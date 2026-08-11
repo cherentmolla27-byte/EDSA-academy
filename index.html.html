@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary Search Engine Optimization (SEO) -->
+  <title>ኢትዮጵያን ዲጂታል ሶሻል ሚዲያ አካዳሚ | EDSA - Examination & Certification Portal</title>
+  <meta name="description" content="Official Examination & Certification Portal for Ethiopian Digital Social Media Academy (ኢትዮጵያን ዲጂታል ሶሻል ሚዲያ አካዳሚ). Take professional exams and receive verified digital certificates.">
+  <meta name="keywords" content="Ethiopian Digital Social Media Academy, ኢትዮጵያን ዲጂታል ሶሻል ሚዲያ አካዳሚ, EDSA Academy, Digital Marketing Ethiopia, Certificate Verification, Social Media Management">
+  <meta name="author" content="Cherenet Molla Alem">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Social Media Preview Tags (For Telegram & Facebook Shares) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ኢትዮጵያን ዲጂታል ሶሻል ሚዲያ አካዳሚ | EDSA Certification Portal">
+  <meta property="og:description" content="Take online certification exams and download official verified credentials from Ethiopian Digital Social Media Academy.">
+  <meta property="og:url" content="https://ethiopian-digital-academy.netlify.app/">
+
+  <!-- Google Search Console Verification Tag (Paste your string inside content="") -->
+  <meta name="google-site-verification" content="YOUR_GOOGLE_CODE_HERE">
+
+  <!-- Schema.org Educational Organization Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Ethiopian Digital Social Media Academy",
+    "alternateName": "ኢትዮጵያን ዲጂታል ሶሻል ሚዲያ አካዳሚ",
+    "url": "https://ethiopian-digital-academy.netlify.app/",
+    "description": "Official Examination and Professional Certification Portal for Digital Marketing and Social Media Management in Ethiopia."
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .hidden-section { display: none; }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(14, 165, 233, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(14, 165, 233, 0.6); }
+    }
+    .hero-glow { animation: pulse-glow 4s infinite; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .float-anim { animation: float 3s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-black text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50 py-4 px-6 flex justify-between items-center">
+    <div class="flex items-center space-x-3 cursor-pointer" onclick="navToCatalog()">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-lg float-anim">
+        <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold text-white tracking-wide leading-tight">EDSA ACADEMY</h1>
+        <p class="text-[10px] text-sky-400 tracking-wider uppercase font-semibold">Certification Portal</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openAdminModal()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300 font-medium transition-colors">
+        <i class="fa-solid fa-lock text-sky-400 mr-1"></i> Admin Panel
+      </button>
+      <span id="userStatus" class="text-xs bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300 font-medium hidden sm:inline-block">
+        Status: Select Exam
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto w-full p-4 sm:p-6 my-auto">
+
+    <!-- STEP 1: Hero & Course Catalog -->
+    <section id="stepCatalog" class="space-y-6">
+      
+      <!-- Animated Hero Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-950/40 p-6 sm:p-8 rounded-2xl border border-sky-500/30 hero-glow text-center relative overflow-hidden">
+        <div class="inline-block p-3 rounded-2xl bg-sky-500/10 border border-sky-500/20 mb-3 float-anim">
+          <i class="fa-solid fa-award text-sky-400 text-3xl"></i>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Examination & Professional Certification</h2>
+        <p class="text-slate-300 text-sm max-w-xl mx-auto leading-relaxed">
+          Select a professional track below. Score <span class="text-sky-400 font-bold">80% or higher</span> on the exam to earn your verified digital certificate. Fee: <span class="text-sky-400 font-bold">200 ETB per attempt</span>.
+        </p>
+      </div>
+
+      <!-- Course Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="courseList"></div>
+    </section>
+
+    <!-- STEP 2: Payment & Verification -->
+    <section id="stepPayment" class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl hidden-section">
+      <button onclick="navToCatalog()" class="text-xs text-sky-400 hover:text-sky-300 font-semibold mb-4 inline-flex items-center gap-1">
+        <i class="fa-solid fa-arrow-left"></i> Back to Courses
+      </button>
+      <h2 class="text-2xl font-bold text-white mb-1">Manual Payment & Activation</h2>
+      <p id="selectedCourseTitle" class="text-sky-400 font-semibold mb-4 text-sm"></p>
+
+      <div class="bg-black/80 p-5 rounded-xl border border-slate-800 mb-6 text-sm text-slate-300 space-y-3">
+        <p class="font-bold text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-receipt text-sky-400"></i> Exam Fee: <span class="text-sky-400">200 ETB</span>
+        </p>
+        <div class="space-y-1 font-mono text-xs">
+          <p>• Telebirr: <span class="text-sky-400 font-bold">0996173649</span></p>
+          <p>• Awash Bank: <span class="text-sky-400 font-bold">013351438026400</span></p>
+          <p>• CBE: <span class="text-sky-400 font-bold">1000730997934</span></p>
+        </div>
+        
+        <hr class="border-slate-800 my-2">
+
+        <!-- Telegram Action Button -->
+        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-xs text-slate-400">After paying 200 ETB, send your transfer screenshot to get your key:</p>
+          <a id="telegramBtn" href="https://t.me/Cheru178" target="_blank" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg inline-flex items-center gap-2 transition-colors whitespace-nowrap">
+            <i class="fa-brands fa-telegram text-base"></i> Send Receipt on Telegram
+          </a>
+        </div>
+      </div>
+
+      <form id="paymentForm" onsubmit="verifyAndStartExam(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Full Name (Printed on Certificate)</label>
+          <input type="text" id="studentName" required placeholder="e.g. Cherenet Molla" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-sky-500">
+        </div>
+        <div>
+          <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Activation Key (Received via Telegram)</label>
+          <input type="text" id="accessKey" required placeholder="e.g. EDSA-8A2F9B" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white uppercase focus:outline-none focus:border-sky-500">
+        </div>
+        <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-lg transition-colors shadow-lg">
+          Verify Key & Launch Exam
+        </button>
+      </form>
+    </section>
+
+    <!-- STEP 3: Examination -->
+    <section id="stepExam" class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl hidden-section space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
+        <div>
+          <h2 id="examCourseTitle" class="text-xl font-bold text-white"></h2>
+          <p class="text-xs text-slate-400">Total Questions: 50 | Passing Mark: 80% (40/50 correct)</p>
+        </div>
+        <span class="text-xs bg-sky-500/10 text-sky-400 font-bold px-3 py-1.5 rounded-full border border-sky-500/30">
+          Fee: 200 ETB
+        </span>
+      </div>
+
+      <div class="bg-black/90 border border-slate-800 p-3.5 rounded-xl flex flex-wrap justify-between items-center gap-3 sticky top-[72px] z-40 backdrop-blur">
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-300">
+          <i class="fa-solid fa-clock text-sky-400"></i>
+          <span>Time Remaining:</span>
+          <span id="examTimer" class="font-mono text-sky-400 font-bold text-sm">60:00</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <span id="answeredCounter" class="text-slate-300 font-semibold">0 of 50 Answered</span>
+          <div class="w-24 bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+            <div id="progressBar" class="bg-sky-500 h-full w-0 transition-all duration-300"></div>
+          </div>
+        </div>
+      </div>
+
+      <form id="examForm" onsubmit="submitExam(event)" class="space-y-6">
+        <div id="quizContainer" class="space-y-4"></div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+          <button type="button" id="prevPageBtn" onclick="changePage(-1)" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition-colors inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left"></i> Previous
+          </button>
+          <span id="pageIndicator" class="text-xs font-bold text-sky-400">Page 1 of 5</span>
+          <button type="button" id="nextPageBtn" onclick="changePage(1)" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition-colors inline-flex items-center gap-1.5">
+            Next <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <button type="submit" id="submitExamBtn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-lg transition-colors shadow-lg mt-4">
+          Submit All 50 Answers for Grading
+        </button>
+      </form>
+    </section>
+
+    <!-- STEP 4: Results -->
+    <section id="stepResult" class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl hidden-section text-center">
+      <div id="resultIcon" class="mb-4 text-6xl"></div>
+      <h2 id="resultTitle" class="text-3xl font-bold mb-2"></h2>
+      <p id="resultScore" class="text-xl font-semibold mb-4"></p>
+      <p id="resultMessage" class="text-slate-300 text-sm mb-6 max-w-md mx-auto leading-relaxed"></p>
+
+      <div id="actionContainer"></div>
+    </section>
+
+  </main>
+
+  <!-- ADMIN PANEL MODAL -->
+  <div id="adminModal" class="fixed inset-0 bg-black/80 backdrop-blur z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <div id="adminAuthView" class="space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-user-shield text-sky-400"></i> Admin Panel Access
+          </h3>
+          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p class="text-xs text-slate-400">Enter administrator PIN code to access key generator.</p>
+        
+        <div id="lockoutNotice" class="hidden text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-lg font-semibold"></div>
+
+        <div class="space-y-2">
+          <input type="password" id="adminPinInput" placeholder="Enter PIN" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-sky-500">
+          <button id="adminLoginBtn" onclick="authenticateAdmin()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors">
+            Login
+          </button>
+        </div>
+      </div>
+
+      <div id="adminDashboardView" class="space-y-6 hidden">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-key text-sky-400"></i> Key Generator (200 ETB)
+            </h3>
+            <p class="text-[11px] text-slate-400">Generate activation keys to send to students on Telegram</p>
+          </div>
+          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <div class="bg-black/80 p-4 rounded-xl border border-slate-800 space-y-4">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Generate New Key</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Course Scope</label>
+              <select id="keyCourseScope" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                <option value="ALL">ANY COURSE (Universal Key)</option>
+                <option value="smm">Social Media Management</option>
+                <option value="dme">Digital Marketing Essentials</option>
+                <option value="pbm">Project & Business Management</option>
+                <option value="gdm">Graphic Design for Marketers</option>
+                <option value="fme">Financial Management</option>
+                <option value="dbi">Data Analysis & BI</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Quantity</label>
+              <input type="number" id="keyCount" value="1" min="1" max="20" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
+            </div>
+          </div>
+          <button onclick="generateKeys()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-lg text-xs transition-colors">
+            Generate Key(s)
+          </button>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Active & Used Keys</h4>
+            <button onclick="clearUsedKeys()" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold">Clear Used Keys</button>
+          </div>
+          
+          <div class="border border-slate-800 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black text-slate-400 uppercase font-semibold">
+                <tr>
+                  <th class="p-3">Key Code</th>
+                  <th class="p-3">Scope</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Copy / Delete</th>
+                </tr>
+              </thead>
+              <tbody id="keysTableBody" class="divide-y divide-slate-800 bg-slate-900/50"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-400 space-y-2">
+    <div>&copy; EDSA Management Academy. Director: Cherenet Molla Alem</div>
+    <div>
+      Contact Support / Owner: 
+      <a href="mailto:cherentmolla27@gmail.com" class="text-sky-400 hover:underline font-semibold inline-flex items-center justify-center gap-1 mt-1">
+        <i class="fa-solid fa-envelope"></i> cherentmolla27@gmail.com
+      </a>
+    </div>
+  </footer>
+
+  <div id="qrcode" class="hidden"></div>
+  <canvas id="certCanvas" width="1200" height="850" class="hidden"></canvas>
+
+  <script>
+    // ADMIN SECURITY SETTINGS
+    const SECURE_ADMIN_PIN = "EDSA26";
+    const MAX_FAILED_ATTEMPTS = 3;
+    const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+
+    function generate50Questions(courseKey, courseTitle) {
+      const qList = [];
+      const topics = {
+        smm: ["Audience Growth", "Content Calendar", "Engagement Metrics", "Paid Social Ads", "Brand Identity", "Hashtag SEO", "Influencer Outreach", "Community Management", "Video Reels Strategy", "Analytics Reporting"],
+        dme: ["SEO Optimization", "Google Search Ads", "Email Marketing", "Conversion Funnels", "Copywriting", "Retargeting Pixels", "Landing Page CRO", "Affiliate Marketing", "Customer Lifetime Value", "Web Analytics"],
+        pbm: ["Agile Sprints", "Risk Registers", "Gantt Schedules", "Scope Creep", "Stakeholder Communication", "Budget Controls", "KPI Tracking", "Change Management", "Procurement Planning", "Project Closure"],
+        gdm: ["Color Psychology", "Typography Hierarchy", "Logo Branding Systems", "Ad Creative Layouts", "Vector vs Raster", "UI/UX Basics", "Visual Composition", "Brand Guidelines", "Design Tools Workflow", "Export Resolution"],
+        fme: ["Cash Flow Statements", "Break-Even Point", "Balance Sheet Assets", "Profit & Loss Analysis", "Working Capital", "Operating Margins", "Tax Compliance", "Debt vs Equity", "Financial Forecasting", "Cost of Goods Sold"],
+        dbi: ["SQL Querying", "Excel Data Tables", "Power BI Dashboards", "Data Cleaning", "Data Visualization", "Key Performance Indicators", "Predictive Analytics", "Data Modeling", "Business Metrics", "Data Governance"]
+      };
+
+      const keys = topics[courseKey] || topics.smm;
+
+      for (let i = 1; i <= 50; i++) {
+        const topic = keys[(i - 1) % keys.length];
+        const rawOptions = [
+          { text: `Consistently analyzing data insights to refine ${topic.toLowerCase()} strategies continuously.`, isCorrect: true },
+          { text: `Executing one-time actions without measuring operational outcomes or feedback.`, isCorrect: false },
+          { text: `Ignoring industry standard benchmarks and competitor evaluation metrics.`, isCorrect: false },
+          { text: `Outsourcing all key decisions without tracking progress or internal goals.`, isCorrect: false }
+        ];
+
+        for (let j = rawOptions.length - 1; j > 0; j--) {
+          const k = Math.floor(Math.random() * (j + 1));
+          [rawOptions[j], rawOptions[k]] = [rawOptions[k], rawOptions[j]];
+        }
+
+        const correctIdx = rawOptions.findIndex(opt => opt.isCorrect);
+
+        qList.push({
+          q: `[Question ${i}] Regarding ${topic} in ${courseTitle}, what is considered the standard best practice for achieving optimal performance?`,
+          options: rawOptions.map(o => o.text),
+          correct: correctIdx
+        });
+      }
+      return qList;
+    }
+
+    const COURSES = [
+      { id: "smm", title: "Social Media Management", icon: "fa-share-nodes", questions: generate50Questions("smm", "Social Media Management") },
+      { id: "dme", title: "Digital Marketing Essentials", icon: "fa-rectangle-ad", questions: generate50Questions("dme", "Digital Marketing Essentials") },
+      { id: "pbm", title: "Project & Business Management", icon: "fa-chart-kanban", questions: generate50Questions("pbm", "Project & Business Management") },
+      { id: "gdm", title: "Graphic Design for Marketers", icon: "fa-palette", questions: generate50Questions("gdm", "Graphic Design for Marketers") },
+      { id: "fme", title: "Financial Management for Entrepreneurs", icon: "fa-vault", questions: generate50Questions("fme", "Financial Management for Entrepreneurs") },
+      { id: "dbi", title: "Data Analysis & Business Intelligence", icon: "fa-chart-pie", questions: generate50Questions("dbi", "Data Analysis & Business Intelligence") }
+    ];
+
+    const DEFAULT_KEYS = [
+      { code: "EDSA-DEMO200", scope: "ALL", used: false, usedBy: null }
+    ];
+
+    function getStoredKeys() {
+      const stored = localStorage.getItem("EDSA_KEYS");
+      if (!stored) {
+        localStorage.setItem("EDSA_KEYS", JSON.stringify(DEFAULT_KEYS));
+        return DEFAULT_KEYS;
+      }
+      return JSON.parse(stored);
+    }
+
+    function saveStoredKeys(keys) {
+      localStorage.setItem("EDSA_KEYS", JSON.stringify(keys));
+    }
+
+    let state = {
+      selectedCourse: null,
+      studentName: "",
+      accessKey: "",
+      score: 0,
+      userAnswers: {},
+      currentPage: 1,
+      questionsPerPage: 10,
+      timerInterval: null,
+      secondsLeft: 3600,
+      adminAuthenticated: false,
+      failedAttempts: parseInt(localStorage.getItem("EDSA_FAILED_ATTEMPTS") || "0"),
+      lockUntil: parseInt(localStorage.getItem("EDSA_LOCK_UNTIL") || "0")
+    };
+
+    function initCatalog() {
+      const container = document.getElementById("courseList");
+      container.innerHTML = COURSES.map(course => `
+        <div class="border border-slate-800 bg-slate-900/60 p-5 rounded-2xl flex flex-col justify-between hover:border-sky-500/50 hover:bg-slate-900 transition-all shadow-md group">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-4 text-xl group-hover:scale-110 transition-transform">
+              <i class="fa-solid ${course.icon}"></i>
+            </div>
+            <h3 class="font-bold text-white text-base mb-1 group-hover:text-sky-400 transition-colors">${course.title}</h3>
+            <p class="text-xs text-slate-400 mb-4">50 Questions • 80% Pass Grade • 200 ETB</p>
+          </div>
+          <button onclick="selectCourse('${course.id}')" class="w-full bg-sky-500/10 hover:bg-sky-500 text-sky-400 hover:text-white border border-sky-500/30 text-xs font-bold py-2.5 rounded-xl transition-all">
+            Take Exam (200 ETB)
+          </button>
+        </div>
+      `).join("");
+    }
+
+    function showSection(id) {
+      ["stepCatalog", "stepPayment", "stepExam", "stepResult"].forEach(sec => {
+        document.getElementById(sec).classList.add("hidden-section");
+      });
+      document.getElementById(id).classList.remove("hidden-section");
+    }
+
+    function navToCatalog() {
+      stopTimer();
+      document.getElementById("userStatus").innerText = "Status: Select Exam";
+      showSection("stepCatalog");
+    }
+
+    function selectCourse(courseId) {
+      state.selectedCourse = COURSES.find(c => c.id === courseId);
+      document.getElementById("selectedCourseTitle").innerText = `Selected: ${state.selectedCourse.title}`;
+      document.getElementById("userStatus").innerText = `Selected: ${state.selectedCourse.title}`;
+      showSection("stepPayment");
+    }
+
+    function verifyAndStartExam(e) {
+      e.preventDefault();
+      const inputKey = document.getElementById("accessKey").value.trim().toUpperCase();
+      const name = document.getElementById("studentName").value.trim();
+
+      if (!inputKey || !name) {
+        alert("Please enter both your full name and valid payment key.");
+        return;
+      }
+
+      const keys = getStoredKeys();
+      const keyObj = keys.find(k => k.code === inputKey);
+
+      if (!keyObj) {
+        alert("Invalid Activation Key. Please contact admin on Telegram to receive your key.");
+        return;
+      }
+
+      if (keyObj.used) {
+        alert(`This key has already been used by ${keyObj.usedBy || "another student"}.`);
+        return;
+      }
+
+      if (keyObj.scope !== "ALL" && keyObj.scope !== state.selectedCourse.id) {
+        alert(`This key is valid only for the '${COURSES.find(c => c.id === keyObj.scope)?.title}' exam.`);
+        return;
+      }
+
+      keyObj.used = true;
+      keyObj.usedBy = name;
+      saveStoredKeys(keys);
+
+      state.studentName = name;
+      state.accessKey = inputKey;
+      state.userAnswers = {};
+      state.currentPage = 1;
+
+      document.getElementById("examCourseTitle").innerText = state.selectedCourse.title;
+      document.getElementById("userStatus").innerText = `Exam Active: ${state.selectedCourse.title}`;
+      
+      startTimer();
+      renderPage();
+      updateProgress();
+      showSection("stepExam");
+    }
+
+    function renderPage() {
+      const quizBox = document.getElementById("quizContainer");
+      const startIdx = (state.currentPage - 1) * state.questionsPerPage;
+      const endIdx = startIdx + state.questionsPerPage;
+      const pageQuestions = state.selectedCourse.questions.slice(startIdx, endIdx);
+
+      quizBox.innerHTML = pageQuestions.map((q, i) => {
+        const globalIndex = startIdx + i;
+        const selectedVal = state.userAnswers[globalIndex];
+
+        return `
+          <div class="bg-black/90 p-4 sm:p-5 rounded-xl border border-slate-800">
+            <p class="font-semibold text-sm text-slate-200 mb-3">${globalIndex + 1}. ${q.q}</p>
+            <div class="space-y-2">
+              ${q.options.map((opt, oIndex) => `
+                <label class="flex items-start space-x-3 p-2.5 rounded-lg hover:bg-slate-900 cursor-pointer border border-transparent hover:border-slate-800 text-xs text-slate-300 transition-colors">
+                  <input type="radio" name="q_${globalIndex}" value="${oIndex}" ${selectedVal === oIndex ? "checked" : ""} onchange="recordAnswer(${globalIndex}, ${oIndex})" class="mt-0.5 accent-sky-500">
+                  <span>${opt}</span>
+                </label>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const totalPages = Math.ceil(state.selectedCourse.questions.length / state.questionsPerPage);
+      document.getElementById("pageIndicator").innerText = `Page ${state.currentPage} of ${totalPages}`;
+      document.getElementById("prevPageBtn").style.visibility = state.currentPage === 1 ? "hidden" : "visible";
+      document.getElementById("nextPageBtn").style.visibility = state.currentPage === totalPages ? "hidden" : "visible";
+    }
+
+    function changePage(delta) {
+      state.currentPage += delta;
+      renderPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function recordAnswer(questionIndex, optionIndex) {
+      state.userAnswers[questionIndex] = optionIndex;
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const answeredCount = Object.keys(state.userAnswers).length;
+      const total = state.selectedCourse.questions.length;
+      const percent = Math.round((answeredCount / total) * 100);
+
+      document.getElementById("answeredCounter").innerText = `${answeredCount} of ${total} Answered`;
+      document.getElementById("progressBar").style.width = `${percent}%`;
+    }
+
+    function startTimer() {
+      stopTimer();
+      state.secondsLeft = 3600;
+      updateTimerDisplay();
+
+      state.timerInterval = setInterval(() => {
+        state.secondsLeft--;
+        updateTimerDisplay();
+
+        if (state.secondsLeft <= 0) {
+          stopTimer();
+          alert("Time is up! Your exam will be submitted automatically.");
+          calculateAndRenderScore();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(state.secondsLeft / 60);
+      const secs = state.secondsLeft % 60;
+      document.getElementById("examTimer").innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function submitExam(e) {
+      if (e) e.preventDefault();
+      stopTimer();
+      calculateAndRenderScore();
+    }
+
+    function calculateAndRenderScore() {
+      const questions = state.selectedCourse.questions;
+      let correctAnswers = 0;
+
+      questions.forEach((q, idx) => {
+        if (state.userAnswers[idx] === q.correct) {
+          correctAnswers++;
+        }
+      });
+
+      const percentage = Math.round((correctAnswers / questions.length) * 100);
+      state.score = percentage;
+
+      renderResult(percentage >= 80, percentage, correctAnswers);
+    }
+
+    function renderResult(passed, score, correctCount) {
+      const icon = document.getElementById("resultIcon");
+      const title = document.getElementById("resultTitle");
+      const scoreTxt = document.getElementById("resultScore");
+      const msg = document.getElementById("resultMessage");
+      const actions = document.getElementById("actionContainer");
+
+      scoreTxt.innerText = `Final Result: ${score}% (${correctCount}/50 Correct)`;
+
+      if (passed) {
+        icon.innerHTML = '<i class="fa-solid fa-trophy text-sky-400"></i>';
+        title.innerText = "Congratulations! You Passed";
+        title.className = "text-3xl font-bold mb-2 text-emerald-400";
+        msg.innerText = `You achieved the required 80% passing threshold for ${state.selectedCourse.title}. Choose how you would like to receive your official certificate below:`;
+        
+        actions.innerHTML = `
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onclick="saveCertificateImage()" class="w-full sm:w-auto bg-sky-500 hover:bg-sky-600 text-white font-bold px-5 py-3 rounded-xl transition-colors shadow-lg inline-flex items-center justify-center gap-2 text-sm">
+              <i class="fa-solid fa-image"></i> Save to Gallery (PNG)
+            </button>
+            <button onclick="downloadCertificate()" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-3 rounded-xl transition-colors shadow-lg inline-flex items-center justify-center gap-2 text-sm">
+              <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </button>
+            <button onclick="printCertificate()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-5 py-3 rounded-xl transition-colors shadow-lg inline-flex items-center justify-center gap-2 text-sm">
+              <i class="fa-solid fa-print"></i> Print Certificate
+            </button>
+          </div>
+        `;
+      } else {
+        icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500"></i>';
+        title.innerText = "Examination Failed";
+        title.className = "text-3xl font-bold mb-2 text-rose-500";
+        msg.innerText = `You scored ${score}%, which is below the 80% passing mark. To attempt this exam again, please submit a new payment of 200 ETB.`;
+        actions.innerHTML = `
+          <button onclick="resetAndPayAgain()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 py-3.5 rounded-xl transition-colors shadow-lg">
+            Pay Again & Retake Exam (200 ETB)
+          </button>
+        `;
+      }
+
+      document.getElementById("userStatus").innerText = passed ? "Passed - Certificate Issued" : "Failed - Key Expired";
+      showSection("stepResult");
+    }
+
+    function resetAndPayAgain() {
+      state.accessKey = "";
+      state.userAnswers = {};
+      document.getElementById("accessKey").value = "";
+      document.getElementById("paymentForm").reset();
+      navToCatalog();
+    }
+
+    // DRAW CANVAS CERTIFICATE FOR IMAGE SAVE & PRINT
+    function drawCertificateCanvas(callback) {
+      const canvas = document.getElementById("certCanvas");
+      const ctx = canvas.getContext("2d");
+      const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const certId = "EDSA-" + Math.floor(100000 + Math.random() * 900000);
+
+      // Background
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, 1200, 850);
+
+      // Border
+      ctx.strokeStyle = "#0EA5E9";
+      ctx.lineWidth = 12;
+      ctx.strokeRect(30, 30, 1140, 790);
+
+      ctx.strokeStyle = "#0284C7";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(45, 45, 1110, 760);
+
+      // Header
+      ctx.fillStyle = "#0EA5E9";
+      ctx.font = "bold 38px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("ETHIOPIAN DIGITAL SOCIAL MEDIA ACADEMY", 600, 180);
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "24px sans-serif";
+      ctx.fillText("CERTIFICATE OF ACHIEVEMENT", 600, 240);
+
+      ctx.fillStyle = "#94A3B8";
+      ctx.font = "20px sans-serif";
+      ctx.fillText("This official certificate verifies that", 600, 320);
+
+      // Name
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 44px sans-serif";
+      ctx.fillText(state.studentName.toUpperCase(), 600, 400);
+
+      // Description
+      ctx.fillStyle = "#94A3B8";
+      ctx.font = "20px sans-serif";
+      ctx.fillText(`has successfully passed with a score of ${state.score}% for`, 600, 470);
+
+      // Course Title
+      ctx.fillStyle = "#0EA5E9";
+      ctx.font = "bold 34px sans-serif";
+      ctx.fillText(state.selectedCourse.title, 600, 530);
+
+      // Footer Meta
+      ctx.fillStyle = "#94A3B8";
+      ctx.font = "18px sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(`Issue Date: ${dateStr}`, 100, 710);
+      ctx.fillText(`Certificate ID: ${certId}`, 100, 745);
+
+      ctx.textAlign = "right";
+      ctx.fillText(`Director: Cherenet Molla Alem`, 1100, 710);
+
+      // QR Code
+      const qrDiv = document.getElementById("qrcode");
+      qrDiv.innerHTML = "";
+      new QRCode(qrDiv, {
+        text: `https://ethiopian-digital-academy.netlify.app/verify?id=${certId}&student=${encodeURIComponent(state.studentName)}`,
+        width: 100,
+        height: 100
+      });
+
+      setTimeout(() => {
+        const qrCanvas = qrDiv.querySelector("canvas");
+        if (qrCanvas) {
+          ctx.drawImage(qrCanvas, 550, 630, 100, 100);
+        }
+        if (callback) callback(certId);
+      }, 300);
+    }
+
+    // SAVE TO GALLERY AS PNG
+    function saveCertificateImage() {
+      drawCertificateCanvas((certId) => {
+        const canvas = document.getElementById("certCanvas");
+        const imageURI = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.download = `${state.studentName.replace(/\s+/g, "_")}_Certificate.png`;
+        link.href = imageURI;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }
+
+    // DIRECT PRINT FUNCTION
+    function printCertificate() {
+      drawCertificateCanvas(() => {
+        const canvas = document.getElementById("certCanvas");
+        const dataUrl = canvas.toDataURL("image/png");
+        const printWindow = window.open('', '_blank');
+        
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Print Certificate - ${state.studentName}</title>
+              <style>
+                @page { size: landscape; margin: 0; }
+                body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #000; }
+                img { max-width: 100%; max-height: 100vh; object-fit: contain; }
+              </style>
+            </head>
+            <body>
+              <img src="${dataUrl}" onload="window.print(); window.close();" />
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+      });
+    }
+
+    // DOWNLOAD PDF CERTIFICATE
+    function downloadCertificate() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+
+      const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const certId = "EDSA-" + Math.floor(100000 + Math.random() * 900000);
+
+      // Certificate Background (Black)
+      doc.setFillColor(0, 0, 0);
+      doc.rect(0, 0, 297, 210, "F");
+
+      // Certificate Border (Sky Blue)
+      doc.setDrawColor(14, 165, 233);
+      doc.setLineWidth(3);
+      doc.rect(10, 10, 277, 190);
+
+      // Header Text (Sky Blue)
+      doc.setTextColor(14, 165, 233);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(26);
+      doc.text("ETHIOPIAN DIGITAL SOCIAL MEDIA ACADEMY", 148.5, 45, { align: "center" });
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(15);
+      doc.text("CERTIFICATE OF ACHIEVEMENT", 148.5, 60, { align: "center" });
+
+      doc.setFontSize(12);
+      doc.setTextColor(148, 163, 184);
+      doc.text("This official certificate verifies that", 148.5, 80, { align: "center" });
+
+      // Student Name
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(24);
+      doc.setTextColor(255, 255, 255);
+      doc.text(state.studentName.toUpperCase(), 148.5, 98, { align: "center" });
+
+      // Passing Wording
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.setTextColor(148, 163, 184);
+      doc.text("has successfully passed with a score of " + state.score + "% for", 148.5, 115, { align: "center" });
+
+      // Course Title (Sky Blue)
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.setTextColor(14, 165, 233);
+      doc.text(state.selectedCourse.title, 148.5, 130, { align: "center" });
+
+      // Footer & Info
+      doc.setFontSize(10);
+      doc.setTextColor(148, 163, 184);
+      doc.text(`Issue Date: ${dateStr}`, 40, 170);
+      doc.text(`Certificate ID: ${certId}`, 40, 178);
+      doc.text(`Director: Cherenet Molla Alem`, 200, 170);
+
+      // QR Code Generation
+      const qrDiv = document.getElementById("qrcode");
+      qrDiv.innerHTML = "";
+      new QRCode(qrDiv, {
+        text: `https://ethiopian-digital-academy.netlify.app/verify?id=${certId}&student=${encodeURIComponent(state.studentName)}`,
+        width: 80,
+        height: 80
+      });
+
+      setTimeout(() => {
+        const qrCanvas = qrDiv.querySelector("canvas");
+        if (qrCanvas) {
+          const qrDataUrl = qrCanvas.toDataURL("image/png");
+          doc.addImage(qrDataUrl, "PNG", 133.5, 150, 30, 30);
+        }
+        doc.save(`${state.studentName.replace(/\s+/g, "_")}_Certificate.pdf`);
+      }, 300);
+    }
+
+    // ADMIN PANEL & LOCKOUT SECURITY FUNCTIONS
+    function checkLockoutState() {
+      const now = Date.now();
+      const lockoutNotice = document.getElementById("lockoutNotice");
+      const pinInput = document.getElementById("adminPinInput");
+      const loginBtn = document.getElementById("adminLoginBtn");
+
+      if (state.lockUntil > now) {
+        const remainingMins = Math.ceil((state.lockUntil - now) / 60000);
+        lockoutNotice.classList.remove("hidden");
+        lockoutNotice.innerText = `Too many failed attempts. Admin panel locked for ${remainingMins} minute(s).`;
+        pinInput.disabled = true;
+        loginBtn.disabled = true;
+        loginBtn.classList.add("opacity-50", "cursor-not-allowed");
+        return true;
+      } else {
+        if (state.lockUntil !== 0) {
+          state.failedAttempts = 0;
+          state.lockUntil = 0;
+          localStorage.removeItem("EDSA_FAILED_ATTEMPTS");
+          localStorage.removeItem("EDSA_LOCK_UNTIL");
+        }
+        lockoutNotice.classList.add("hidden");
+        pinInput.disabled = false;
+        loginBtn.disabled = false;
+        loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        return false;
+      }
+    }
+
+    function openAdminModal() {
+      document.getElementById("adminModal").classList.remove("hidden");
+      checkLockoutState();
+
+      if (state.adminAuthenticated) {
+        document.getElementById("adminAuthView").classList.add("hidden");
+        document.getElementById("adminDashboardView").classList.remove("hidden");
+        renderKeysTable();
+      } else {
+        document.getElementById("adminAuthView").classList.remove("hidden");
+        document.getElementById("adminDashboardView").classList.add("hidden");
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById("adminModal").classList.add("hidden");
+    }
+
+    function authenticateAdmin() {
+      if (checkLockoutState()) return;
+
+      const pin = document.getElementById("adminPinInput").value.trim();
+      
+      if (pin === SECURE_ADMIN_PIN) {
+        state.adminAuthenticated = true;
+        state.failedAttempts = 0;
+        state.lockUntil = 0;
+        localStorage.removeItem("EDSA_FAILED_ATTEMPTS");
+        localStorage.removeItem("EDSA_LOCK_UNTIL");
+
+        document.getElementById("adminAuthView").classList.add("hidden");
+        document.getElementById("adminDashboardView").classList.remove("hidden");
+        renderKeysTable();
+      } else {
+        state.failedAttempts += 1;
+        localStorage.setItem("EDSA_FAILED_ATTEMPTS", state.failedAttempts.toString());
+
+        if (state.failedAttempts >= MAX_FAILED_ATTEMPTS) {
+          state.lockUntil = Date.now() + LOCKOUT_DURATION_MS;
+          localStorage.setItem("EDSA_LOCK_UNTIL", state.lockUntil.toString());
+          checkLockoutState();
+        } else {
+          const attemptsLeft = MAX_FAILED_ATTEMPTS - state.failedAttempts;
+          alert(`Incorrect PIN code. You have ${attemptsLeft} attempt(s) remaining before a 15-minute lockout.`);
+        }
+      }
+    }
+
+    function generateKeys() {
+      const scope = document.getElementById("keyCourseScope").value;
+      const count = parseInt(document.getElementById("keyCount").value) || 1;
+      const keys = getStoredKeys();
+
+      for (let i = 0; i < count; i++) {
+        const randomHex = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const code = `EDSA-${randomHex}`;
+        keys.unshift({ code, scope, used: false, usedBy: null });
+      }
+
+      saveStoredKeys(keys);
+      renderKeysTable();
+    }
+
+    function copyKey(code) {
+      navigator.clipboard.writeText(code);
+      alert(`Key ${code} copied to clipboard! You can paste it into Telegram now.`);
+    }
+
+    function renderKeysTable() {
+      const keys = getStoredKeys();
+      const tbody = document.getElementById("keysTableBody");
+
+      if (keys.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No active keys generated yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = keys.map((k, idx) => `
+        <tr class="hover:bg-slate-800/80">
+          <td class="p-3 font-mono font-bold text-sky-400">${k.code}</td>
+          <td class="p-3 font-semibold text-slate-300">${k.scope === "ALL" ? "Universal" : k.scope.toUpperCase()}</td>
+          <td class="p-3">
+            ${k.used 
+              ? `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded text-[10px] font-bold">Used by ${k.usedBy || 'Student'}</span>`
+              : `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded text-[10px] font-bold">Active</span>`
+            }
+          </td>
+          <td class="p-3 text-right space-x-2">
+            <button onclick="copyKey('${k.code}')" title="Copy to Clipboard" class="text-sky-400 hover:text-sky-300">
+              <i class="fa-solid fa-copy"></i>
+            </button>
+            <button onclick="deleteKey(${idx})" title="Delete Key" class="text-rose-400 hover:text-rose-300">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function deleteKey(index) {
+      const keys = getStoredKeys();
+      keys.splice(index, 1);
+      saveStoredKeys(keys);
+      renderKeysTable();
+    }
+
+    function clearUsedKeys() {
+      const keys = getStoredKeys().filter(k => !k.used);
+      saveStoredKeys(keys);
+      renderKeysTable();
+    }
+
+    initCatalog();
+  </script>
+</body>
+</html>
