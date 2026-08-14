@@ -783,35 +783,70 @@
 
       // Course Title (Sky Blue)
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(20);
-      doc.setTextColor(14, 165, 233);
-      doc.text(state.selectedCourse.title, 148.5, 130, { align: "center" });
-      doc.addImage(bgImage, "JPEG", 0, 0, 297, 210);
-      // Footer & Info
-      doc.setFontSize(10);
-      doc.setTextColor(148, 163, 184);
-      doc.text(`Issue Date: ${dateStr}`, 40, 170);
-      doc.text(`Certificate ID: ${certId}`, 40, 178);
-      doc.text(`Director: Cherenet Molla Alem`, 200, 170);
+      // 1. Draw Background Template FIRST (so text sits on top of it)
+doc.addImage(bgImage, "JPEG", 0, 0, 297, 210);
 
-      // QR Code Generation
-      const qrDiv = document.getElementById("qrcode");
-      qrDiv.innerHTML = "";
-      new QRCode(qrDiv, {
-        text: `https://ethiopian-digital-academy.netlify.app/?key=${certId}&name=${encodeURIComponent(state.studentName)}`,
-        width: 80,
-        height: 80
-      });
+// 2. Student Name (Centered above the main line)
+doc.setFont("times", "bolditalic");
+doc.setFontSize(26);
+doc.setTextColor(30, 41, 59);
+doc.text(state.studentName, 148.5, 110, { align: "center" });
 
-      setTimeout(() => {
-        const qrCanvas = qrDiv.querySelector("canvas");
-        if (qrCanvas) {
-          const qrDataUrl = qrCanvas.toDataURL("image/png");
-          doc.addImage(qrDataUrl, "PNG", 230, 155, 30, 30);
-        }
-        const pdfBlobUrl = doc.output('bloburl');
-window.open(pdfBlobUrl, '_blank');
-      }, 300);
+// 3. Achievement Statement & Course Title
+doc.setFont("helvetica", "normal");
+doc.setFontSize(12);
+doc.setTextColor(71, 85, 105);
+doc.text("has successfully completed the training program in", 148.5, 122, { align: "center" });
+
+doc.setFont("helvetica", "bold");
+doc.setFontSize(16);
+doc.setTextColor(180, 83, 9);
+doc.text(state.selectedCourse.title, 148.5, 131, { align: "center" });
+
+// 4. Academy Name (Centered on the Golden Banner Ribbon)
+doc.setFont("times", "bolditalic");
+doc.setFontSize(12);
+doc.setTextColor(30, 41, 59);
+doc.text("Ethiopian Digital Social Media Academy", 148.5, 145, { align: "center" });
+
+// 5. Date (Bottom-Left Line) & Director Signature (Bottom-Right Line)
+doc.setFont("helvetica", "normal");
+doc.setFontSize(11);
+doc.setTextColor(51, 65, 85);
+doc.text(`${dateStr}`, 60, 172, { align: "center" });
+doc.setFontSize(8);
+doc.text(`ID: ${certId}`, 60, 178, { align: "center" });
+
+doc.setFontSize(11);
+doc.text("Cherenet Molla Alem", 235, 172, { align: "center" });
+
+// 6. Verification QR Code (Inside the Gold Laurel Wreath on the Right)
+const qrDiv = document.getElementById("qrcode");
+qrDiv.innerHTML = "";
+
+const verifyUrl = `https://ethiopian-digital-academy.netlify.app/?key=${certId}&name=${encodeURIComponent(state.studentName)}`;
+
+new QRCode(qrDiv, {
+  text: verifyUrl,
+  width: 100,
+  height: 100
+});
+
+setTimeout(() => {
+  const qrCanvas = qrDiv.querySelector("canvas");
+  if (qrCanvas) {
+    const qrDataUrl = qrCanvas.toDataURL("image/png");
+    // Places QR directly inside the gold wreath circle
+    doc.addImage(qrDataUrl, "PNG", 216, 92, 28, 28);
+  }
+  
+  // Choose one:
+  // Use this line to preview in new tab:
+  const pdfBlobUrl = doc.output('bloburl'); window.open(pdfBlobUrl, '_blank');
+  
+  // Or switch back to this line when ready to let users download it:
+  // doc.save(`${state.studentName.replace(/\s+/g, "_")}_Certificate.pdf`);
+}, 300);
     }
 
     // ADMIN PANEL & LOCKOUT SECURITY FUNCTIONS
