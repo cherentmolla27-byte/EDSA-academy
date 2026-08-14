@@ -767,22 +767,19 @@
 
       doc.setFontSize(12);
       doc.setTextColor(148, 163, 184);
-      doc.text("This official certificate verifies that", 148.5, 80, { align: "center" });
+      // Load the template image file first
+const bgImage = new Image();
+bgImage.src = "certificate-template.jpg"; // Must match your uploaded image filename in GitHub!
 
-      // Student Name
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(24);
-      doc.setTextColor(255, 255, 255);
-      doc.text(state.studentName.toUpperCase(), 148.5, 98, { align: "center" });
+bgImage.onload = function() {
+  const doc = new jspdf.jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4"
+  });
 
-      // Passing Wording
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.setTextColor(148, 163, 184);
-      doc.text("has successfully passed with a score of " + state.score + "% for", 148.5, 115, { align: "center" });
-
-      // Course Title (Sky Blue)
-      doc.setFont("helvetica", "bold");
+  // Draw the template image across the entire page (297mm x 210mm)
+  doc.addImage(bgImage, "JPEG", 0, 0, 297, 210);
       // 1. Draw Background Template FIRST (so text sits on top of it)
 doc.addImage(bgImage, "JPEG", 0, 0, 297, 210);
 
