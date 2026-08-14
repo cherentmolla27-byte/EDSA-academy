@@ -959,12 +959,15 @@ setTimeout(() => {
       navigator.clipboard.writeText(code);
       alert(`Key ${code} copied to clipboard! You can paste it into Telegram now.`);
     }
- navigator.clipboard.writeText(code);
-      alert(`Key ${code} copied to clipboard! You can paste it into Telegram now.`);
+
+    // --- TEMPORARY TEST TRIGGER ---
+    state.studentName = "Cherenet Molla Alem";
+    state.selectedCourse = { title: "Social Media Management" };
+    setTimeout(() => { generatePDF(); }, 1000);
+
     function renderKeysTable() {
       const keys = getStoredKeys();
       const tbody = document.getElementById("keysTableBody");
-
 
       if (keys.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No active keys generated yet.</td></tr>`;
