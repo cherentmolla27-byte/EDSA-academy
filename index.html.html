@@ -786,7 +786,7 @@
       doc.setFontSize(20);
       doc.setTextColor(14, 165, 233);
       doc.text(state.selectedCourse.title, 148.5, 130, { align: "center" });
-
+      doc.addImage(bgImage, "JPEG", 0, 0, 297, 210);
       // Footer & Info
       doc.setFontSize(10);
       doc.setTextColor(148, 163, 184);
@@ -798,7 +798,7 @@
       const qrDiv = document.getElementById("qrcode");
       qrDiv.innerHTML = "";
       new QRCode(qrDiv, {
-        text: `https://ethiopian-digital-academy.netlify.app/verify?id=${certId}&student=${encodeURIComponent(state.studentName)}`,
+        text: `https://ethiopian-digital-academy.netlify.app/?key=${certId}&name=${encodeURIComponent(state.studentName)}`,
         width: 80,
         height: 80
       });
@@ -807,9 +807,10 @@
         const qrCanvas = qrDiv.querySelector("canvas");
         if (qrCanvas) {
           const qrDataUrl = qrCanvas.toDataURL("image/png");
-          doc.addImage(qrDataUrl, "PNG", 133.5, 150, 30, 30);
+          doc.addImage(qrDataUrl, "PNG", 230, 155, 30, 30);
         }
-        doc.save(`${state.studentName.replace(/\s+/g, "_")}_Certificate.pdf`);
+        const pdfBlobUrl = doc.output('bloburl');
+window.open(pdfBlobUrl, '_blank');
       }, 300);
     }
 
