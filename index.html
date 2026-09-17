@@ -10,107 +10,97 @@ iframe{border:0;width:100%;height:100%;display:block}
 </style>
 </head>
 <body>
-<iframe id="app" src="/edsa-app.html" title="EDSA Academy"></iframe>
+<div id="appHost"></div>
 <script src="/question-banks.js"></script>
 <script>
 (function(){
-  const frame=document.getElementById('app');
-  frame.addEventListener('load',function(){
-    const w=frame.contentWindow;
-    const verifyBase='https://edsa-academy.vercel.app/verify';
+  const host=document.getElementById('appHost');
+  const frame=document.createElement('iframe');
+  frame.title='EDSA Academy';
+  frame.style.cssText='border:0;width:100%;height:100%;display:block';
+  host.appendChild(frame);
 
-    // Keep the old certificate trigger disabled. A certificate is created only after a real pass.
+  const verifyBase='https://edsa-academy.vercel.app/verify';
+  let initialized=false;
+
+  function shuffle(list){
+    const a=Array.isArray(list)?list.slice():[];
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function prepareCourse(w,course){
+    if(!course)return false;
+    try{
+      const bank=window.EDSA_QUESTION_BANKS&&window.EDSA_QUESTION_BANKS[course.id];
+      const source=Array.isArray(bank)&&bank.length===50?bank:(Array.isArray(course.questions)?course.questions:[]);
+      if(!source.length)return false;
+      course.questions=shuffle(source.map(function(q){
+        const options=Array.isArray(q&&q.options)?q.options.slice():[];
+        if(!options.length)return {...q};
+        const correctIndex=Number.isInteger(q.correct)&&q.correct>=0&&q.correct<options.length?q.correct:0;
+        const correctText=options[correctIndex];
+        shuffle(options);
+        const newCorrect=options.indexOf(correctText);
+        return {...q,options,correct:newCorrect>=0?newCorrect:0};
+      }));
+      return course.questions.length===50;
+    }catch(err){
+      console.error('EDSA question preparation failed:',err);
+      return false;
+    }
+  }
+
+  function initialize(w){
+    if(initialized)return;
+    if(!w||!w.document||!w.selectCourse||!w.verifyAndStartExam)return;
+    initialized=true;
+
+    // Disable the legacy automatic certificate trigger. Certificates are generated only after a real pass.
     w.generatePDF=function(){};
 
-    function shuffle(list){
-      const a=Array.isArray(list)?list.slice():[];
-      for(let i=a.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
-      }
-      return a;
-    }
-
-    function prepareCourse(course){
-      if(!course)return false;
-      try{
-        const bank=window.EDSA_QUESTION_BANKS && window.EDSA_QUESTION_BANKS[course.id];
-        const source=Array.isArray(bank)&&bank.length===50
-          ? bank
-          : (Array.isArray(course.questions)?course.questions:[]);
-        if(!source.length)return false;
-
-        course.questions=shuffle(source.map(function(q){
-          const options=Array.isArray(q && q.options)?q.options.slice():[];
-          if(!options.length)return {...q};
-          const correctIndex=Number.isInteger(q.correct)&&q.correct>=0&&q.correct<options.length?q.correct:0;
-          const correctText=options[correctIndex];
-          shuffle(options);
-          const newCorrect=options.indexOf(correctText);
-          return {...q,options,correct:newCorrect>=0?newCorrect:0};
-        }));
-        return course.questions.length===50;
-      }catch(err){
-        console.error('EDSA question preparation failed:',err);
-        return false;
-      }
-    }
-
-    // Patch course selection without allowing a question-bank error to break navigation.
     const originalSelectCourse=w.selectCourse;
-    if(typeof originalSelectCourse==='function'){
-      w.selectCourse=function(courseId){
-        originalSelectCourse.call(w,courseId);
-        try{prepareCourse(w.state && w.state.selectedCourse);}catch(err){console.error(err)}
-      };
-    }
+    w.selectCourse=function(courseId){
+      try{originalSelectCourse.call(w,courseId);}catch(err){console.error('Course selection error:',err);return;}
+      try{prepareCourse(w,w.state&&w.state.selectedCourse);}catch(err){console.error(err);}
+    };
 
-    // IMPORTANT: prevent the browser from submitting/reloading the iframe even if a bank has a bad record.
     const originalVerifyAndStartExam=w.verifyAndStartExam;
-    if(typeof originalVerifyAndStartExam==='function'){
-      w.verifyAndStartExam=function(e){
-        if(e && typeof e.preventDefault==='function')e.preventDefault();
-        const course=w.state && w.state.selectedCourse;
-        const prepared=prepareCourse(course);
-        if(!prepared){
-          console.warn('EDSA: custom question bank unavailable; using the course questions already in the app.');
-        }
-        try{
-          return originalVerifyAndStartExam.call(w,e);
-        }catch(err){
-          console.error('EDSA exam launch error:',err);
-          try{w.alert('The exam could not start. Please refresh once and try again.');}catch(_){ }
-        }
-      };
-    }
+    w.verifyAndStartExam=function(e){
+      if(e&&typeof e.preventDefault==='function')e.preventDefault();
+      const course=w.state&&w.state.selectedCourse;
+      const prepared=prepareCourse(w,course);
+      if(!prepared)console.warn('EDSA: custom question bank unavailable; using existing course questions.');
+      try{return originalVerifyAndStartExam.call(w,e);}catch(err){
+        console.error('EDSA exam launch error:',err);
+        try{w.alert('The exam could not start. Please refresh once and try again.');}catch(_){ }
+      }
+    };
 
     function makeCertificateId(){
       const year=new Date().getFullYear();
       let n=Date.now()%1000000;
-      try{
-        if(window.crypto&&window.crypto.getRandomValues)n=window.crypto.getRandomValues(new Uint32Array(1))[0]%1000000;
-      }catch(_){ }
+      try{if(w.crypto&&w.crypto.getRandomValues)n=w.crypto.getRandomValues(new Uint32Array(1))[0]%1000000;}catch(_){ }
       return 'EDSA-'+year+'-'+String(n).padStart(6,'0');
     }
-
     function cert(){
       const id=w.state.certificateId||makeCertificateId();
       if(!w.state.certificateId)w.state.certificateId=id;
       if(!w.state.issueDate)w.state.issueDate=new Date().toISOString();
-      return {id,name:w.state.studentName||'',course:w.state.selectedCourse&&w.state.selectedCourse.title||'',issueDate:w.state.issueDate};
+      return{id,name:w.state.studentName||'',course:w.state.selectedCourse&&w.state.selectedCourse.title||'',issueDate:w.state.issueDate};
     }
-
     function saveVerificationRecord(d){
       try{
-        const records=JSON.parse(localStorage.getItem('EDSA_CERTIFICATES')||'{}');
+        const records=JSON.parse(w.localStorage.getItem('EDSA_CERTIFICATES')||'{}');
         records[d.id]={id:d.id,name:d.name,course:d.course,issueDate:d.issueDate,status:'Valid',issuedBy:'Ethiopian Digital Skills Academy'};
-        localStorage.setItem('EDSA_CERTIFICATES',JSON.stringify(records));
+        w.localStorage.setItem('EDSA_CERTIFICATES',JSON.stringify(records));
       }catch(_){ }
     }
-
     w.drawCertificateCanvas=function(cb){
-      const c=w.document.getElementById('certCanvas');
-      if(!c)return;
+      const c=w.document.getElementById('certCanvas');if(!c)return;
       c.width=1536;c.height=1080;
       const x=c.getContext('2d'),d=cert();
       x.fillStyle='#F7F4EC';x.fillRect(0,0,1536,1080);
@@ -137,30 +127,34 @@ iframe{border:0;width:100%;height:100%;display:block}
         q.innerHTML='';
         const qrUrl=verifyBase+'?id='+encodeURIComponent(d.id)+'&name='+encodeURIComponent(d.name)+'&course='+encodeURIComponent(d.course)+'&date='+encodeURIComponent(d.issueDate);
         try{new w.QRCode(q,{text:qrUrl,width:164,height:164});}catch(_){ }
-        setTimeout(function(){
-          const qc=q.querySelector('canvas');
-          if(qc)x.drawImage(qc,1218,483,164,164);
-          finishCertificate(x,d,cb);
-        },250);
+        setTimeout(function(){const qc=q.querySelector('canvas');if(qc)x.drawImage(qc,1218,483,164,164);finishCertificate(x,d,cb);},250);
       }else finishCertificate(x,d,cb);
       saveVerificationRecord(d);
     };
-
     function finishCertificate(x,d,cb){
-      x.textAlign='center';x.font='17px Arial';x.fillStyle='#111827';x.fillText('Scan to verify authenticity',1300,690);x.fillText('or visit:',1300,718);
-      x.font='bold 16px Arial';x.fillText('edsa-academy.vercel.app/verify',1300,744);
-      x.fillStyle='#B47C12';x.fillText('ID: '+d.id,1300,774);
+      x.textAlign='center';x.font='17px Arial';x.fillStyle='#111827';x.fillText('Scan to verify authenticity',1300,690);x.fillText('or visit:',1300,718);x.font='bold 16px Arial';x.fillText('edsa-academy.vercel.app/verify',1300,744);x.fillStyle='#B47C12';x.fillText('ID: '+d.id,1300,774);
       x.textAlign='left';x.fillStyle='#111827';x.font='bold 18px Arial';x.fillText('Issue Date',190,845);x.font='20px Arial';x.fillText(new Date(d.issueDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),190,875);x.font='bold 18px Arial';x.fillText('Certificate ID',190,920);x.fillStyle='#B47C12';x.fillText(d.id,190,947);
       x.textAlign='center';x.fillStyle='#101B31';x.font='italic 42px cursive';x.fillText('Director',1130,850);x.strokeStyle='#C99A28';x.beginPath();x.moveTo(1000,875);x.lineTo(1260,875);x.stroke();x.fillStyle='#B47C12';x.font='bold 18px Arial';x.fillText('Director',1130,905);x.fillStyle='#111827';x.font='18px Arial';x.fillText('Ethiopian Digital Skills Academy',1130,935);
-      x.fillStyle='#fff';x.fillText('edsa-academy.vercel.app',450,1018);x.fillText('info@edsa-academy.com',830,1018);x.fillText('Ethiopia',1190,1018);
-      if(cb)cb(d.id);
+      x.fillStyle='#fff';x.fillText('edsa-academy.vercel.app',450,1018);x.fillText('info@edsa-academy.com',830,1018);x.fillText('Ethiopia',1190,1018);if(cb)cb(d.id);
     }
-
     const safe=s=>String(s||'Certificate').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
     w.downloadCertificate=function(){w.drawCertificateCanvas(function(){const doc=new w.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'});doc.addImage(w.document.getElementById('certCanvas').toDataURL('image/png'),'PNG',0,0,297,210);doc.save(safe(w.state.studentName)+'_'+w.state.certificateId+'_Certificate.pdf');});};
     w.saveCertificateImage=function(){w.drawCertificateCanvas(function(){const a=w.document.createElement('a');a.download=safe(w.state.studentName)+'_'+w.state.certificateId+'_Certificate.png';a.href=w.document.getElementById('certCanvas').toDataURL('image/png');a.click();});};
     w.printCertificate=function(){w.drawCertificateCanvas(function(){const p=w.open('','_blank');if(!p)return;p.document.write('<img style="width:100%" src="'+w.document.getElementById('certCanvas').toDataURL('image/png')+'" onload="print()">');p.document.close();});};
+  }
+
+  frame.addEventListener('load',function(){
+    // The iframe src is assigned only after this listener exists, so the handler cannot miss the first load.
+    const w=frame.contentWindow;
+    initialize(w);
+    let tries=0;
+    const timer=setInterval(function(){
+      if(initialized||tries++>50){clearInterval(timer);return;}
+      initialize(frame.contentWindow);
+    },100);
   });
+
+  frame.src='/edsa-app.html';
 })();
 </script>
 </body>
