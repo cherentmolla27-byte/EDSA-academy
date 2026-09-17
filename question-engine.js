@@ -2,7 +2,7 @@
 'use strict';
 
 // EDSA QUESTION ENGINE
-// SMM and Digital Marketing are now handled by dedicated, validated banks.
+// SMM, Digital Marketing, and PBM are handled by dedicated validated banks.
 // Other subjects remain untouched until they are individually verified.
 
 function shuffle(a){
@@ -52,13 +52,19 @@ function buildDME(){
   return cleanBank(window.EDSA_DIGITAL_MARKETING_BANK,'Digital Marketing');
 }
 
+function buildPBM(){
+  return cleanBank(window.EDSA_PROJECT_BUSINESS_MANAGEMENT_BANK,'Project/Business Management');
+}
+
 function applyBanks(){
   const courses=getCourses();
   if(!Array.isArray(courses)) return;
   const smm=courses.find(x=>x&&x.id==='smm');
   const dme=courses.find(x=>x&&x.id==='dme');
+  const pbm=courses.find(x=>x&&x.id==='pbm');
   if(smm){ const q=buildSMM(); if(q.length===50) smm.questions=q; }
   if(dme){ const q=buildDME(); if(q.length===50) dme.questions=q; }
+  if(pbm){ const q=buildPBM(); if(q.length===50) pbm.questions=q; }
 }
 
 function install(){
@@ -74,6 +80,11 @@ function install(){
       if(String(id)==='dme'){
         const q=buildDME();
         const c=getCourses().find(x=>x&&x.id==='dme');
+        if(c&&q.length===50) c.questions=q;
+      }
+      if(String(id)==='pbm'){
+        const q=buildPBM();
+        const c=getCourses().find(x=>x&&x.id==='pbm');
         if(c&&q.length===50) c.questions=q;
       }
       return originalSelect.apply(this,arguments);
@@ -100,6 +111,9 @@ function boot(){
   }
   if(!Array.isArray(window.EDSA_DIGITAL_MARKETING_BANK)){
     tasks.push(function(next){loadScript('/digital-marketing-question-bank.js','data-edsa-dme-bank',next);});
+  }
+  if(!Array.isArray(window.EDSA_PROJECT_BUSINESS_MANAGEMENT_BANK)){
+    tasks.push(function(next){loadScript('/project-business-management-question-bank.js','data-edsa-pbm-bank',next);});
   }
   let i=0;
   function next(){
