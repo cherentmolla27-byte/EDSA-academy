@@ -40,19 +40,13 @@ iframe{border:0;width:100%;height:100%;display:block}
     if(!w.selectCourse||!w.verifyAndStartExam)return false;
     w.__EDSA_CERT_READY=true;
 
-    // Disable the legacy automatic test certificate trigger.
     w.generatePDF=function(){};
 
     function getCertificate(){
       const state=w.state||{};
       if(!state.certificateId)state.certificateId=makeCertificateId();
       if(!state.issueDate)state.issueDate=new Date().toISOString();
-      return {
-        id:state.certificateId,
-        name:state.studentName||"",
-        course:(state.selectedCourse&&state.selectedCourse.title)||"",
-        issueDate:state.issueDate
-      };
+      return {id:state.certificateId,name:state.studentName||"",course:(state.selectedCourse&&state.selectedCourse.title)||"",issueDate:state.issueDate};
     }
 
     function saveLocalRecord(d){
@@ -66,24 +60,18 @@ iframe{border:0;width:100%;height:100%;display:block}
     function drawCertificate(callback){
       const canvas=w.document.getElementById("certCanvas");
       if(!canvas)return;
-      canvas.width=1536;
-      canvas.height=1080;
+      canvas.width=1536;canvas.height=1080;
       const ctx=canvas.getContext("2d");
       const d=getCertificate();
-
-      // EDSA navy/gold certificate design.
       ctx.fillStyle="#F7F4EC";ctx.fillRect(0,0,1536,1080);
       ctx.strokeStyle="#D5A62A";ctx.lineWidth=5;ctx.strokeRect(18,18,1500,1044);
-      ctx.fillStyle="#07111D";
-      ctx.beginPath();ctx.moveTo(20,20);ctx.lineTo(1516,20);ctx.lineTo(1516,190);ctx.bezierCurveTo(1180,310,350,300,20,160);ctx.closePath();ctx.fill();
+      ctx.fillStyle="#07111D";ctx.beginPath();ctx.moveTo(20,20);ctx.lineTo(1516,20);ctx.lineTo(1516,190);ctx.bezierCurveTo(1180,310,350,300,20,160);ctx.closePath();ctx.fill();
       ctx.strokeStyle="#D9A72E";ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(20,160);ctx.bezierCurveTo(360,302,1180,310,1516,190);ctx.stroke();
       ctx.fillStyle="#07111D";ctx.fillRect(20,960,1496,100);
-
       ctx.textAlign="center";
       ctx.fillStyle="#F4C542";ctx.font="bold 96px Arial";ctx.fillText("EDSA",768,105);
       ctx.fillStyle="#FFFFFF";ctx.font="bold 24px Arial";ctx.fillText("ETHIOPIAN DIGITAL SKILLS ACADEMY",768,145);
       ctx.fillStyle="#E0A82D";ctx.font="bold 22px Arial";ctx.fillText("MASTER THE DIGITAL FRONTIER",768,178);
-
       ctx.fillStyle="#0B1320";ctx.font="bold 70px Georgia";ctx.fillText("CERTIFICATE",650,380);
       ctx.fillStyle="#B47C12";ctx.font="bold 30px Arial";ctx.fillText("OF ACHIEVEMENT",650,425);
       ctx.fillStyle="#111827";ctx.font="bold 25px Arial";ctx.fillText("THIS IS TO CERTIFY THAT",650,480);
@@ -92,20 +80,14 @@ iframe{border:0;width:100%;height:100%;display:block}
       ctx.fillStyle="#111827";ctx.font="21px Arial";ctx.fillText("has successfully completed and passed the examination for the course",650,625);
       ctx.fillStyle="#15233E";ctx.font="bold 36px Arial";ctx.fillText(d.course||"Digital Marketing Essentials",650,670);
       ctx.font="20px Arial";ctx.fillStyle="#111827";ctx.fillText("offered by Ethiopian Digital Skills Academy (EDSA)",650,710);ctx.fillText("and is hereby awarded this certificate for outstanding performance.",650,742);
-
       ctx.fillStyle="#111827";ctx.font="bold 18px Arial";ctx.fillText("VERIFY CERTIFICATE",1300,430);
       ctx.strokeStyle="#D5A62A";ctx.lineWidth=5;ctx.strokeRect(1210,450,180,180);
-
       const q=w.document.getElementById("qrcode");
       if(q){
         q.innerHTML="";
         const url=location.origin+VERIFY_BASE+"?id="+encodeURIComponent(d.id)+"&name="+encodeURIComponent(d.name)+"&course="+encodeURIComponent(d.course)+"&date="+encodeURIComponent(d.issueDate);
         try{new w.QRCode(q,{text:url,width:164,height:164});}catch(_){}
-        setTimeout(function(){
-          const qrCanvas=q.querySelector("canvas");
-          if(qrCanvas)ctx.drawImage(qrCanvas,1218,458,164,164);
-          finishCertificate(ctx,d,callback);
-        },300);
+        setTimeout(function(){const qrCanvas=q.querySelector("canvas");if(qrCanvas)ctx.drawImage(qrCanvas,1218,458,164,164);finishCertificate(ctx,d,callback);},300);
       }else finishCertificate(ctx,d,callback);
       saveLocalRecord(d);
     }
@@ -115,51 +97,42 @@ iframe{border:0;width:100%;height:100%;display:block}
       ctx.fillText("Scan to verify authenticity",1300,665);ctx.fillText("or visit:",1300,692);
       ctx.font="bold 15px Arial";ctx.fillText("edsa-academy.vercel.app/verify",1300,716);
       ctx.fillStyle="#B47C12";ctx.fillText("ID: "+d.id,1300,746);
-
       ctx.textAlign="left";ctx.fillStyle="#111827";ctx.font="bold 18px Arial";ctx.fillText("Issue Date",180,835);
       ctx.font="20px Arial";ctx.fillText(new Date(d.issueDate).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),180,865);
       ctx.font="bold 18px Arial";ctx.fillText("Certificate ID",180,910);ctx.fillStyle="#B47C12";ctx.fillText(d.id,180,938);
-
       ctx.textAlign="center";ctx.fillStyle="#101B31";ctx.font="italic 40px cursive";ctx.fillText("Cherenet Molla Alem",1110,840);
       ctx.strokeStyle="#C99A28";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(980,865);ctx.lineTo(1240,865);ctx.stroke();
       ctx.fillStyle="#B47C12";ctx.font="bold 18px Arial";ctx.fillText("Director",1110,895);
       ctx.fillStyle="#111827";ctx.font="17px Arial";ctx.fillText("Ethiopian Digital Skills Academy",1110,925);
-
       ctx.fillStyle="#FFFFFF";ctx.font="16px Arial";ctx.fillText("edsa-academy.vercel.app",430,1018);ctx.fillText("info@edsa-academy.com",780,1018);ctx.fillText("Ethiopia",1160,1018);
       if(callback)callback(d.id);
     }
 
     w.drawCertificateCanvas=drawCertificate;
-
-    w.downloadCertificate=function(){
-      drawCertificate(function(){
-        const doc=new w.jspdf.jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
-        doc.addImage(w.document.getElementById("certCanvas").toDataURL("image/png"),"PNG",0,0,297,210);
-        doc.save(cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.pdf");
-      });
-    };
-
-    w.saveCertificateImage=function(){
-      drawCertificate(function(){
-        const a=w.document.createElement("a");
-        a.download=cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.png";
-        a.href=w.document.getElementById("certCanvas").toDataURL("image/png");a.click();
-      });
-    };
-
-    w.printCertificate=function(){
-      drawCertificate(function(){
-        const p=w.open("","_blank");if(!p)return;
-        p.document.write("<img style='width:100%' src='"+w.document.getElementById("certCanvas").toDataURL("image/png")+"' onload='print()'>");
-        p.document.close();
-      });
-    };
+    w.downloadCertificate=function(){drawCertificate(function(){const doc=new w.jspdf.jsPDF({orientation:"landscape",unit:"mm",format:"a4"});doc.addImage(w.document.getElementById("certCanvas").toDataURL("image/png"),"PNG",0,0,297,210);doc.save(cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.pdf");});};
+    w.saveCertificateImage=function(){drawCertificate(function(){const a=w.document.createElement("a");a.download=cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.png";a.href=w.document.getElementById("certCanvas").toDataURL("image/png");a.click();});};
+    w.printCertificate=function(){drawCertificate(function(){const p=w.open("","_blank");if(!p)return;p.document.write("<img style='width:100%' src='"+w.document.getElementById("certCanvas").toDataURL("image/png")+"' onload='print()'>");p.document.close();});};
     return true;
   }
 
   frame.addEventListener("load",function(){
-    const w=frame.contentWindow;let tries=0;
-    const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);
+    const w=frame.contentWindow;
+    const bankScript=frame.contentDocument.createElement("script");
+    bankScript.src="/question-banks.js";
+    bankScript.onload=function(){
+      const engineScript=frame.contentDocument.createElement("script");
+      engineScript.src="/question-engine.js";
+      engineScript.onload=function(){
+        if(w.EDSA_INSTALL_QUESTION_ENGINE)w.EDSA_INSTALL_QUESTION_ENGINE();
+        let tries=0;
+        const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);
+      };
+      frame.contentDocument.head.appendChild(engineScript);
+    };
+    bankScript.onerror=function(){
+      let tries=0;const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);
+    };
+    frame.contentDocument.head.appendChild(bankScript);
   });
   frame.src="/edsa-app.html";
 })();
