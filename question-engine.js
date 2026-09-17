@@ -2,7 +2,6 @@
 'use strict';
 
 // EDSA QUESTION ENGINE — SMM FIRST
-// This version intentionally handles Social Media Management only.
 // Other subjects will be added after SMM is verified.
 
 function shuffle(a){
@@ -20,26 +19,21 @@ function getCourses(){
   try{
     const c=eval('COURSES');
     return Array.isArray(c)?c:[];
-  }catch(_){
-    return [];
-  }
+  }catch(_){ return []; }
 }
 
 function getState(){
   try{
     if(window.state) return window.state;
   }catch(_){ }
-  try{
-    return eval('state');
-  }catch(_){
-    return null;
-  }
+  try{ return eval('state'); }catch(_){ return null; }
 }
 
 function normalizeQuestion(q){
   if(!q || typeof q.q!=='string' || !Array.isArray(q.options) || q.options.length!==4) return null;
   if(!Number.isInteger(q.correct) || q.correct<0 || q.correct>=4) return null;
   if(q.options.some(x=>typeof x!=='string' || !x.trim())) return null;
+
   const options=shuffle(q.options.map((text,i)=>({text,correct:i===q.correct})));
   return {
     q:q.q.trim(),
@@ -50,8 +44,7 @@ function normalizeQuestion(q){
 
 function buildSMM(){
   const bank=window.EDSA_ADVANCED_BANKS && Array.isArray(window.EDSA_ADVANCED_BANKS.smm)
-    ? window.EDSA_ADVANCED_BANKS.smm
-    : [];
+    ? window.EDSA_ADVANCED_BANKS.smm : [];
 
   const seen=new Set();
   const clean=[];
@@ -69,7 +62,6 @@ function buildSMM(){
     return [];
   }
 
-  // Exactly 50 unique SMM questions for this exam.
   return shuffle(clean.slice(0,50));
 }
 
@@ -77,10 +69,8 @@ function applySMM(){
   const courses=getCourses();
   const course=courses.find(x=>x && x.id==='smm');
   if(!course) return false;
-
   const questions=buildSMM();
   if(questions.length!==50) return false;
-
   course.questions=questions;
   return true;
 }
@@ -91,19 +81,10 @@ function install(){
   const originalSelect=window.selectCourse;
   if(typeof originalSelect==='function' && !originalSelect.__edsaSMMFixed){
     const wrapped=function(id){
-      originalSelect(id);
-      if(String(id)==='smm'){
-        const s=getState();
-        const course=s && s.selectedCourse;
-        const questions=buildSMM();
-        if(course && course.id==='smm' && questions.length===50){
-          course.questions=questions;
-          // Re-render the exam with the verified 50-question SMM bank.
-          try{
-            if(typeof window.renderQuiz==='function') window.renderQuiz();
-          }catch(_){ }
-        }
-      }
+      // Put the verified 50-question bank onto the course BEFORE the original
+      // selection function renders the exam.
+      if(String(id)==='smm') applySMM();
+      return originalSelect.apply(this,arguments);
     };
     wrapped.__edsaSMMFixed=true;
     window.selectCourse=wrapped;
