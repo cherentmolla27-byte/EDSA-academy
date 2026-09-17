@@ -302,8 +302,569 @@
     const MAX_FAILED_ATTEMPTS = 3;
     const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
-    function generate50Questions(courseKey, courseTitle) {
-      const qList = [];
+     const SMM_QUESTIONS = [                                                                              
+  {    
+    q: "What is the main purpose of a social media content strategy?",
+    options: [
+      "To achieve specific communication and marketing goals",
+      "To post as many times as possible",
+      "To copy competitors exactly",
+      "To avoid measuring results"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What does audience research help a social media manager understand?",
+    options: [
+      "The audience's interests, needs, and behavior",
+      "Only the company's logo color",
+      "How to avoid customer feedback",
+      "Only the number of employees in a company"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a content calendar mainly used for?",
+    options: [
+      "Planning and organizing social media content",
+      "Deleting old social media accounts",
+      "Increasing internet speed",
+      "Creating payment invoices"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Which metric measures the number of times content was displayed?",
+    options: [
+      "Impressions",
+      "Conversion rate",
+      "Engagement rate",
+      "Click-through rate"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What does engagement generally include?",
+    options: [
+      "Likes, comments, shares, saves, and other interactions",
+      "Only the number of followers",
+      "Only advertising costs",
+      "Only website loading speed"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why should a brand maintain a consistent voice on social media?",
+    options: [
+      "To create a recognizable and consistent brand identity",
+      "To make every post identical",
+      "To avoid communicating with customers",
+      "To reduce the number of followers"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is the purpose of a social media call to action (CTA)?",
+    options: [
+      "To encourage the audience to take a desired action",
+      "To hide information from followers",
+      "To reduce engagement",
+      "To replace the brand identity"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Which approach is generally most useful when choosing hashtags?",
+    options: [
+      "Use relevant hashtags that match the content and audience",
+      "Use completely unrelated popular hashtags",
+      "Use the same hashtag for every possible topic",
+      "Avoid researching hashtags"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is community management?",
+    options: [
+      "Building relationships with and responding to an online community",
+      "Only creating advertisements",
+      "Only designing logos",
+      "Deleting customer comments"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What should a social media manager do when receiving a genuine customer question?",
+    options: [
+      "Respond clearly and professionally",
+      "Ignore every question",
+      "Delete the customer's account",
+      "Post an unrelated advertisement"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why is it important to analyze social media performance?",
+    options: [
+      "To understand what is working and improve future strategies",
+      "To make every post longer",
+      "To avoid learning about the audience",
+      "To stop creating content"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is organic social media content?",
+    options: [
+      "Content published without paying for distribution as an advertisement",
+      "Only content created by celebrities",
+      "Content that can never receive comments",
+      "Content that must always be a video"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is paid social advertising?",
+    options: [
+      "Paying a platform to distribute promotional content to selected audiences",
+      "Posting only to personal friends",
+      "Sending private messages manually",
+      "Creating content without publishing it"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is audience segmentation?",
+    options: [
+      "Dividing an audience into groups based on relevant characteristics",
+      "Deleting inactive followers",
+      "Using one message for everyone",
+      "Posting without knowing the audience"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why might a business use different content formats?",
+    options: [
+      "Different formats can suit different audiences, platforms, and goals",
+      "Every audience prefers exactly the same format",
+      "Formats have no effect on communication",
+      "Only text can be used on social media"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a social media KPI?",
+    options: [
+      "A measurable indicator used to evaluate performance",
+      "A type of image file",
+      "A social media password",
+      "A graphic design template"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What does reach measure?",
+    options: [
+      "The number of unique users who saw content",
+      "The number of times one user refreshed a page",
+      "The number of employees in a company",
+      "The amount spent on internet access"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a social media campaign?",
+    options: [
+      "A coordinated set of activities designed around a specific objective",
+      "A random collection of unrelated posts",
+      "A private conversation between employees",
+      "A website hosting service"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is influencer marketing?",
+    options: [
+      "Working with influential creators to communicate with their audience",
+      "Deleting all creator accounts",
+      "Only advertising through newspapers",
+      "Using no audience research"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Before working with an influencer, what should a brand consider?",
+    options: [
+      "Audience relevance, credibility, content fit, and campaign goals",
+      "Only the influencer's profile picture",
+      "Only the number of emojis they use",
+      "Whether they post at exactly the same time every day"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is social listening?",
+    options: [
+      "Monitoring online conversations and mentions about relevant topics or brands",
+      "Listening to music while creating posts",
+      "Calling every follower by telephone",
+      "Deleting negative keywords"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why should social media managers monitor brand mentions?",
+    options: [
+      "To understand public conversations and respond when appropriate",
+      "To prevent customers from talking",
+      "To eliminate all feedback",
+      "To increase the number of unrelated posts"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is A/B testing in social media marketing?",
+    options: [
+      "Comparing two versions to determine which performs better",
+      "Posting the same content forever",
+      "Creating two unrelated companies",
+      "Deleting half of an audience"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What should be changed in a useful A/B test?",
+    options: [
+      "A specific variable that can be compared between versions",
+      "Everything at the same time",
+      "Nothing at all",
+      "The entire business strategy every hour"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is the purpose of a social media content pillar?",
+    options: [
+      "To define recurring themes or categories for content",
+      "To determine an employee's salary",
+      "To replace the company logo",
+      "To prevent content planning"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why should content be adapted to each social media platform?",
+    options: [
+      "Platforms have different audiences, formats, and user behaviors",
+      "Every platform has exactly the same requirements",
+      "Content cannot be changed between platforms",
+      "Users behave identically everywhere"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a target audience?",
+    options: [
+      "The specific group a campaign or message is intended to reach",
+      "Every person on the internet",
+      "Only company employees",
+      "Only competitors"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a buyer persona?",
+    options: [
+      "A research-based representation of an ideal customer type",
+      "A company's social media password",
+      "A type of advertisement",
+      "A graphic design program"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why are visuals important in social media content?",
+    options: [
+      "They can help communicate ideas quickly and attract attention",
+      "They guarantee every post will go viral",
+      "They eliminate the need for strategy",
+      "They make captions unnecessary in every situation"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What makes a social media caption effective?",
+    options: [
+      "It is clear, relevant, audience-focused, and supports the post's objective",
+      "It contains as many words as possible",
+      "It has no connection to the visual",
+      "It avoids communicating any useful information"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is the purpose of storytelling in social media marketing?",
+    options: [
+      "To communicate ideas and create a meaningful connection with the audience",
+      "To make every post exactly the same",
+      "To avoid explaining the brand",
+      "To replace all forms of measurement"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a social media content audit?",
+    options: [
+      "A systematic review of existing social media content and performance",
+      "A financial tax inspection",
+      "A password reset",
+      "A method of increasing internet bandwidth"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What can a content audit help identify?",
+    options: [
+      "Successful content, weak areas, gaps, and opportunities",
+      "Only employee attendance",
+      "Only internet costs",
+      "Only competitor passwords"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why is timing important when publishing social media content?",
+    options: [
+      "Audience activity can affect the opportunity for people to see and interact with content",
+      "Every audience is active at exactly the same time",
+      "Timing never affects distribution",
+      "Posts can only be published once a week"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a social media crisis?",
+    options: [
+      "A situation where negative attention or a serious issue can significantly affect a brand's online reputation",
+      "A normal scheduled post",
+      "A successful product launch",
+      "A routine content calendar update"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is an appropriate first principle during a social media crisis?",
+    options: [
+      "Respond carefully, verify information, and communicate transparently",
+      "Immediately publish unverified information",
+      "Delete every customer comment",
+      "Ignore the situation completely"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why should social media managers avoid buying fake followers?",
+    options: [
+      "Fake followers can reduce audience quality and distort performance data",
+      "Fake followers always improve engagement",
+      "Fake followers guarantee sales",
+      "Fake followers improve customer trust"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What does engagement rate help indicate?",
+    options: [
+      "How actively an audience interacts with content relative to an appropriate audience or reach measure",
+      "The company's total revenue",
+      "The number of employees",
+      "The age of a social media account"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is conversion in social media marketing?",
+    options: [
+      "When a user completes a desired action, such as a purchase or registration",
+      "When someone simply views a post",
+      "When a company changes its logo",
+      "When an account gains a random follower"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why should social media goals be measurable?",
+    options: [
+      "Measurement allows performance to be evaluated against objectives",
+      "Measurement makes content unnecessary",
+      "It prevents audience research",
+      "It guarantees viral growth"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Which goal is more measurable?",
+    options: [
+      "Increase Instagram engagement rate by 15% over the next three months",
+      "Become popular someday",
+      "Post better content",
+      "Get more attention"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is cross-platform content distribution?",
+    options: [
+      "Sharing a campaign across multiple platforms while adapting content appropriately",
+      "Using only one platform forever",
+      "Posting unrelated content everywhere",
+      "Deleting content from every platform"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why is responding to comments important for community building?",
+    options: [
+      "It can encourage conversation and show that the brand values its audience",
+      "It always guarantees a sale",
+      "It removes the need for content",
+      "It prevents customers from asking questions"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is user-generated content (UGC)?",
+    options: [
+      "Content created by customers or other users rather than the brand itself",
+      "Content created only by employees",
+      "Content generated only by advertising platforms",
+      "Content that cannot be shared"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is one benefit of relevant user-generated content?",
+    options: [
+      "It can provide authentic social proof and community participation",
+      "It guarantees every customer will buy",
+      "It eliminates the need for permission in every situation",
+      "It makes analytics unnecessary"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why should a social media manager track competitors?",
+    options: [
+      "To understand the competitive environment and identify useful opportunities",
+      "To copy every competitor post",
+      "To access competitors' private accounts",
+      "To avoid understanding the target audience"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is a social media content gap?",
+    options: [
+      "A relevant topic or content opportunity that is not being adequately addressed",
+      "A missing password",
+      "A broken smartphone",
+      "A deleted social media account"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What should a social media report normally include?",
+    options: [
+      "Relevant metrics, results, insights, and recommended actions",
+      "Only screenshots of posts",
+      "Only the number of employees",
+      "Only the company's logo"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "Why should recommendations in a social media report be based on data?",
+    options: [
+      "Data helps connect recommendations to observed performance and audience behavior",
+      "Data makes strategy unnecessary",
+      "Data guarantees a viral post",
+      "Data prevents experimentation"
+    ],
+    correct: 0
+  },
+
+  {
+    q: "What is the purpose of a social media strategy review?",
+    options: [
+      "To determine what should be maintained, improved, tested, or changed",
+      "To permanently stop measuring results",
+      "To remove the target audience",
+      "To make every post identical"
+    ],
+    correct: 0
+  }
+  ];
+
+function generate50Questions(courseKey, courseTitle) {
+
+  if (courseKey === "smm") {
+    return SMM_QUESTIONS.map(q => ({
+      q: q.q,
+      options: [...q.options],
+      correct: q.correct
+    }));
+  }
+
+  const qList = [];
       const topics = {
         smm: ["Audience Growth", "Content Calendar", "Engagement Metrics", "Paid Social Ads", "Brand Identity", "Hashtag SEO", "Influencer Outreach", "Community Management", "Video Reels Strategy", "Analytics Reporting"],
         dme: ["SEO Optimization", "Google Search Ads", "Email Marketing", "Conversion Funnels", "Copywriting", "Retargeting Pixels", "Landing Page CRO", "Affiliate Marketing", "Customer Lifetime Value", "Web Analytics"],
