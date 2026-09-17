@@ -22,7 +22,12 @@ frame.addEventListener('load',()=>{
     course.questions=shuffle(questions.map(q=>{const options=[...q.options];const correctText=options[q.correct];shuffle(options);return {...q,options,correct:options.indexOf(correctText)}}));
   }
   const originalSelectCourse=w.selectCourse;
-  w.selectCourse=function(courseId){originalSelectCourse.call(w,courseId);prepareCourse(w.state.selectedCourse)};
+  w.selectCourse=function(courseId){originalSelectCourse.call(w,courseId)};
+  const originalVerifyAndStartExam=w.verifyAndStartExam;
+  w.verifyAndStartExam=function(e){
+    prepareCourse(w.state.selectedCourse);
+    return originalVerifyAndStartExam.call(w,e);
+  };
   function cert(){const id=w.state.certificateId||`EDSA-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;if(!w.state.certificateId){w.state.certificateId=id;w.state.issueDate=new Date().toISOString();}return {id,name:w.state.studentName,course:w.state.selectedCourse?.title||'',issueDate:w.state.issueDate||new Date().toISOString()};}
   w.drawCertificateCanvas=function(cb){
     const c=w.document.getElementById('certCanvas');c.width=1536;c.height=1080;const x=c.getContext('2d'),d=cert();
