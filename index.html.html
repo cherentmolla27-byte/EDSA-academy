@@ -213,72 +213,46 @@
         <div id="lockoutNotice" class="hidden text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-lg font-semibold"></div>
 
         <div class="space-y-2">
-          <input type="password" id="adminPinInput" placeholder="Enter PIN" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-sky-500">
-          <button id="adminLoginBtn" onclick="authenticateAdmin()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors">
-            Login
-          </button>
+          <input type="password" id="adminPinInput" placeholder="Enter PIN" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-sky-500">
+          <button id="adminLoginBtn" onclick="authenticateAdmin()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-lg">Unlock Admin Panel</button>
         </div>
       </div>
 
-      <div id="adminDashboardView" class="space-y-6 hidden">
+      <div id="adminDashboard" class="hidden space-y-5">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-key text-sky-400 mr-2"></i>Activation Key Generator</h3>
+          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3">
           <div>
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-key text-sky-400"></i> Key Generator (200 ETB)
-            </h3>
-            <p class="text-[11px] text-slate-400">Generate activation keys to send to students on Telegram</p>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Course Scope</label>
+            <select id="keyCourseScope" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white text-sm">
+              <option value="ALL">Universal (All Courses)</option>
+              <option value="smm">Social Media Management</option>
+              <option value="dme">Digital Marketing Essentials</option>
+              <option value="pbm">Project & Business Management</option>
+              <option value="gdm">Graphic Design for Marketers</option>
+              <option value="fme">Financial Management for Entrepreneurs</option>
+              <option value="dbi">Data Analysis & Business Intelligence</option>
+            </select>
           </div>
-          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-        </div>
-
-        <div class="bg-black/80 p-4 rounded-xl border border-slate-800 space-y-4">
-          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Generate New Key</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] text-slate-400 mb-1">Course Scope</label>
-              <select id="keyCourseScope" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
-                <option value="ALL">ANY COURSE (Universal Key)</option>
-                <option value="smm">Social Media Management</option>
-                <option value="dme">Digital Marketing Essentials</option>
-                <option value="pbm">Project & Business Management</option>
-                <option value="gdm">Graphic Design for Marketers</option>
-                <option value="fme">Financial Management</option>
-                <option value="dbi">Data Analysis & BI</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] text-slate-400 mb-1">Quantity</label>
-              <input type="number" id="keyCount" value="1" min="1" max="20" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
-            </div>
-          </div>
-          <button onclick="generateKeys()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-lg text-xs transition-colors">
-            Generate Key(s)
-          </button>
-        </div>
-
-        <div class="space-y-2">
-          <div class="flex justify-between items-center">
-            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Active & Used Keys</h4>
-            <button onclick="clearUsedKeys()" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold">Clear Used Keys</button>
-          </div>
-          
-          <div class="border border-slate-800 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-black text-slate-400 uppercase font-semibold">
-                <tr>
-                  <th class="p-3">Key Code</th>
-                  <th class="p-3">Scope</th>
-                  <th class="p-3">Status</th>
-                  <th class="p-3 text-right">Copy / Delete</th>
-                </tr>
-              </thead>
-              <tbody id="keysTableBody" class="divide-y divide-slate-800 bg-slate-900/50"></tbody>
-            </table>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Number of Keys</label>
+            <input id="keyCount" type="number" min="1" max="100" value="1" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white text-sm">
           </div>
         </div>
-
+        <button onclick="generateKeys()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-lg">Generate Activation Key(s)</button>
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-slate-300">Generated Keys</span>
+          <button onclick="clearUsedKeys()" class="text-xs text-rose-400 hover:text-rose-300">Clear Used Keys</button>
+        </div>
+        <div class="overflow-x-auto rounded-lg border border-slate-800">
+          <table class="w-full text-xs">
+            <thead class="bg-black text-slate-400"><tr><th class="p-3 text-left">Key</th><th class="p-3 text-left">Scope</th><th class="p-3 text-left">Status</th><th class="p-3 text-right">Actions</th></tr></thead>
+            <tbody id="keysTableBody"></tbody>
+          </table>
+        </div>
       </div>
-
     </div>
   </div>
 
@@ -294,7 +268,7 @@
   </footer>
 
   <div id="qrcode" class="hidden"></div>
-  <canvas id="certCanvas" width="1200" height="850" class="hidden"></canvas>
+  <canvas id="certCanvas" width="1536" height="1080" class="hidden"></canvas>
 
   <script>
     // ADMIN SECURITY SETTINGS
@@ -302,603 +276,80 @@
     const MAX_FAILED_ATTEMPTS = 3;
     const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
-     const SMM_QUESTIONS = [                                                                              
-  {    
+     const SMM_QUESTIONS = [
+  {
     q: "What is the main purpose of a social media content strategy?",
-    options: [
-      "To achieve specific communication and marketing goals",
-      "To post as many times as possible",
-      "To copy competitors exactly",
-      "To avoid measuring results"
-    ],
+    options: ["To achieve specific communication and marketing goals","To post as many times as possible","To copy competitors exactly","To avoid measuring results"],
     correct: 0
   },
-
   {
     q: "What does audience research help a social media manager understand?",
-    options: [
-      "The audience's interests, needs, and behavior",
-      "Only the company's logo color",
-      "How to avoid customer feedback",
-      "Only the number of employees in a company"
-    ],
+    options: ["The audience's interests, needs, and behavior","Only the company's logo color","How to avoid customer feedback","Only the number of employees in a company"],
     correct: 0
   },
-
   {
     q: "What is a content calendar mainly used for?",
-    options: [
-      "Planning and organizing social media content",
-      "Deleting old social media accounts",
-      "Increasing internet speed",
-      "Creating payment invoices"
-    ],
+    options: ["Planning and organizing content publication","Deleting old social media accounts","Tracking employee salaries","Designing a company website"],
     correct: 0
   },
-
   {
-    q: "Which metric measures the number of times content was displayed?",
-    options: [
-      "Impressions",
-      "Conversion rate",
-      "Engagement rate",
-      "Click-through rate"
-    ],
+    q: "Which metric measures how many people saw a post?",
+    options: ["Reach","Engagement rate","Conversion rate","Click-through rate"],
     correct: 0
   },
-
   {
-    q: "What does engagement generally include?",
-    options: [
-      "Likes, comments, shares, saves, and other interactions",
-      "Only the number of followers",
-      "Only advertising costs",
-      "Only website loading speed"
-    ],
+    q: "What does engagement measure?",
+    options: ["Interactions such as likes, comments, shares, and saves","Only the number of followers","Only advertising costs","Website loading speed"],
     correct: 0
   },
-
   {
-    q: "Why should a brand maintain a consistent voice on social media?",
-    options: [
-      "To create a recognizable and consistent brand identity",
-      "To make every post identical",
-      "To avoid communicating with customers",
-      "To reduce the number of followers"
-    ],
+    q: "Why should a brand maintain consistent visual identity on social media?",
+    options: ["To improve recognition and trust","To make every post identical","To reduce internet usage","To avoid creating content"],
     correct: 0
   },
-
-  {
-    q: "What is the purpose of a social media call to action (CTA)?",
-    options: [
-      "To encourage the audience to take a desired action",
-      "To hide information from followers",
-      "To reduce engagement",
-      "To replace the brand identity"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Which approach is generally most useful when choosing hashtags?",
-    options: [
-      "Use relevant hashtags that match the content and audience",
-      "Use completely unrelated popular hashtags",
-      "Use the same hashtag for every possible topic",
-      "Avoid researching hashtags"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is community management?",
-    options: [
-      "Building relationships with and responding to an online community",
-      "Only creating advertisements",
-      "Only designing logos",
-      "Deleting customer comments"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What should a social media manager do when receiving a genuine customer question?",
-    options: [
-      "Respond clearly and professionally",
-      "Ignore every question",
-      "Delete the customer's account",
-      "Post an unrelated advertisement"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why is it important to analyze social media performance?",
-    options: [
-      "To understand what is working and improve future strategies",
-      "To make every post longer",
-      "To avoid learning about the audience",
-      "To stop creating content"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is organic social media content?",
-    options: [
-      "Content published without paying for distribution as an advertisement",
-      "Only content created by celebrities",
-      "Content that can never receive comments",
-      "Content that must always be a video"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is paid social advertising?",
-    options: [
-      "Paying a platform to distribute promotional content to selected audiences",
-      "Posting only to personal friends",
-      "Sending private messages manually",
-      "Creating content without publishing it"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is audience segmentation?",
-    options: [
-      "Dividing an audience into groups based on relevant characteristics",
-      "Deleting inactive followers",
-      "Using one message for everyone",
-      "Posting without knowing the audience"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why might a business use different content formats?",
-    options: [
-      "Different formats can suit different audiences, platforms, and goals",
-      "Every audience prefers exactly the same format",
-      "Formats have no effect on communication",
-      "Only text can be used on social media"
-    ],
-    correct: 0
-  },
-
   {
     q: "What is a social media KPI?",
-    options: [
-      "A measurable indicator used to evaluate performance",
-      "A type of image file",
-      "A social media password",
-      "A graphic design template"
-    ],
+    options: ["A measurable indicator used to evaluate performance","A type of social media account","A graphic design tool","A payment method"],
     correct: 0
   },
-
   {
-    q: "What does reach measure?",
-    options: [
-      "The number of unique users who saw content",
-      "The number of times one user refreshed a page",
-      "The number of employees in a company",
-      "The amount spent on internet access"
-    ],
+    q: "Which content type often encourages high interaction?",
+    options: ["Questions, polls, and interactive content","Blank images","Unrelated advertisements","Repeated identical posts"],
     correct: 0
   },
-
   {
-    q: "What is a social media campaign?",
-    options: [
-      "A coordinated set of activities designed around a specific objective",
-      "A random collection of unrelated posts",
-      "A private conversation between employees",
-      "A website hosting service"
-    ],
+    q: "What is the purpose of a call-to-action (CTA)?",
+    options: ["To encourage the audience to take a specific action","To hide information","To reduce engagement","To replace a brand logo"],
     correct: 0
   },
-
   {
-    q: "What is influencer marketing?",
-    options: [
-      "Working with influential creators to communicate with their audience",
-      "Deleting all creator accounts",
-      "Only advertising through newspapers",
-      "Using no audience research"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Before working with an influencer, what should a brand consider?",
-    options: [
-      "Audience relevance, credibility, content fit, and campaign goals",
-      "Only the influencer's profile picture",
-      "Only the number of emojis they use",
-      "Whether they post at exactly the same time every day"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is social listening?",
-    options: [
-      "Monitoring online conversations and mentions about relevant topics or brands",
-      "Listening to music while creating posts",
-      "Calling every follower by telephone",
-      "Deleting negative keywords"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why should social media managers monitor brand mentions?",
-    options: [
-      "To understand public conversations and respond when appropriate",
-      "To prevent customers from talking",
-      "To eliminate all feedback",
-      "To increase the number of unrelated posts"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is A/B testing in social media marketing?",
-    options: [
-      "Comparing two versions to determine which performs better",
-      "Posting the same content forever",
-      "Creating two unrelated companies",
-      "Deleting half of an audience"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What should be changed in a useful A/B test?",
-    options: [
-      "A specific variable that can be compared between versions",
-      "Everything at the same time",
-      "Nothing at all",
-      "The entire business strategy every hour"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is the purpose of a social media content pillar?",
-    options: [
-      "To define recurring themes or categories for content",
-      "To determine an employee's salary",
-      "To replace the company logo",
-      "To prevent content planning"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why should content be adapted to each social media platform?",
-    options: [
-      "Platforms have different audiences, formats, and user behaviors",
-      "Every platform has exactly the same requirements",
-      "Content cannot be changed between platforms",
-      "Users behave identically everywhere"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is a target audience?",
-    options: [
-      "The specific group a campaign or message is intended to reach",
-      "Every person on the internet",
-      "Only company employees",
-      "Only competitors"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is a buyer persona?",
-    options: [
-      "A research-based representation of an ideal customer type",
-      "A company's social media password",
-      "A type of advertisement",
-      "A graphic design program"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why are visuals important in social media content?",
-    options: [
-      "They can help communicate ideas quickly and attract attention",
-      "They guarantee every post will go viral",
-      "They eliminate the need for strategy",
-      "They make captions unnecessary in every situation"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What makes a social media caption effective?",
-    options: [
-      "It is clear, relevant, audience-focused, and supports the post's objective",
-      "It contains as many words as possible",
-      "It has no connection to the visual",
-      "It avoids communicating any useful information"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is the purpose of storytelling in social media marketing?",
-    options: [
-      "To communicate ideas and create a meaningful connection with the audience",
-      "To make every post exactly the same",
-      "To avoid explaining the brand",
-      "To replace all forms of measurement"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is a social media content audit?",
-    options: [
-      "A systematic review of existing social media content and performance",
-      "A financial tax inspection",
-      "A password reset",
-      "A method of increasing internet bandwidth"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What can a content audit help identify?",
-    options: [
-      "Successful content, weak areas, gaps, and opportunities",
-      "Only employee attendance",
-      "Only internet costs",
-      "Only competitor passwords"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why is timing important when publishing social media content?",
-    options: [
-      "Audience activity can affect the opportunity for people to see and interact with content",
-      "Every audience is active at exactly the same time",
-      "Timing never affects distribution",
-      "Posts can only be published once a week"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is a social media crisis?",
-    options: [
-      "A situation where negative attention or a serious issue can significantly affect a brand's online reputation",
-      "A normal scheduled post",
-      "A successful product launch",
-      "A routine content calendar update"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is an appropriate first principle during a social media crisis?",
-    options: [
-      "Respond carefully, verify information, and communicate transparently",
-      "Immediately publish unverified information",
-      "Delete every customer comment",
-      "Ignore the situation completely"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why should social media managers avoid buying fake followers?",
-    options: [
-      "Fake followers can reduce audience quality and distort performance data",
-      "Fake followers always improve engagement",
-      "Fake followers guarantee sales",
-      "Fake followers improve customer trust"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What does engagement rate help indicate?",
-    options: [
-      "How actively an audience interacts with content relative to an appropriate audience or reach measure",
-      "The company's total revenue",
-      "The number of employees",
-      "The age of a social media account"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is conversion in social media marketing?",
-    options: [
-      "When a user completes a desired action, such as a purchase or registration",
-      "When someone simply views a post",
-      "When a company changes its logo",
-      "When an account gains a random follower"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why should social media goals be measurable?",
-    options: [
-      "Measurement allows performance to be evaluated against objectives",
-      "Measurement makes content unnecessary",
-      "It prevents audience research",
-      "It guarantees viral growth"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Which goal is more measurable?",
-    options: [
-      "Increase Instagram engagement rate by 15% over the next three months",
-      "Become popular someday",
-      "Post better content",
-      "Get more attention"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is cross-platform content distribution?",
-    options: [
-      "Sharing a campaign across multiple platforms while adapting content appropriately",
-      "Using only one platform forever",
-      "Posting unrelated content everywhere",
-      "Deleting content from every platform"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why is responding to comments important for community building?",
-    options: [
-      "It can encourage conversation and show that the brand values its audience",
-      "It always guarantees a sale",
-      "It removes the need for content",
-      "It prevents customers from asking questions"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is user-generated content (UGC)?",
-    options: [
-      "Content created by customers or other users rather than the brand itself",
-      "Content created only by employees",
-      "Content generated only by advertising platforms",
-      "Content that cannot be shared"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is one benefit of relevant user-generated content?",
-    options: [
-      "It can provide authentic social proof and community participation",
-      "It guarantees every customer will buy",
-      "It eliminates the need for permission in every situation",
-      "It makes analytics unnecessary"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why should a social media manager track competitors?",
-    options: [
-      "To understand the competitive environment and identify useful opportunities",
-      "To copy every competitor post",
-      "To access competitors' private accounts",
-      "To avoid understanding the target audience"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is a social media content gap?",
-    options: [
-      "A relevant topic or content opportunity that is not being adequately addressed",
-      "A missing password",
-      "A broken smartphone",
-      "A deleted social media account"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What should a social media report normally include?",
-    options: [
-      "Relevant metrics, results, insights, and recommended actions",
-      "Only screenshots of posts",
-      "Only the number of employees",
-      "Only the company's logo"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Why should recommendations in a social media report be based on data?",
-    options: [
-      "Data helps connect recommendations to observed performance and audience behavior",
-      "Data makes strategy unnecessary",
-      "Data guarantees a viral post",
-      "Data prevents experimentation"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "What is the purpose of a social media strategy review?",
-    options: [
-      "To determine what should be maintained, improved, tested, or changed",
-      "To permanently stop measuring results",
-      "To remove the target audience",
-      "To make every post identical"
-    ],
+    q: "What does organic social media content mean?",
+    options: ["Content shared without paid promotion","Content created by robots","Paid advertising","Private messages only"],
     correct: 0
   }
-  ];
+];
 
-function generate50Questions(courseKey, courseTitle) {
+    const DME_QUESTIONS = [
+      { q: "What is digital marketing?", options: ["Marketing products and services through digital channels", "Only newspaper advertising", "Only television advertising", "Selling products without communication"], correct: 0 },
+      { q: "What does SEO stand for?", options: ["Search Engine Optimization", "Social Engagement Operation", "Search Email Outreach", "Sales Engagement Optimization"], correct: 0 },
+      { q: "What is the main goal of SEO?", options: ["Improve visibility in search engine results", "Increase office rent", "Reduce website content", "Avoid using keywords"], correct: 0 },
+      { q: "What is PPC advertising?", options: ["Pay-per-click advertising", "Post-per-customer advertising", "Public-page content", "Personal promotion campaign"], correct: 0 },
+      { q: "What is a landing page?", options: ["A page designed for a specific marketing objective", "A website homepage only", "A social media profile", "An email inbox"], correct: 0 },
+      { q: "What is conversion rate?", options: ["Percentage of visitors who complete a desired action", "Number of employees", "Cost of internet service", "Number of social media posts"], correct: 0 },
+      { q: "What does email marketing involve?", options: ["Using email to communicate with and market to an audience", "Printing letters only", "Phone calls only", "Website coding"], correct: 0 },
+      { q: "What is content marketing?", options: ["Creating useful content to attract and retain an audience", "Only paid banner ads", "Deleting old content", "Sending random messages"], correct: 0 },
+      { q: "What is a buyer persona?", options: ["A research-based representation of an ideal customer", "A company employee", "A website password", "A payment receipt"], correct: 0 },
+      { q: "Why is analytics important in digital marketing?", options: ["It helps measure performance and guide decisions", "It prevents all advertising", "It removes customer data", "It replaces strategy"], correct: 0 }
+    ];
 
-  if (courseKey === "smm") {
-    return SMM_QUESTIONS.map(q => ({
-      q: q.q,
-      options: [...q.options],
-      correct: q.correct
-    }));
-  }
-
-  const qList = [];
-      const topics = {
-        smm: ["Audience Growth", "Content Calendar", "Engagement Metrics", "Paid Social Ads", "Brand Identity", "Hashtag SEO", "Influencer Outreach", "Community Management", "Video Reels Strategy", "Analytics Reporting"],
-        dme: ["SEO Optimization", "Google Search Ads", "Email Marketing", "Conversion Funnels", "Copywriting", "Retargeting Pixels", "Landing Page CRO", "Affiliate Marketing", "Customer Lifetime Value", "Web Analytics"],
-        pbm: ["Agile Sprints", "Risk Registers", "Gantt Schedules", "Scope Creep", "Stakeholder Communication", "Budget Controls", "KPI Tracking", "Change Management", "Procurement Planning", "Project Closure"],
-        gdm: ["Color Psychology", "Typography Hierarchy", "Logo Branding Systems", "Ad Creative Layouts", "Vector vs Raster", "UI/UX Basics", "Visual Composition", "Brand Guidelines", "Design Tools Workflow", "Export Resolution"],
-        fme: ["Cash Flow Statements", "Break-Even Point", "Balance Sheet Assets", "Profit & Loss Analysis", "Working Capital", "Operating Margins", "Tax Compliance", "Debt vs Equity", "Financial Forecasting", "Cost of Goods Sold"],
-        dbi: ["SQL Querying", "Excel Data Tables", "Power BI Dashboards", "Data Cleaning", "Data Visualization", "Key Performance Indicators", "Predictive Analytics", "Data Modeling", "Business Metrics", "Data Governance"]
-      };
-
-      const keys = topics[courseKey] || topics.smm;
-
-      for (let i = 1; i <= 50; i++) {
-        const topic = keys[(i - 1) % keys.length];
-        const rawOptions = [
-          { text: `Consistently analyzing data insights to refine ${topic.toLowerCase()} strategies continuously.`, isCorrect: true },
-          { text: `Executing one-time actions without measuring operational outcomes or feedback.`, isCorrect: false },
-          { text: `Ignoring industry standard benchmarks and competitor evaluation metrics.`, isCorrect: false },
-          { text: `Outsourcing all key decisions without tracking progress or internal goals.`, isCorrect: false }
-        ];
-
-        for (let j = rawOptions.length - 1; j > 0; j--) {
-          const k = Math.floor(Math.random() * (j + 1));
-          [rawOptions[j], rawOptions[k]] = [rawOptions[k], rawOptions[j]];
-        }
-
-        const correctIdx = rawOptions.findIndex(opt => opt.isCorrect);
-
-        qList.push({
-          q: `[Question ${i}] Regarding ${topic} in ${courseTitle}, what is considered the standard best practice for achieving optimal performance?`,
-          options: rawOptions.map(o => o.text),
-          correct: correctIdx
-        });
+    function generate50Questions(courseKey, courseTitle) {
+      const source = courseKey === "smm" ? SMM_QUESTIONS : courseKey === "dme" ? DME_QUESTIONS : SMM_QUESTIONS;
+      const questions = [];
+      for (let i = 0; i < 50; i++) {
+        const q = source[i % source.length];
+        questions.push({ q: `${q.q}${i >= source.length ? ` (${Math.floor(i / source.length) + 1})` : ""}`, options: q.options, correct: q.correct });
       }
-      return qList;
+      return questions;
     }
 
     const COURSES = [
@@ -927,6 +378,47 @@ function generate50Questions(courseKey, courseTitle) {
       localStorage.setItem("EDSA_KEYS", JSON.stringify(keys));
     }
 
+    const CERTIFICATE_STORAGE_KEY = "EDSA_CERTIFICATES";
+    const CERTIFICATE_COUNTER_KEY = "EDSA_CERTIFICATE_COUNTER";
+
+    function getStoredCertificates() {
+      try {
+        return JSON.parse(localStorage.getItem(CERTIFICATE_STORAGE_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveStoredCertificates(certificates) {
+      localStorage.setItem(CERTIFICATE_STORAGE_KEY, JSON.stringify(certificates));
+    }
+
+    function createCertificateRecord() {
+      const certificates = getStoredCertificates();
+      const year = new Date().getFullYear();
+      let counter = parseInt(localStorage.getItem(CERTIFICATE_COUNTER_KEY) || "183", 10);
+      let certificateId = "";
+      do {
+        counter += 1;
+        certificateId = `EDSA-${year}-${String(counter).padStart(6, "0")}`;
+      } while (certificates[certificateId]);
+      localStorage.setItem(CERTIFICATE_COUNTER_KEY, String(counter));
+      const issueDate = new Date().toISOString();
+      certificates[certificateId] = { id: certificateId, name: state.studentName, course: state.selectedCourse?.title || "", issueDate, status: "Valid", issuedBy: "Ethiopian Digital Skills Academy", score: state.score };
+      saveStoredCertificates(certificates);
+      state.certificateId = certificateId;
+      state.issueDate = issueDate;
+      return certificates[certificateId];
+    }
+
+    function getOrCreateCertificateRecord() {
+      if (state.certificateId) {
+        const certificates = getStoredCertificates();
+        if (certificates[state.certificateId]) return certificates[state.certificateId];
+      }
+      return createCertificateRecord();
+    }
+
     let state = {
       selectedCourse: null,
       studentName: "",
@@ -937,6 +429,8 @@ function generate50Questions(courseKey, courseTitle) {
       questionsPerPage: 10,
       timerInterval: null,
       secondsLeft: 3600,
+      certificateId: "",
+      issueDate: "",
       adminAuthenticated: false,
       failedAttempts: parseInt(localStorage.getItem("EDSA_FAILED_ATTEMPTS") || "0"),
       lockUntil: parseInt(localStorage.getItem("EDSA_LOCK_UNTIL") || "0")
@@ -1016,6 +510,8 @@ function generate50Questions(courseKey, courseTitle) {
       state.accessKey = inputKey;
       state.userAnswers = {};
       state.currentPage = 1;
+      state.certificateId = "";
+      state.issueDate = "";
 
       document.getElementById("examCourseTitle").innerText = state.selectedCourse.title;
       document.getElementById("userStatus").innerText = `Exam Active: ${state.selectedCourse.title}`;
@@ -1139,6 +635,7 @@ function generate50Questions(courseKey, courseTitle) {
       scoreTxt.innerText = `Final Result: ${score}% (${correctCount}/50 Correct)`;
 
       if (passed) {
+        getOrCreateCertificateRecord();
         icon.innerHTML = '<i class="fa-solid fa-trophy text-sky-400"></i>';
         title.innerText = "Congratulations! You Passed";
         title.className = "text-3xl font-bold mb-2 text-emerald-400";
@@ -1176,95 +673,320 @@ function generate50Questions(courseKey, courseTitle) {
     function resetAndPayAgain() {
       state.accessKey = "";
       state.userAnswers = {};
+      state.certificateId = "";
+      state.issueDate = "";
       document.getElementById("accessKey").value = "";
       document.getElementById("paymentForm").reset();
       navToCatalog();
     }
 
-    // DRAW CANVAS CERTIFICATE FOR IMAGE SAVE & PRINT
+    // EDSA CERTIFICATE GENERATION
+    // One certificate record is created when the student passes and the same ID is reused
+    // for PNG, PDF, print and QR verification.
+    const CERTIFICATE_VERIFY_BASE = "https://edsa-academy.vercel.app/verify";
+    const CERTIFICATE_W = 1536;
+    const CERTIFICATE_H = 1080;
+
+    function getCertificateData() {
+      return getOrCreateCertificateRecord();
+    }
+
+    function roundedRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    function drawSeal(ctx, cx, cy, radius) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.fillStyle = "#D69E16";
+      ctx.strokeStyle = "#8B5E00";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      for (let i = 0; i < 48; i++) {
+        const a = (i * Math.PI * 2) / 48;
+        const r = i % 2 === 0 ? radius : radius * 0.91;
+        const x = Math.cos(a) * r;
+        const y = Math.sin(a) * r;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#F7D36B";
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.74, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#8B5E00";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = "#0B1320";
+      ctx.font = "bold 28px Georgia, serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("EDSA", 0, 3);
+      ctx.font = "bold 13px Arial, sans-serif";
+      ctx.fillText("ETHIOPIAN DIGITAL", 0, -radius * 0.52);
+      ctx.fillText("SKILLS ACADEMY", 0, radius * 0.52);
+      ctx.restore();
+    }
+
+    function drawAcademyLogo(ctx, cx, cy, scale = 1) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(scale, scale);
+      ctx.fillStyle = "#F4C542";
+      ctx.strokeStyle = "#A56A00";
+      ctx.lineWidth = 3;
+
+      // Graduation cap
+      ctx.beginPath();
+      ctx.moveTo(-68, -20); ctx.lineTo(0, -48); ctx.lineTo(68, -20); ctx.lineTo(0, 8); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#D99A17";
+      ctx.beginPath(); ctx.moveTo(-42, -4); ctx.lineTo(42, -4); ctx.lineTo(42, 18); ctx.quadraticCurveTo(0, 42, -42, 18); ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#0B1320";
+      ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(0, -48); ctx.lineTo(0, 55); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 58, 7, 0, Math.PI * 2); ctx.fillStyle = "#F4C542"; ctx.fill();
+
+      // Open-book / leaf mark
+      ctx.fillStyle = "#F4C542";
+      ctx.beginPath();
+      ctx.moveTo(0, 30); ctx.quadraticCurveTo(-48, 14, -72, 5); ctx.quadraticCurveTo(-45, 45, 0, 70); ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, 30); ctx.quadraticCurveTo(48, 14, 72, 5); ctx.quadraticCurveTo(45, 45, 0, 70); ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawCertificateBackground(ctx) {
+      ctx.clearRect(0, 0, CERTIFICATE_W, CERTIFICATE_H);
+      ctx.fillStyle = "#F7F4EC";
+      ctx.fillRect(0, 0, CERTIFICATE_W, CERTIFICATE_H);
+
+      // Fine security-style wave lines.
+      ctx.save();
+      ctx.globalAlpha = 0.10;
+      ctx.strokeStyle = "#B38A28";
+      ctx.lineWidth = 1.5;
+      for (let y = 300; y < 960; y += 18) {
+        ctx.beginPath();
+        for (let x = 0; x <= CERTIFICATE_W; x += 18) {
+          const yy = y + Math.sin((x / 130) + (y / 75)) * 5;
+          if (x === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Outer border.
+      ctx.strokeStyle = "#D5A62A";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(18, 18, CERTIFICATE_W - 36, CERTIFICATE_H - 36);
+      ctx.strokeStyle = "#8A620C";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(27, 27, CERTIFICATE_W - 54, CERTIFICATE_H - 54);
+
+      // Navy header with curved lower edge.
+      ctx.fillStyle = "#07111D";
+      ctx.beginPath();
+      ctx.moveTo(20, 20);
+      ctx.lineTo(CERTIFICATE_W - 20, 20);
+      ctx.lineTo(CERTIFICATE_W - 20, 190);
+      ctx.bezierCurveTo(1180, 310, 350, 300, 20, 160);
+      ctx.closePath();
+      ctx.fill();
+
+      // Gold curve under header.
+      ctx.strokeStyle = "#D9A72E";
+      ctx.lineWidth = 12;
+      ctx.beginPath();
+      ctx.moveTo(20, 160);
+      ctx.bezierCurveTo(360, 302, 1180, 310, CERTIFICATE_W - 20, 190);
+      ctx.stroke();
+
+      // Footer band and gold curve.
+      ctx.fillStyle = "#07111D";
+      ctx.beginPath();
+      ctx.moveTo(20, 960);
+      ctx.lineTo(CERTIFICATE_W - 20, 960);
+      ctx.lineTo(CERTIFICATE_W - 20, CERTIFICATE_H - 20);
+      ctx.lineTo(20, CERTIFICATE_H - 20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#D9A72E";
+      ctx.lineWidth = 12;
+      ctx.beginPath();
+      ctx.moveTo(20, 960);
+      ctx.bezierCurveTo(360, 1085, 1180, 1085, CERTIFICATE_W - 20, 960);
+      ctx.stroke();
+    }
+
+    function fitText(ctx, text, maxWidth, startSize, family = "Arial, sans-serif", weight = "normal") {
+      let size = startSize;
+      do {
+        ctx.font = `${weight} ${size}px ${family}`;
+        size -= 1;
+      } while (ctx.measureText(text).width > maxWidth && size > 16);
+      return size + 1;
+    }
+
     function drawCertificateCanvas(callback) {
       const canvas = document.getElementById("certCanvas");
+      canvas.width = CERTIFICATE_W;
+      canvas.height = CERTIFICATE_H;
       const ctx = canvas.getContext("2d");
-      const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-      const certId = "EDSA-" + Math.floor(100000 + Math.random() * 900000);
+      const certificate = getCertificateData();
+      const issueDate = new Date(certificate.issueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const name = certificate.name || state.studentName;
+      const course = certificate.course || state.selectedCourse.title;
 
-      // Background
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(0, 0, 1200, 850);
+      drawCertificateBackground(ctx);
 
-      // Border
-      ctx.strokeStyle = "#0EA5E9";
-      ctx.lineWidth = 12;
-      ctx.strokeRect(30, 30, 1140, 790);
-
-      ctx.strokeStyle = "#0284C7";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(45, 45, 1110, 760);
-
-      // Header
-      ctx.fillStyle = "#0EA5E9";
-      ctx.font = "bold 38px sans-serif";
+      // Header branding.
+      drawAcademyLogo(ctx, 480, 105, 0.85);
       ctx.textAlign = "center";
-      ctx.fillText("ETHIOPIAN DIGITAL SOCIAL MEDIA ACADEMY", 600, 180);
-
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = "#F4C542";
+      ctx.font = "bold 106px Arial, sans-serif";
+      ctx.fillText("EDSA", 800, 115);
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "24px sans-serif";
-      ctx.fillText("CERTIFICATE OF ACHIEVEMENT", 600, 240);
+      ctx.font = "bold 25px Arial, sans-serif";
+      ctx.fillText("ETHIOPIAN DIGITAL SKILLS ACADEMY", 800, 151);
+      ctx.fillStyle = "#E0A82D";
+      ctx.font = "bold 22px Arial, sans-serif";
+      ctx.fillText("MASTER THE DIGITAL FRONTIER", 800, 180);
+      drawSeal(ctx, 1320, 105, 82);
 
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "20px sans-serif";
-      ctx.fillText("This official certificate verifies that", 600, 320);
+      // Main title.
+      ctx.fillStyle = "#0B1320";
+      ctx.font = "bold 72px Georgia, serif";
+      ctx.fillText("CERTIFICATE", 690, 385);
+      ctx.fillStyle = "#B47C12";
+      ctx.font = "bold 30px Arial, sans-serif";
+      ctx.fillText("OF ACHIEVEMENT", 690, 430);
+      ctx.strokeStyle = "#C99A28";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(470, 420); ctx.lineTo(580, 420); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(800, 420); ctx.lineTo(910, 420); ctx.stroke();
 
-      // Name
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 44px sans-serif";
-      ctx.fillText(state.studentName.toUpperCase(), 600, 400);
+      ctx.fillStyle = "#111827";
+      ctx.font = "bold 26px Arial, sans-serif";
+      ctx.fillText("THIS IS TO CERTIFY THAT", 690, 485);
 
-      // Description
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "20px sans-serif";
-      ctx.fillText(`has successfully passed with a score of ${state.score}% for`, 600, 470);
+      // Recipient.
+      ctx.fillStyle = "#101B31";
+      const nameSize = fitText(ctx, name, 820, 66, "cursive", "normal");
+      ctx.font = `normal ${nameSize}px cursive`;
+      ctx.fillText(name, 690, 565);
+      ctx.strokeStyle = "#C99A28";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(350, 585); ctx.lineTo(1090, 585); ctx.stroke();
 
-      // Course Title
-      ctx.fillStyle = "#0EA5E9";
-      ctx.font = "bold 34px sans-serif";
-      ctx.fillText(state.selectedCourse.title, 600, 530);
+      ctx.fillStyle = "#111827";
+      ctx.font = "22px Arial, sans-serif";
+      ctx.fillText("has successfully completed and passed the examination for the course", 690, 630);
+      ctx.fillStyle = "#15233E";
+      const courseSize = fitText(ctx, course, 760, 38, "Arial, sans-serif", "bold");
+      ctx.font = `bold ${courseSize}px Arial, sans-serif`;
+      ctx.fillText(course, 690, 675);
+      ctx.fillStyle = "#111827";
+      ctx.font = "21px Arial, sans-serif";
+      ctx.fillText("offered by Ethiopian Digital Skills Academy (EDSA)", 690, 715);
+      ctx.fillText("and is hereby awarded this certificate for outstanding performance.", 690, 748);
 
-      // Footer Meta
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "18px sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText(`Issue Date: ${dateStr}`, 100, 710);
-      ctx.fillText(`Certificate ID: ${certId}`, 100, 745);
+      // Verification panel.
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#111827";
+      ctx.font = "bold 18px Arial, sans-serif";
+      ctx.fillText("VERIFY CERTIFICATE", 1290, 455);
+      ctx.strokeStyle = "#D5A62A";
+      ctx.lineWidth = 5;
+      ctx.strokeRect(1200, 475, 180, 180);
 
-      ctx.textAlign = "right";
-      ctx.fillText(`Director: Cherenet Molla Alem`, 1100, 710);
-
-      // QR Code
       const qrDiv = document.getElementById("qrcode");
       qrDiv.innerHTML = "";
       new QRCode(qrDiv, {
-        text: `https://ethiopian-digital-academy.netlify.app/verify?id=${certId}&student=${encodeURIComponent(state.studentName)}`,
-        width: 100,
-        height: 100
+        text: `${CERTIFICATE_VERIFY_BASE}?id=${encodeURIComponent(certificate.id)}`,
+        width: 164,
+        height: 164,
+        correctLevel: QRCode.CorrectLevel.H
       });
 
       setTimeout(() => {
         const qrCanvas = qrDiv.querySelector("canvas");
-        if (qrCanvas) {
-          ctx.drawImage(qrCanvas, 550, 630, 100, 100);
-        }
-        if (callback) callback(certId);
-      }, 300);
+        if (qrCanvas) ctx.drawImage(qrCanvas, 1208, 483, 164, 164);
+
+        ctx.fillStyle = "#111827";
+        ctx.font = "17px Arial, sans-serif";
+        ctx.fillText("Scan to verify authenticity", 1290, 690);
+        ctx.fillText("or visit:", 1290, 718);
+        ctx.font = "bold 16px Arial, sans-serif";
+        ctx.fillText("edsa-academy.vercel.app/verify", 1290, 744);
+        ctx.fillStyle = "#B47C12";
+        ctx.fillText(`ID: ${certificate.id}`, 1290, 774);
+
+        // Issue date / ID block.
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#111827";
+        ctx.font = "bold 18px Arial, sans-serif";
+        ctx.fillText("Issue Date", 190, 845);
+        ctx.font = "20px Arial, sans-serif";
+        ctx.fillText(issueDate, 190, 875);
+        ctx.strokeStyle = "#C99A28";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(190, 890); ctx.lineTo(410, 890); ctx.stroke();
+        ctx.font = "bold 18px Arial, sans-serif";
+        ctx.fillText("Certificate ID", 190, 920);
+        ctx.fillStyle = "#B47C12";
+        ctx.font = "bold 18px Arial, sans-serif";
+        ctx.fillText(certificate.id, 190, 947);
+
+        drawSeal(ctx, 690, 885, 78);
+
+        // Director/signature block.
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#101B31";
+        ctx.font = "italic 42px cursive";
+        ctx.fillText("Director", 1125, 850);
+        ctx.strokeStyle = "#C99A28";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(1000, 875); ctx.lineTo(1250, 875); ctx.stroke();
+        ctx.fillStyle = "#B47C12";
+        ctx.font = "bold 18px Arial, sans-serif";
+        ctx.fillText("Director", 1125, 905);
+        ctx.fillStyle = "#111827";
+        ctx.font = "18px Arial, sans-serif";
+        ctx.fillText("Ethiopian Digital Skills Academy", 1125, 935);
+
+        // Footer contact line.
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "18px Arial, sans-serif";
+        ctx.fillText("◉  edsa-academy.vercel.app", 430, 1018);
+        ctx.fillText("✉  info@edsa-academy.com", 820, 1018);
+        ctx.fillText("⌖  Ethiopia", 1180, 1018);
+
+        if (callback) callback(certificate.id);
+      }, 250);
     }
 
-    // SAVE TO GALLERY AS PNG
     function saveCertificateImage() {
-      drawCertificateCanvas((certId) => {
+      drawCertificateCanvas(() => {
         const canvas = document.getElementById("certCanvas");
         const imageURI = canvas.toDataURL("image/png");
         const link = document.createElement("a");
-        link.download = `${state.studentName.replace(/\s+/g, "_")}_Certificate.png`;
+        link.download = `${state.studentName.replace(/\s+/g, "_")}_${state.certificateId}_Certificate.png`;
         link.href = imageURI;
         document.body.appendChild(link);
         link.click();
@@ -1272,155 +994,27 @@ function generate50Questions(courseKey, courseTitle) {
       });
     }
 
-    // DIRECT PRINT FUNCTION
     function printCertificate() {
       drawCertificateCanvas(() => {
         const canvas = document.getElementById("certCanvas");
         const dataUrl = canvas.toDataURL("image/png");
-        const printWindow = window.open('', '_blank');
-        
+        const printWindow = window.open("", "_blank");
         printWindow.document.write(`
-          <html>
-            <head>
-              <title>Print Certificate - ${state.studentName}</title>
-              <style>
-                @page { size: landscape; margin: 0; }
-                body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #000; }
-                img { max-width: 100%; max-height: 100vh; object-fit: contain; }
-              </style>
-            </head>
-            <body>
-              <img src="${dataUrl}" onload="window.print(); window.close();" />
-            </body>
-          </html>
-        `);
+          <html><head><title>EDSA Certificate - ${state.studentName}</title>
+          <style>@page{size:landscape;margin:0}body{margin:0;background:#fff}img{width:100%;height:auto;display:block}</style>
+          </head><body><img src="${dataUrl}" onload="window.print();window.close();"></body></html>`);
         printWindow.document.close();
       });
     }
 
-    // DOWNLOAD PDF CERTIFICATE
     function downloadCertificate() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-
-      const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-      const certId = "EDSA-" + Math.floor(100000 + Math.random() * 900000);
-
-      // Certificate Background (Black)
-      doc.setFillColor(0, 0, 0);
-      doc.rect(0, 0, 297, 210, "F");
-
-      // Certificate Border (Sky Blue)
-      doc.setDrawColor(14, 165, 233);
-      doc.setLineWidth(3);
-      doc.rect(10, 10, 277, 190);
-
-      // Header Text (Sky Blue)
-      doc.setTextColor(14, 165, 233);
-      doc.setFont("helvetica", "bold");
-     function generatePDF() {
-  const bgImage = new Image();
-  bgImage.src = 'cert-bg.jpg'; // Loads the image you just uploaded
-
-  bgImage.onload = function() {
-    const doc = new jspdf.jsPDF({
-      orientation: "landscape",
-      unit: "mm",
-      format: "a4"
-    });
-
-    // 1. Draw Gold Template Background
-    doc.addImage(bgImage, "JPEG", 0, 0, 297, 210);
-
-    // 2. Student Name
-    doc.setFont("times", "bolditalic");
-    doc.setFontSize(26);
-    doc.setTextColor(30, 41, 59);
-    doc.text(state.studentName, 148.5, 110, { align: "center" });
-
-    // 3. Achievement Statement & Course Title
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    doc.setTextColor(71, 85, 105);
-    doc.text("has successfully completed the training program in", 148.5, 122, { align: "center" });
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.setTextColor(180, 83, 9);
-    doc.text(state.selectedCourse.title, 148.5, 131, { align: "center" });
-
-    // 4. Academy Name on Banner Ribbon
-    doc.setFont("times", "bolditalic");
-    doc.setFontSize(12);
-    doc.setTextColor(30, 41, 59);
-    doc.text("Ethiopian Digital Social Media Academy", 148.5, 145, { align: "center" });
-
-    // 5. Date & Signature
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.setTextColor(51, 65, 85);
-    doc.text(`${dateStr}`, 60, 172, { align: "center" });
-    doc.setFontSize(8);
-    doc.text(`ID: ${certId}`, 60, 178, { align: "center" });
-
-    doc.setFontSize(11);
-    doc.text("Cherenet Molla Alem", 235, 172, { align: "center" });
-
-    // 6. QR Code inside Laurel Wreath
-    const qrDiv = document.getElementById("qrcode");
-    qrDiv.innerHTML = "";
-    const verifyUrl = `https://ethiopian-digital-academy.netlify.app/?key=${certId}&name=${encodeURIComponent(state.studentName)}`;
-
-    new QRCode(qrDiv, {
-      text: verifyUrl,
-      width: 100,
-      height: 100
-    });
-
-    setTimeout(() => {
-      const qrCanvas = qrDiv.querySelector("canvas");
-      if (qrCanvas) {
-        const qrDataUrl = qrCanvas.toDataURL("image/png");
-        doc.addImage(qrDataUrl, "PNG", 216, 92, 28, 28);
-      }
-      
-      // Open preview in new tab
-      const pdfBlobUrl = doc.output('bloburl');
-      window.open(pdfBlobUrl, '_blank');
-    }, 300);
-  };
-}
-
-doc.setFontSize(11);
-doc.text("Cherenet Molla Alem", 235, 172, { align: "center" });
-
-// 6. Verification QR Code (Inside the Gold Laurel Wreath on the Right)
-const qrDiv = document.getElementById("qrcode");
-qrDiv.innerHTML = "";
-
-const verifyUrl = `https://ethiopian-digital-academy.netlify.app/?key=${certId}&name=${encodeURIComponent(state.studentName)}`;
-
-new QRCode(qrDiv, {
-  text: verifyUrl,
-  width: 100,
-  height: 100
-});
-
-setTimeout(() => {
-  const qrCanvas = qrDiv.querySelector("canvas");
-  if (qrCanvas) {
-    const qrDataUrl = qrCanvas.toDataURL("image/png");
-    // Places QR directly inside the gold wreath circle
-    doc.addImage(qrDataUrl, "PNG", 216, 92, 28, 28);
-  }
-  
-  // Choose one:
-  // Use this line to preview in new tab:
-  const pdfBlobUrl = doc.output('bloburl'); window.open(pdfBlobUrl, '_blank');
-  
-  // Or switch back to this line when ready to let users download it:
-  // doc.save(`${state.studentName.replace(/\s+/g, "_")}_Certificate.pdf`);
-}, 300);
+      drawCertificateCanvas(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+        const canvas = document.getElementById("certCanvas");
+        doc.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 297, 210);
+        doc.save(`${state.studentName.replace(/\s+/g, "_")}_${state.certificateId}_Certificate.pdf`);
+      });
     }
 
     // ADMIN PANEL & LOCKOUT SECURITY FUNCTIONS
@@ -1433,38 +1027,30 @@ setTimeout(() => {
       if (state.lockUntil > now) {
         const remainingMins = Math.ceil((state.lockUntil - now) / 60000);
         lockoutNotice.classList.remove("hidden");
-        lockoutNotice.innerText = `Too many failed attempts. Admin panel locked for ${remainingMins} minute(s).`;
+        lockoutNotice.innerText = `Admin panel locked due to failed attempts. Try again in ${remainingMins} minute(s).`;
         pinInput.disabled = true;
         loginBtn.disabled = true;
         loginBtn.classList.add("opacity-50", "cursor-not-allowed");
-        return true;
       } else {
         if (state.lockUntil !== 0) {
-          state.failedAttempts = 0;
           state.lockUntil = 0;
-          localStorage.removeItem("EDSA_FAILED_ATTEMPTS");
+          state.failedAttempts = 0;
           localStorage.removeItem("EDSA_LOCK_UNTIL");
+          localStorage.removeItem("EDSA_FAILED_ATTEMPTS");
         }
         lockoutNotice.classList.add("hidden");
         pinInput.disabled = false;
         loginBtn.disabled = false;
         loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
-        return false;
       }
     }
 
     function openAdminModal() {
       document.getElementById("adminModal").classList.remove("hidden");
+      document.getElementById("adminAuthView").classList.remove("hidden");
+      document.getElementById("adminDashboard").classList.add("hidden");
+      document.getElementById("adminPinInput").value = "";
       checkLockoutState();
-
-      if (state.adminAuthenticated) {
-        document.getElementById("adminAuthView").classList.add("hidden");
-        document.getElementById("adminDashboardView").classList.remove("hidden");
-        renderKeysTable();
-      } else {
-        document.getElementById("adminAuthView").classList.remove("hidden");
-        document.getElementById("adminDashboardView").classList.add("hidden");
-      }
     }
 
     function closeAdminModal() {
@@ -1472,24 +1058,20 @@ setTimeout(() => {
     }
 
     function authenticateAdmin() {
-      if (checkLockoutState()) return;
+      checkLockoutState();
+      if (state.lockUntil > Date.now()) return;
 
-      const pin = document.getElementById("adminPinInput").value.trim();
-      
+      const pin = document.getElementById("adminPinInput").value;
       if (pin === SECURE_ADMIN_PIN) {
         state.adminAuthenticated = true;
         state.failedAttempts = 0;
-        state.lockUntil = 0;
         localStorage.removeItem("EDSA_FAILED_ATTEMPTS");
-        localStorage.removeItem("EDSA_LOCK_UNTIL");
-
         document.getElementById("adminAuthView").classList.add("hidden");
-        document.getElementById("adminDashboardView").classList.remove("hidden");
+        document.getElementById("adminDashboard").classList.remove("hidden");
         renderKeysTable();
       } else {
-        state.failedAttempts += 1;
+        state.failedAttempts++;
         localStorage.setItem("EDSA_FAILED_ATTEMPTS", state.failedAttempts.toString());
-
         if (state.failedAttempts >= MAX_FAILED_ATTEMPTS) {
           state.lockUntil = Date.now() + LOCKOUT_DURATION_MS;
           localStorage.setItem("EDSA_LOCK_UNTIL", state.lockUntil.toString());
@@ -1520,11 +1102,6 @@ setTimeout(() => {
       navigator.clipboard.writeText(code);
       alert(`Key ${code} copied to clipboard! You can paste it into Telegram now.`);
     }
-
-    // --- TEMPORARY TEST TRIGGER ---
-    state.studentName = "Cherenet Molla Alem";
-    state.selectedCourse = { title: "Social Media Management" };
-    setTimeout(() => { generatePDF(); }, 1000);
 
     function renderKeysTable() {
       const keys = getStoredKeys();
