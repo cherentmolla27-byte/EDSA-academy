@@ -1,85 +1,135 @@
 (function(){
 'use strict';
-const SUBJECTS=['smm','dme','pbm','gdm','fme','dbi'];
-const ADV=window.EDSA_ADVANCED_BANKS||{};
-const BANKS=window.EDSA_QUESTION_BANKS||{};
+
+// EDSA QUESTION ENGINE — SMM FIRST
+// This version intentionally handles Social Media Management only.
+// Other subjects will be added after SMM is verified.
 
 function shuffle(a){
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
   return a;
 }
 
-const stems={
- what:[t=>`Which statement most accurately defines ${t}?`,t=>`A professional is asked to explain ${t}. Which answer is the most precise?`,t=>`Which description best distinguishes ${t} from related practices?`,t=>`Which claim about ${t} would be safest to defend in a professional setting?`],
- why:[t=>`Why does ${t} matter when making a business decision?`,t=>`Which rationale best explains the practical importance of ${t}?`,t=>`What outcome is most directly supported by using ${t} correctly?`,t=>`A manager asks why ${t} should receive attention. Which explanation is strongest?`],
- action:[t=>`A team needs to apply ${t}. Which action follows sound practice?`,t=>`Results involving ${t} are weaker than expected. What should the practitioner do first?`,t=>`Which sequence is most appropriate when working with ${t}?`,t=>`Which choice demonstrates competent professional practice in ${t}?`],
- signal:[t=>`Which evidence would be most useful for evaluating ${t}?`,t=>`A manager wants to monitor ${t}. Which signal deserves the most attention?`,t=>`Which measurement would provide the clearest indication of performance related to ${t}?`,t=>`When reviewing ${t}, which evidence is most relevant to the decision?`]
-};
-
-function topicQuestion(topic,field,index,topics){
-  const value=topic[field];
-  const others=topics.filter(x=>x!==topic);
-  const distractors=shuffle(others.slice()).slice(0,3).map(x=>x[field]);
-  const opts=shuffle([{text:value,correct:true},...distractors.map(text=>({text,correct:false}))]);
-  return {q:stems[field][index%stems[field].length](topic.t),options:opts.map(x=>x.text),correct:opts.findIndex(x=>x.correct)};
+function getCourses(){
+  try{
+    if(Array.isArray(window.COURSES)) return window.COURSES;
+  }catch(_){ }
+  try{
+    const c=eval('COURSES');
+    return Array.isArray(c)?c:[];
+  }catch(_){
+    return [];
+  }
 }
 
-function build50(key){
-  if(key==='smm'&&Array.isArray(ADV.smm)&&ADV.smm.length>=50){
-    return shuffle(ADV.smm.slice(0,50).map(q=>{
-      const opts=shuffle(q.options.map((text,i)=>({text,correct:i===q.correct})));
-      return {q:q.q,options:opts.map(x=>x.text),correct:opts.findIndex(x=>x.correct)};
-    }));
+function getState(){
+  try{
+    if(window.state) return window.state;
+  }catch(_){ }
+  try{
+    return eval('state');
+  }catch(_){
+    return null;
   }
-
-  const result=[];
-  if(Array.isArray(ADV[key])){
-    ADV[key].slice(0,10).forEach(q=>{
-      const opts=shuffle(q.options.map((text,i)=>({text,correct:i===q.correct})));
-      result.push({q:q.q,options:opts.map(x=>x.text),correct:opts.findIndex(x=>x.correct)});
-    });
-  }
-
-  const topics=BANKS[key]||[];
-  const fields=['what','why','action','signal'];
-  if(topics.length>=10){
-    topics.slice(0,10).forEach((topic,i)=>{
-      fields.forEach((field,j)=>result.push(topicQuestion(topic,field,i+j,topics)));
-    });
-  }
-  return shuffle(result).slice(0,50);
 }
 
-function getCourses(){try{return eval('COURSES');}catch(_){return []}}
-function getState(){try{return eval('state');}catch(_){return null}}
+function normalizeQuestion(q){
+  if(!q || typeof q.q!=='string' || !Array.isArray(q.options) || q.options.length!==4) return null;
+  if(!Number.isInteger(q.correct) || q.correct<0 || q.correct>=4) return null;
+  if(q.options.some(x=>typeof x!=='string' || !x.trim())) return null;
+  const options=shuffle(q.options.map((text,i)=>({text,correct:i===q.correct})));
+  return {
+    q:q.q.trim(),
+    options:options.map(x=>x.text),
+    correct:options.findIndex(x=>x.correct)
+  };
+}
+
+function buildSMM(){
+  const bank=window.EDSA_ADVANCED_BANKS && Array.isArray(window.EDSA_ADVANCED_BANKS.smm)
+    ? window.EDSA_ADVANCED_BANKS.smm
+    : [];
+
+  const seen=new Set();
+  const clean=[];
+  bank.forEach(raw=>{
+    const q=normalizeQuestion(raw);
+    if(!q) return;
+    const key=q.q.toLowerCase();
+    if(seen.has(key)) return;
+    seen.add(key);
+    clean.push(q);
+  });
+
+  if(clean.length<50){
+    console.error('[EDSA] SMM bank is not ready: '+clean.length+'/50 valid questions found.');
+    return [];
+  }
+
+  // Exactly 50 unique SMM questions for this exam.
+  return shuffle(clean.slice(0,50));
+}
+
+function applySMM(){
+  const courses=getCourses();
+  const course=courses.find(x=>x && x.id==='smm');
+  if(!course) return false;
+
+  const questions=buildSMM();
+  if(questions.length!==50) return false;
+
+  course.questions=questions;
+  return true;
+}
 
 function install(){
-  const courses=getCourses();
-  SUBJECTS.forEach(key=>{const c=courses.find(x=>x.id===key);if(c)c.questions=build50(key);});
+  applySMM();
+
   const originalSelect=window.selectCourse;
-  if(typeof originalSelect==='function'&&!originalSelect.__edsaAdvanced){
+  if(typeof originalSelect==='function' && !originalSelect.__edsaSMMFixed){
     const wrapped=function(id){
       originalSelect(id);
-      const s=getState();
-      if(s&&s.selectedCourse){
-        const c=s.selectedCourse;
-        if(SUBJECTS.includes(c.id))c.questions=build50(c.id);
+      if(String(id)==='smm'){
+        const s=getState();
+        const course=s && s.selectedCourse;
+        const questions=buildSMM();
+        if(course && course.id==='smm' && questions.length===50){
+          course.questions=questions;
+          // Re-render the exam with the verified 50-question SMM bank.
+          try{
+            if(typeof window.renderQuiz==='function') window.renderQuiz();
+          }catch(_){ }
+        }
       }
     };
-    wrapped.__edsaAdvanced=true;
+    wrapped.__edsaSMMFixed=true;
     window.selectCourse=wrapped;
   }
 }
 
 window.EDSA_INSTALL_QUESTION_ENGINE=install;
 
-if(!Object.keys(ADV).length){
+function ensureAdvancedBank(){
+  if(window.EDSA_ADVANCED_BANKS && Array.isArray(window.EDSA_ADVANCED_BANKS.smm)){
+    install();
+    return;
+  }
+
+  const existing=document.querySelector('script[data-edsa-advanced-bank="1"]');
+  if(existing) return;
+
   const s=document.createElement('script');
   s.src='/advanced-question-banks.js';
+  s.setAttribute('data-edsa-advanced-bank','1');
   s.onload=install;
-  s.onerror=install;
+  s.onerror=function(){
+    console.error('[EDSA] Could not load advanced-question-banks.js');
+  };
   document.head.appendChild(s);
-}else{
-  install();
 }
+
+ensureAdvancedBank();
 })();
