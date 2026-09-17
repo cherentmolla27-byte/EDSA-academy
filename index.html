@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>EDSA Academy</title>
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020617}
-iframe{border:0;width:100%;height:100%;display:block}
+html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}
+body{overflow-x:hidden}
+#appHost{width:100%;min-height:100vh}
+iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:auto}
 </style>
 </head>
 <body>
@@ -16,6 +18,7 @@ iframe{border:0;width:100%;height:100%;display:block}
   const host=document.getElementById("appHost");
   const frame=document.createElement("iframe");
   frame.title="EDSA Academy";
+  frame.setAttribute("scrolling","yes");
   host.appendChild(frame);
 
   const VERIFY_BASE="/verify";
@@ -117,6 +120,11 @@ iframe{border:0;width:100%;height:100%;display:block}
 
   frame.addEventListener("load",function(){
     const w=frame.contentWindow;
+
+    // Expose the app's global lexical variables so the enhancement scripts
+    // can safely integrate with the existing application.
+    try{w.eval("window.COURSES = COURSES; window.state = state;");}catch(_){}
+
     const bankScript=frame.contentDocument.createElement("script");
     bankScript.src="/question-banks.js";
     bankScript.onload=function(){
