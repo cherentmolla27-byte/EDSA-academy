@@ -1,55 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>EDSA Certificate Verification</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>body{background:#07111d}.gold{color:#d6a52a}</style>
+<style>
+body{background:#07111d}.gold{color:#d6a52a}
+</style>
 </head>
 <body class="min-h-screen text-slate-100 flex items-center justify-center p-4">
 <main class="w-full max-w-2xl">
-<div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
-<div class="bg-[#07111d] border-b border-yellow-700/40 p-7 text-center">
-<div class="flex justify-center items-center gap-4 mb-3"><div class="w-14 h-14 rounded-full border-2 border-yellow-500 flex items-center justify-center text-yellow-400 text-2xl"><i class="fa-solid fa-graduation-cap"></i></div><div class="text-left"><div class="text-4xl font-black tracking-wider text-yellow-400">EDSA</div><div class="text-xs font-bold tracking-[0.2em] text-white">ETHIOPIAN DIGITAL SKILLS ACADEMY</div></div></div>
-<h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-wide">EDSA Certificate Verification</h1>
+<div class="bg-slate-900 border border-yellow-700/30 rounded-3xl shadow-2xl overflow-hidden">
+<div class="bg-[#07111d] border-b border-yellow-700/40 p-8 text-center">
+<div class="text-5xl font-black tracking-widest text-yellow-400">EDSA</div>
+<div class="text-xs font-bold tracking-[0.22em] text-white mt-1">ETHIOPIAN DIGITAL SKILLS ACADEMY</div>
+<h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-wide mt-6">Certificate Verification</h1>
 </div>
 <section id="loading" class="p-10 text-center text-slate-400">Checking certificate…</section>
 <section id="result" class="hidden p-7 sm:p-10">
 <div id="statusBox" class="rounded-2xl border p-5 mb-7 text-center"></div>
 <div class="grid gap-4">
-<div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Name</div><div id="name" class="text-lg font-semibold mt-1"></div></div>
-<div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Course</div><div id="course" class="text-lg font-semibold mt-1"></div></div>
+<div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Full Name</div><div id="name" class="text-xl font-semibold mt-1"></div></div>
+<div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Course</div><div id="course" class="text-xl font-semibold mt-1"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Certificate ID</div><div id="certificateId" class="font-mono font-semibold mt-1 text-yellow-400"></div></div><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Issue Date</div><div id="issueDate" class="font-semibold mt-1"></div></div></div>
-<div class="grid sm:grid-cols-2 gap-4"><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Status</div><div id="status" class="font-semibold mt-1"></div></div><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Issued by</div><div id="issuedBy" class="font-semibold mt-1"></div></div></div>
+<div class="grid sm:grid-cols-2 gap-4"><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Status</div><div id="status" class="font-semibold mt-1"></div></div><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Issued By</div><div id="issuedBy" class="font-semibold mt-1"></div></div></div>
+<div id="scoreBox" class="hidden bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Exam Score</div><div id="score" class="text-xl font-bold mt-1 text-yellow-400"></div></div>
 </div>
-<div class="mt-8 text-center"><a href="/" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-yellow-500 text-slate-950 font-bold hover:bg-yellow-400 transition"><i class="fa-solid fa-arrow-left"></i> Back to EDSA Academy</a></div>
+<div class="mt-8 text-center"><a href="/" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-yellow-500 text-slate-950 font-bold hover:bg-yellow-400">Back to EDSA Academy</a></div>
 </section>
 </div>
 <p class="text-center text-xs text-slate-500 mt-5">Official EDSA certificate verification service</p>
 </main>
 <script>
-const params=new URLSearchParams(location.search),id=params.get('id');
-const loading=document.getElementById('loading'),result=document.getElementById('result'),statusBox=document.getElementById('statusBox');
-function formatDate(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return value||'—';return d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});}
+const params=new URLSearchParams(location.search),id=params.get("id");
+const loading=document.getElementById("loading"),result=document.getElementById("result"),statusBox=document.getElementById("statusBox");
+function formatDate(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return value||"—";return d.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});}
 async function loadCertificate(){
-  let record=null,source='';
-  if(id){
-    try{const response=await fetch('/certificates.json',{cache:'no-store'});if(response.ok){const registry=await response.json();if(registry[id]){record=registry[id];source='registry';}}}catch(_){ }
-    try{const local=JSON.parse(localStorage.getItem('EDSA_CERTIFICATES')||'{}');if(local[id]){record=local[id];source=source||'local';}}catch(_){ }
-  }
-  // QR links carry the certificate details so a newly issued certificate can be displayed on any device.
-  // A static website cannot make those query parameters tamper-proof; registry records are the authoritative verification source.
-  if(!record&&id&&params.get('name')){record={id,name:params.get('name')||'',course:params.get('course')||'',issueDate:params.get('date')||'',status:'Details supplied by QR link',issuedBy:'Ethiopian Digital Skills Academy'};source='qr';}
-  loading.classList.add('hidden');result.classList.remove('hidden');
-  if(!id||!record){statusBox.className='rounded-2xl border border-rose-500/30 bg-rose-500/10 p-5 text-center';statusBox.innerHTML='<div class="text-4xl mb-2">✕</div><div class="text-xl font-bold text-rose-400">Certificate Not Found</div><div class="text-sm text-slate-400 mt-2">No certificate record was found for this ID.</div>';document.getElementById('certificateId').textContent=id||'No certificate ID supplied';return;}
-  if(source==='registry'||source==='local'){
-    statusBox.className='rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-center';statusBox.innerHTML='<div class="text-4xl mb-2">✓</div><div class="text-xl font-bold text-emerald-400">Certificate Verified</div><div class="text-sm text-slate-400 mt-2">This certificate ID matches an EDSA certificate record.</div>';
-  }else{
-    statusBox.className='rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-center';statusBox.innerHTML='<div class="text-4xl mb-2">▣</div><div class="text-xl font-bold text-yellow-400">Certificate Details</div><div class="text-sm text-slate-400 mt-2">The QR code supplied the student and certificate details shown below.</div>';
-  }
-  document.getElementById('name').textContent=record.name||'—';document.getElementById('course').textContent=record.course||'—';document.getElementById('certificateId').textContent=record.id||id;document.getElementById('issueDate').textContent=formatDate(record.issueDate);document.getElementById('status').textContent=record.status||'Valid';document.getElementById('issuedBy').textContent=record.issuedBy||'Ethiopian Digital Skills Academy';
+ let record=null,source="";
+ if(id){
+  try{const response=await fetch("/certificates.json",{cache:"no-store"});if(response.ok){const registry=await response.json();if(registry[id]){record=registry[id];source="registry";}}}catch(_){}
+  if(!record){try{const local=JSON.parse(localStorage.getItem("EDSA_CERTIFICATES")||"{}");if(local[id]){record=local[id];source="local";}}catch(_){} }
+ }
+ if(!record&&id&&params.get("name")){
+  record={id:id,name:params.get("name")||"",course:params.get("course")||"",issueDate:params.get("date")||"",score:params.get("score")||"",status:"Certificate details supplied by QR",issuedBy:"Ethiopian Digital Skills Academy"};
+  source="qr";
+ }
+ loading.classList.add("hidden");result.classList.remove("hidden");
+ if(!id||!record){
+  statusBox.className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-5 text-center";
+  statusBox.innerHTML="<div class='text-4xl mb-2'>✕</div><div class='text-xl font-bold text-rose-400'>Certificate Not Found</div><div class='text-sm text-slate-400 mt-2'>No certificate record was found for this ID.</div>";
+  document.getElementById("certificateId").textContent=id||"No certificate ID supplied";return;
+ }
+ if(source==="registry"||source==="local"){
+  statusBox.className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-center";
+  statusBox.innerHTML="<div class='text-4xl mb-2'>✓</div><div class='text-xl font-bold text-emerald-400'>Certificate Verified</div><div class='text-sm text-slate-400 mt-2'>This certificate ID matches an EDSA certificate record.</div>";
+ }else{
+  statusBox.className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-center";
+  statusBox.innerHTML="<div class='text-4xl mb-2'>▣</div><div class='text-xl font-bold text-yellow-400'>Certificate Details</div><div class='text-sm text-slate-400 mt-2'>The QR code supplied the certificate details shown below. Public registry verification can be enabled later with a shared database.</div>";
+ }
+ document.getElementById("name").textContent=record.name||"—";
+ document.getElementById("course").textContent=record.course||"—";
+ document.getElementById("certificateId").textContent=record.id||id;
+ document.getElementById("issueDate").textContent=formatDate(record.issueDate);
+ document.getElementById("status").textContent=record.status||"Valid";
+ document.getElementById("issuedBy").textContent=record.issuedBy||"Ethiopian Digital Skills Academy";
+ if(record.score){document.getElementById("scoreBox").classList.remove("hidden");document.getElementById("score").textContent=String(record.score).includes("%")?record.score:record.score+"%";}
 }
 loadCertificate();
 </script>
-</body></html>
+</body>
+</html>
