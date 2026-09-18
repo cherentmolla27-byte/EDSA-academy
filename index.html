@@ -55,7 +55,7 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
     function saveLocalRecord(d){
       try{
         const records=JSON.parse(w.localStorage.getItem("EDSA_CERTIFICATES")||"{}");
-        records[d.id]={id:d.id,name:d.name,course:d.course,issueDate:d.issueDate,status:"Valid",issuedBy:"Ethiopian Digital Skills Academy"};
+        records[d.id]={id:d.id,name:d.name,course:d.course,issueDate:d.issueDate,score:d.score||"",status:"Valid",issuedBy:"Ethiopian Digital Skills Academy"};
         w.localStorage.setItem("EDSA_CERTIFICATES",JSON.stringify(records));
       }catch(_){}
     }
@@ -88,7 +88,7 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
       const q=w.document.getElementById("qrcode");
       if(q){
         q.innerHTML="";
-        const url=location.origin+VERIFY_BASE+"?id="+encodeURIComponent(d.id)+"&name="+encodeURIComponent(d.name)+"&course="+encodeURIComponent(d.course)+"&date="+encodeURIComponent(d.issueDate);
+        const url=location.origin+VERIFY_BASE+"?id="+encodeURIComponent(d.id);
         try{new w.QRCode(q,{text:url,width:164,height:164});}catch(_){}
         setTimeout(function(){const qrCanvas=q.querySelector("canvas");if(qrCanvas)ctx.drawImage(qrCanvas,1218,458,164,164);finishCertificate(ctx,d,callback);},300);
       }else finishCertificate(ctx,d,callback);
