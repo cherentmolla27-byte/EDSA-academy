@@ -39,8 +39,19 @@ function formatDate(value){const d=new Date(value);if(Number.isNaN(d.getTime()))
 async function loadCertificate(){
  let record=null,source="";
  if(id){
-  try{const response=await fetch("/certificates.json",{cache:"no-store"});if(response.ok){const registry=await response.json();if(registry[id]){record=registry[id];source="registry";}}}catch(_){}
-  if(!record){try{const local=JSON.parse(localStorage.getItem("EDSA_CERTIFICATES")||"{}");if(local[id]){record=local[id];source="local";}}catch(_){} }
+  try{
+    const response=await fetch("/api/verify-certificate?id="+encodeURIComponent(id),{cache:"no-store"});
+    if(response.ok){
+      const data=await response.json();
+      if(data.found&&data.certificate){record=data.certificate;source="registry";}
+    }
+  }catch(_){}
+  if(!record){
+    try{
+      const local=JSON.parse(localStorage.getItem("EDSA_CERTIFICATES")||"{}");
+      if(local[id]){record=local[id];source="local";}
+    }catch(_){} 
+  }
  }
  
  loading.classList.add("hidden");result.classList.remove("hidden");
