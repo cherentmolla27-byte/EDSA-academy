@@ -42,23 +42,20 @@ async function loadCertificate(){
   try{const response=await fetch("/certificates.json",{cache:"no-store"});if(response.ok){const registry=await response.json();if(registry[id]){record=registry[id];source="registry";}}}catch(_){}
   if(!record){try{const local=JSON.parse(localStorage.getItem("EDSA_CERTIFICATES")||"{}");if(local[id]){record=local[id];source="local";}}catch(_){} }
  }
- if(!record&&id&&params.get("name")){
-  record={id:id,name:params.get("name")||"",course:params.get("course")||"",issueDate:params.get("date")||"",score:params.get("score")||"",status:"Certificate details supplied by QR",issuedBy:"Ethiopian Digital Skills Academy"};
-  source="qr";
- }
+ 
  loading.classList.add("hidden");result.classList.remove("hidden");
  if(!id||!record){
   statusBox.className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-5 text-center";
-  statusBox.innerHTML="<div class='text-4xl mb-2'>✕</div><div class='text-xl font-bold text-rose-400'>Certificate Not Found</div><div class='text-sm text-slate-400 mt-2'>No certificate record was found for this ID.</div>";
+  statusBox.innerHTML="<div class='text-4xl mb-2'>✕</div><div class='text-xl font-bold text-rose-400'>Certificate Not Found</div><div class='text-sm text-slate-400 mt-2'>No public EDSA certificate record was found for this ID.</div>";
   document.getElementById("certificateId").textContent=id||"No certificate ID supplied";return;
  }
- if(source==="registry"||source==="local"){
+ if(source==="registry"){
   statusBox.className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 text-center";
-  statusBox.innerHTML="<div class='text-4xl mb-2'>✓</div><div class='text-xl font-bold text-emerald-400'>Certificate Verified</div><div class='text-sm text-slate-400 mt-2'>This certificate ID matches an EDSA certificate record.</div>";
- }else{
+  statusBox.innerHTML="<div class='text-4xl mb-2'>✓</div><div class='text-xl font-bold text-emerald-400'>Certificate Verified</div><div class='text-sm text-slate-400 mt-2'>This certificate ID matches the official EDSA public certificate registry.</div>";
+}else if(source==="local"){
   statusBox.className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-center";
-  statusBox.innerHTML="<div class='text-4xl mb-2'>▣</div><div class='text-xl font-bold text-yellow-400'>Certificate Details</div><div class='text-sm text-slate-400 mt-2'>The QR code supplied the certificate details shown below. Public registry verification can be enabled later with a shared database.</div>";
- }
+  statusBox.innerHTML="<div class='text-4xl mb-2'>!</div><div class='text-xl font-bold text-yellow-400'>Certificate Found on This Device</div><div class='text-sm text-slate-400 mt-2'>This record is stored locally and is not a public registry verification.</div>";
+}
  document.getElementById("name").textContent=record.name||"—";
  document.getElementById("course").textContent=record.course||"—";
  document.getElementById("certificateId").textContent=record.id||id;
