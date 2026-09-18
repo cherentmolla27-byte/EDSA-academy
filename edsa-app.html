@@ -1504,6 +1504,7 @@ setTimeout(() => {
         document.getElementById("adminAuthView").classList.add("hidden");
         document.getElementById("adminDashboardView").classList.remove("hidden");
         renderKeysTable();
+        renderCertificateRegistry();
       } else {
         state.failedAttempts += 1;
         localStorage.setItem("EDSA_FAILED_ATTEMPTS", state.failedAttempts.toString());
