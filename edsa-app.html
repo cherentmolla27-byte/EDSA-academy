@@ -256,6 +256,23 @@
           </button>
         </div>
 
+        <div class="bg-black/80 p-4 rounded-xl border border-yellow-700/30 space-y-4">
+          <div class="flex justify-between items-start gap-3">
+            <div>
+              <h4 class="text-xs font-bold text-yellow-400 uppercase tracking-wider">Certificate Registry</h4>
+              <p class="text-[11px] text-slate-400 mt-1">Certificates created on this device can be prepared for the public EDSA registry.</p>
+            </div>
+            <span id="certificateRegistryCount" class="text-[10px] font-bold px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">0</span>
+          </div>
+          <div id="certificateRegistryList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button onclick="downloadCertificateRegistry()" class="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold py-2 rounded-lg text-xs transition-colors"><i class="fa-solid fa-file-export mr-1"></i> Export Registry</button>
+            <button onclick="clearLocalCertificateRecords()" class="bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700 font-bold py-2 rounded-lg text-xs transition-colors"><i class="fa-solid fa-trash-can mr-1"></i> Clear Local Records</button>
+          </div>
+          <div class="text-[10px] leading-relaxed text-slate-500 bg-slate-950/70 rounded-lg p-3">
+            Export creates an updated <span class="text-slate-300 font-semibold">certificates.json</span>. Upload/replace that file in the GitHub project to make the new certificates publicly verifiable.
+          </div>
+        </div>
         <div class="space-y-2">
           <div class="flex justify-between items-center">
             <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Active & Used Keys</h4>
@@ -1461,6 +1478,7 @@ setTimeout(() => {
         document.getElementById("adminAuthView").classList.add("hidden");
         document.getElementById("adminDashboardView").classList.remove("hidden");
         renderKeysTable();
+        renderCertificateRegistry();
       } else {
         document.getElementById("adminAuthView").classList.remove("hidden");
         document.getElementById("adminDashboardView").classList.add("hidden");
@@ -1501,6 +1519,85 @@ setTimeout(() => {
       }
     }
 
+    function getLocalCertificateRecords() {
+      try {
+        const records = JSON.parse(localStorage.getItem("EDSA_CERTIFICATES") || "{}");
+        return records && typeof records === "object" ? records : {};
+      } catch (_) { return {}; }
+    }
+
+    function renderCertificateRegistry() {
+      const records = getLocalCertificateRecords();
+      const list = document.getElementById("certificateRegistryList");
+      const count = document.getElementById("certificateRegistryCount");
+      if (!list || !count) return;
+      const entries = Object.values(records).sort((a,b) => String(b.issueDate || "").localeCompare(String(a.issueDate || "")));
+      count.textContent = entries.length;
+      if (!entries.length) {
+        list.innerHTML = '<div class="text-xs text-slate-500 text-center py-3">No certificate records stored on this device yet.</div>';
+        return;
+      }
+      list.innerHTML = entries.map(r =>
+        '<div class="bg-slate-950/80 border border-slate-800 rounded-lg p-3">' +
+          '<div class="flex justify-between gap-3">' +
+            '<div class="min-w-0"><div class="text-xs font-bold text-white truncate">' + escapeHtml(r.name || "Student") + '</div>' +
+            '<div class="text-[10px] text-slate-400 truncate">' + escapeHtml(r.course || "Course") + '</div></div>' +
+            '<div class="text-[10px] font-mono text-yellow-400 whitespace-nowrap">' + escapeHtml(r.id || "") + '</div>' +
+          '</div>' +
+          '<div class="text-[10px] text-slate-500 mt-1">' + escapeHtml(formatRegistryDate(r.issueDate)) +
+          (r.score !== undefined && r.score !== "" ? ' • Score: ' + escapeHtml(String(r.score).replace(/%$/,"")) + '%' : '') + '</div>' +
+        '</div>'
+      ).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]));
+    }
+
+    function formatRegistryDate(value) {
+      const d = new Date(value);
+      return Number.isNaN(d.getTime()) ? String(value || "Date not set") : d.toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
+    }
+
+    async function downloadCertificateRegistry() {
+      const local = getLocalCertificateRecords();
+      let registry = {};
+      try {
+        const response = await fetch("/certificates.json", { cache: "no-store" });
+        if (response.ok) {
+          const existing = await response.json();
+          if (existing && typeof existing === "object") registry = existing;
+        }
+      } catch (_) {}
+
+      Object.keys(local).forEach(id => {
+        const r = local[id];
+        registry[id] = {
+          id: r.id || id,
+          name: r.name || "",
+          course: r.course || "",
+          issueDate: r.issueDate || new Date().toISOString(),
+          score: r.score || "",
+          status: r.status || "Valid",
+          issuedBy: r.issuedBy || "Ethiopian Digital Skills Academy"
+        };
+      });
+
+      const blob = new Blob([JSON.stringify(registry, null, 2) + "\n"], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "certificates.json";
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      alert("Registry exported. Replace the certificates.json file in the GitHub project with this exported file to publish the new certificates.");
+    }
+
+    function clearLocalCertificateRecords() {
+      if (!confirm("Clear certificate records stored on this device? This does not remove records already published in certificates.json.")) return;
+      localStorage.removeItem("EDSA_CERTIFICATES");
+      renderCertificateRegistry();
+    }
+
     function generateKeys() {
       const scope = document.getElementById("keyCourseScope").value;
       const count = parseInt(document.getElementById("keyCount").value) || 1;
@@ -1520,11 +1617,6 @@ setTimeout(() => {
       navigator.clipboard.writeText(code);
       alert(`Key ${code} copied to clipboard! You can paste it into Telegram now.`);
     }
-
-    // --- TEMPORARY TEST TRIGGER ---
-    state.studentName = "Cherenet Molla Alem";
-    state.selectedCourse = { title: "Social Media Management" };
-    setTimeout(() => { generatePDF(); }, 1000);
 
     function renderKeysTable() {
       const keys = getStoredKeys();
