@@ -49,7 +49,7 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
       const state=w.state||{};
       if(!state.certificateId)state.certificateId=makeCertificateId();
       if(!state.issueDate)state.issueDate=new Date().toISOString();
-      return {id:state.certificateId,name:state.studentName||"",course:(state.selectedCourse&&state.selectedCourse.title)||"",issueDate:state.issueDate};
+      return {id:state.certificateId,name:state.studentName||"",course:(state.selectedCourse&&state.selectedCourse.title)||"",issueDate:state.issueDate,score:state.score||""};
     }
 
     function saveLocalRecord(d){
@@ -97,8 +97,7 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
 
     function finishCertificate(ctx,d,callback){
       ctx.textAlign="center";ctx.fillStyle="#111827";ctx.font="16px Arial";
-      ctx.fillText("Scan to verify authenticity",1300,665);ctx.fillText("or visit:",1300,692);
-      ctx.font="bold 15px Arial";ctx.fillText("edsa-academy.vercel.app/verify",1300,716);
+      ctx.fillText("Scan to verify authenticity",1300,665);ctx.fillText("or visit:",1300,692); ctx.font="bold 15px Arial"; ctx.fillText(location.host+"/verify?id="+d.id,1300,716);
       ctx.fillStyle="#B47C12";ctx.fillText("ID: "+d.id,1300,746);
       ctx.textAlign="left";ctx.fillStyle="#111827";ctx.font="bold 18px Arial";ctx.fillText("Issue Date",180,835);
       ctx.font="20px Arial";ctx.fillText(new Date(d.issueDate).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),180,865);
