@@ -268,32 +268,13 @@ window.EDSA_SHOW_COURSES=function(){
   g.classList.add('show'); document.getElementById('edsaPublicCourses').scrollIntoView({behavior:'smooth'});
 };
 window.EDSA_OPEN_COURSE=function(id){
-  var host=document.getElementById('appHost'), home=document.getElementById('edsaPublicHome');
-  host.style.display='block'; home.style.display='none';
-  var tries=0;
-  var t=setInterval(function(){
-    var f=host.querySelector('iframe'), w=f&&f.contentWindow;
-    if(w&&typeof w.selectCourse==='function'){
-      clearInterval(t);
-      try{
-        w.selectCourse(String(id));
-        try{w.scrollTo(0,0);}catch(_){}
-      }catch(e){console.error('EDSA course launch failed',e);}
-    }
-    if(++tries>150){clearInterval(t);console.error('EDSA course launch timed out');}
-  },100);
+  // Open the real exam application directly. This avoids iframe/bridge failures
+  // on mobile browsers and keeps the exam UI fully interactive.
+  window.location.href="/edsa-app.html?course="+encodeURIComponent(String(id));
 };
 window.EDSA_OPEN_ADMIN=function(){
-  var host=document.getElementById('appHost'), home=document.getElementById('edsaPublicHome');
-  host.style.display='block'; home.style.display='none';
-  var tries=0;var t=setInterval(function(){
-    var f=host.querySelector('iframe'),w=f&&f.contentWindow;
-    if(w&&typeof w.openAdminModal==='function'){
-      clearInterval(t);
-      try{w.openAdminModal();}catch(e){console.error('EDSA admin launch failed',e);}
-    }
-    if(++tries>150){clearInterval(t);console.error('EDSA admin launch timed out');}
-  },100);
+  // Open the real admin panel directly instead of routing it through an iframe.
+  window.location.href="/edsa-app.html?admin=1";
 };
 </script></body>
 </html>
