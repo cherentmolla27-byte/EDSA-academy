@@ -45,7 +45,7 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
 
     const style=w.document.createElement("style");
     style.id="edsa-home-v3-style";
-    style.textContent=\`
+    style.textContent=`
       #stepCatalog{max-width:1180px!important;margin:0 auto!important;padding:0!important}
       .edsa-v3{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#0b2145}
       .edsa-v3 *{box-sizing:border-box}
@@ -69,10 +69,10 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
       .edsa-footer{margin:42px -16px -16px;padding:32px 16px;background:#041737;color:#94a3b8;text-align:center;font-size:11px}.edsa-footer strong{color:#fff}.edsa-footer a{color:#93c5fd;text-decoration:none}.edsa-admin{margin-top:12px;background:transparent;border:1px solid #29466f;color:#93c5fd;border-radius:10px;padding:8px 12px;font-size:10px;font-weight:800;cursor:pointer}
       @media(min-width:700px){.edsa-navlinks{display:flex}.edsa-hero-grid{grid-template-columns:1.05fr .95fr}.edsa-copy{text-align:left}.edsa-copy p{margin:0}.edsa-actions{justify-content:flex-start}.edsa-stats{grid-template-columns:repeat(4,1fr)}.edsa-course-grid{grid-template-columns:repeat(2,1fr)}.edsa-how{grid-template-columns:repeat(4,1fr)}.edsa-proof{grid-template-columns:1.05fr .95fr;padding:32px}.edsa-trust{grid-template-columns:repeat(4,1fr)}}
       @media(min-width:1024px){.edsa-hero{padding:64px 38px 32px}.edsa-course-grid{grid-template-columns:repeat(3,1fr)}.edsa-screen{padding-top:20px}}
-    \`;
+    `;
     w.document.head.appendChild(style);
 
-    catalog.innerHTML=\`
+    catalog.innerHTML=`
       <div class="edsa-v3">
         <nav class="edsa-nav">
           <a class="edsa-brand" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false"><div class="edsa-logo">E</div><div><strong>ETHIOPIAN DIGITAL SKILLS ACADEMY</strong><span>Digital Skills & Certification</span></div></a>
@@ -130,7 +130,7 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
 
         <footer class="edsa-footer"><strong>EDSA — Ethiopian Digital Skills Academy</strong><br><span>Digital Skills Examination & Certification</span><br><br>© Ethiopian Digital Skills Academy • Director: Cherenet Molla Alem<br><span style="color:#93c5fd">📞 0996173649</span> &nbsp;•&nbsp; <a href="mailto:cherentmolla27@gmail.com">cherentmolla27@gmail.com</a><br><button class="edsa-admin" onclick="openAdminModal()">🔐 Admin / Exam Key Generator</button></footer>
       </div>
-    \`;
+    `;
 
     const grid=w.document.getElementById("edsa-course-grid");
     courseNodes.forEach(n=>grid.appendChild(n));
