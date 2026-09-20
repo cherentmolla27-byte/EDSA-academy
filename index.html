@@ -228,11 +228,36 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
 
   frame.addEventListener("load",function(){
     const w=frame.contentWindow;
+
+    // Make the exam UI usable immediately. The question-bank/engine enhancements
+    // load afterward, so tapping a course or Admin never leaves the screen black.
+    let readyTries=0;
+    const readyTimer=setInterval(function(){
+      if(initialize(w)||readyTries++>100)clearInterval(readyTimer);
+    },100);
+
     try{w.eval("window.COURSES = COURSES; window.state = state;");}catch(_){}
-    const bankScript=frame.contentDocument.createElement("script");bankScript.src="/question-banks.js";
-    bankScript.onload=function(){const engineScript=frame.contentDocument.createElement("script");engineScript.src="/question-engine.js";engineScript.onload=function(){if(w.EDSA_INSTALL_QUESTION_ENGINE)w.EDSA_INSTALL_QUESTION_ENGINE();let tries=0;const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);};frame.contentDocument.head.appendChild(engineScript);};
-    bankScript.onerror=function(){let tries=0;const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);};
-    frame.contentDocument.head.appendChild(bankScript);
+
+    // Load the shared question bank and engine without blocking the basic exam flow.
+    try{
+      const bankScript=frame.contentDocument.createElement("script");
+      bankScript.src="/question-banks.js";
+      bankScript.onload=function(){
+        try{
+          const engineScript=frame.contentDocument.createElement("script");
+          engineScript.src="/question-engine.js";
+          engineScript.onload=function(){
+            try{if(w.EDSA_INSTALL_QUESTION_ENGINE)w.EDSA_INSTALL_QUESTION_ENGINE();}catch(e){console.error(e);}
+            try{initialize(w);}catch(e){console.error(e);}
+          };
+          engineScript.onerror=function(){try{initialize(w);}catch(e){console.error(e);}};
+          frame.contentDocument.head.appendChild(engineScript);
+        }catch(e){try{initialize(w);}catch(_){}}
+      };
+      bankScript.onerror=function(){try{initialize(w);}catch(e){console.error(e);}};
+      frame.contentDocument.head.appendChild(bankScript);
+    }catch(e){try{initialize(w);}catch(_){}
+    }
   });
   frame.src="/edsa-app.html";
 })();
@@ -250,9 +275,12 @@ window.EDSA_OPEN_COURSE=function(id){
     var f=host.querySelector('iframe'), w=f&&f.contentWindow;
     if(w&&typeof w.selectCourse==='function'){
       clearInterval(t);
-      try{w.selectCourse(id);}catch(e){console.error(e);}
+      try{
+        w.selectCourse(String(id));
+        try{w.scrollTo(0,0);}catch(_){}
+      }catch(e){console.error('EDSA course launch failed',e);}
     }
-    if(++tries>100)clearInterval(t);
+    if(++tries>150){clearInterval(t);console.error('EDSA course launch timed out');}
   },100);
 };
 window.EDSA_OPEN_ADMIN=function(){
@@ -260,8 +288,11 @@ window.EDSA_OPEN_ADMIN=function(){
   host.style.display='block'; home.style.display='none';
   var tries=0;var t=setInterval(function(){
     var f=host.querySelector('iframe'),w=f&&f.contentWindow;
-    if(w&&typeof w.openAdminModal==='function'){clearInterval(t);w.openAdminModal();}
-    if(++tries>100)clearInterval(t);
+    if(w&&typeof w.openAdminModal==='function'){
+      clearInterval(t);
+      try{w.openAdminModal();}catch(e){console.error('EDSA admin launch failed',e);}
+    }
+    if(++tries>150){clearInterval(t);console.error('EDSA admin launch timed out');}
   },100);
 };
 </script></body>
