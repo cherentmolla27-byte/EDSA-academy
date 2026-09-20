@@ -1556,6 +1556,29 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     initCatalog();
+
+    // Direct-launch support for the public homepage.
+    // /edsa-app.html?course=smm (etc.) opens the selected payment screen.
+    // /edsa-app.html?admin=1 opens the admin login.
+    (function handleDirectLaunch() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get("course");
+        const openAdmin = params.get("admin") === "1";
+
+        if (courseId) {
+          setTimeout(() => {
+            if (COURSES.some(c => c.id === courseId)) {
+              selectCourse(courseId);
+            }
+          }, 0);
+        } else if (openAdmin) {
+          setTimeout(() => openAdminModal(), 0);
+        }
+      } catch (e) {
+        console.error("EDSA direct launch error:", e);
+      }
+    })();
   </script>
 </body>
 </html>
