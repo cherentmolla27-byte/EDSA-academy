@@ -39,7 +39,9 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
     const courseNodes=oldCourses?Array.from(oldCourses.children):[];
     w.__EDSA_HOME_V2=true;
 
-    const oldHeader=w.document.querySelector("body>header"); if(oldHeader)oldHeader.style.display="none"; const oldFooter=w.document.querySelector("body>footer"); if(oldFooter)oldFooter.style.display="none"; const oldMain=w.document.querySelector("body>main"); if(oldMain){oldMain.style.maxWidth="1180px";oldMain.style.padding="16px";}\n\n    const style=w.document.createElement("style");
+    const oldHeader=w.document.querySelector("body>header"); if(oldHeader)oldHeader.style.display="none"; const oldFooter=w.document.querySelector("body>footer"); if(oldFooter)oldFooter.style.display="none"; const oldMain=w.document.querySelector("body>main"); if(oldMain){oldMain.style.maxWidth="1180px";oldMain.style.padding="16px";}
+
+    const style=w.document.createElement("style");
     style.id="edsa-home-v2-style";
     style.textContent=`
       #stepCatalog{max-width:1180px!important;margin:0 auto!important;padding:0!important}
