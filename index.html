@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>EDSA Academy</title>
+<title>EDSA Academy | Digital Skills Examination & Certification</title>
+<meta name="description" content="Ethiopian Digital Skills Academy — professional digital skills examinations and verifiable certificates.">
 <style>
 html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}
 body{overflow-x:hidden}
@@ -20,29 +21,129 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
   frame.title="EDSA Academy";
   frame.setAttribute("scrolling","yes");
   host.appendChild(frame);
-
   const VERIFY_BASE="/verify";
 
-  function cleanName(s){
-    return String(s||"Certificate").replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_-]/g,"");
-  }
-
+  function cleanName(s){return String(s||"Certificate").replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_-]/g,"");}
   function makeCertificateId(){
     const year=new Date().getFullYear();
     let n=Date.now()%1000000;
-    try{
-      if(window.crypto&&window.crypto.getRandomValues){
-        n=window.crypto.getRandomValues(new Uint32Array(1))[0]%1000000;
-      }
-    }catch(_){}
+    try{if(window.crypto&&window.crypto.getRandomValues)n=window.crypto.getRandomValues(new Uint32Array(1))[0]%1000000;}catch(_){}
     return "EDSA-"+year+"-"+String(n).padStart(6,"0");
+  }
+
+  function enhanceHomepage(w){
+    if(!w||w.__EDSA_HOME_V2||!w.document)return;
+    const catalog=w.document.getElementById("stepCatalog");
+    if(!catalog)return;
+    const oldCourses=w.document.getElementById("courseList");
+    const courseNodes=oldCourses?Array.from(oldCourses.children):[];
+    w.__EDSA_HOME_V2=true;
+
+    const style=w.document.createElement("style");
+    style.id="edsa-home-v2-style";
+    style.textContent=`
+      #stepCatalog{max-width:1180px!important;margin:0 auto!important;padding:0!important}
+      .edsa-v2{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e5e7eb}
+      .edsa-v2 *{box-sizing:border-box}
+      .edsa-nav{position:sticky;top:0;z-index:45;background:rgba(2,6,23,.88);backdrop-filter:blur(18px);border:1px solid rgba(148,163,184,.12);border-radius:18px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+      .edsa-brand{display:flex;align-items:center;gap:11px;min-width:0}
+      .edsa-logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#f4c542,#a96f00);display:grid;place-items:center;color:#07111d;font-weight:900;box-shadow:0 10px 30px rgba(212,166,42,.18)}
+      .edsa-brand strong{display:block;color:#fff;letter-spacing:.08em;font-size:14px}.edsa-brand span{display:block;color:#f4c542;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-top:2px}
+      .edsa-links{display:none;gap:18px;align-items:center}.edsa-links a{color:#94a3b8;text-decoration:none;font-size:12px;font-weight:700}.edsa-links a:hover{color:#f4c542}
+      .edsa-nav-actions{display:flex;gap:8px;align-items:center}.edsa-btn{border:0;border-radius:11px;padding:11px 15px;font-weight:800;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}.edsa-btn-gold{background:#f4c542;color:#07111d}.edsa-btn-dark{background:#111c2d;color:#e2e8f0;border:1px solid #263449}
+      .edsa-hero{position:relative;overflow:hidden;border:1px solid rgba(244,197,66,.22);border-radius:28px;padding:48px 24px 40px;text-align:center;background:radial-gradient(circle at 50% -20%,rgba(244,197,66,.18),transparent 42%),linear-gradient(145deg,#0a1424,#050b16 65%,#0b1526);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+      .edsa-hero:before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;border:1px solid rgba(244,197,66,.08);top:-120px;left:-100px}.edsa-hero:after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;border:1px solid rgba(244,197,66,.06);right:-150px;bottom:-180px}
+      .edsa-eyebrow{display:inline-flex;padding:7px 11px;border-radius:999px;background:rgba(244,197,66,.08);border:1px solid rgba(244,197,66,.2);color:#f4c542;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;position:relative;z-index:1}
+      .edsa-hero h1{font-size:clamp(35px,7vw,68px);line-height:.98;margin:18px auto 16px;max-width:850px;color:#fff;letter-spacing:-.045em;position:relative;z-index:1}.edsa-hero h1 span{color:#f4c542}
+      .edsa-hero p{max-width:650px;margin:0 auto;color:#a9b5c5;line-height:1.7;font-size:14px;position:relative;z-index:1}
+      .edsa-hero-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:25px;position:relative;z-index:1}.edsa-hero .edsa-btn{padding:13px 20px}
+      .edsa-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:25px;position:relative;z-index:1}.edsa-stat{background:rgba(255,255,255,.035);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:13px}.edsa-stat b{display:block;color:#f4c542;font-size:20px}.edsa-stat span{color:#94a3b8;font-size:9px;text-transform:uppercase;letter-spacing:.1em}
+      .edsa-section{padding:48px 4px 0}.edsa-section-head{text-align:center;margin-bottom:22px}.edsa-kicker{color:#f4c542;text-transform:uppercase;letter-spacing:.16em;font-size:10px;font-weight:900}.edsa-section h2{font-size:28px;color:#fff;margin:7px 0}.edsa-section-head p{color:#94a3b8;font-size:13px;max-width:650px;margin:auto;line-height:1.6}
+      .edsa-course-grid{display:grid;grid-template-columns:1fr;gap:12px}.edsa-course-grid>div{min-width:0}
+      .edsa-course-grid>div>button,.edsa-course-grid>div>div{border-radius:18px!important}
+      .edsa-how{display:grid;grid-template-columns:1fr;gap:10px}.edsa-how-card{background:#0b1525;border:1px solid #1d2b3f;border-radius:18px;padding:20px}.edsa-how-num{color:#f4c542;font-size:11px;font-weight:900;letter-spacing:.12em}.edsa-how-card h3{color:#fff;font-size:16px;margin:8px 0 5px}.edsa-how-card p{color:#94a3b8;font-size:12px;line-height:1.6;margin:0}
+      .edsa-proof{display:grid;grid-template-columns:1fr;gap:20px;align-items:center;background:linear-gradient(135deg,#0b1525,#07101d);border:1px solid rgba(244,197,66,.16);border-radius:24px;padding:24px;margin-top:30px}.edsa-proof h2{text-align:left}.edsa-proof p{color:#94a3b8;font-size:13px;line-height:1.7}.edsa-cert-preview{background:#f7f4ec;color:#111827;border:5px solid #d5a62a;border-radius:10px;padding:22px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3)}.edsa-cert-preview .small{font-size:8px;letter-spacing:.14em;font-weight:900}.edsa-cert-preview .title{font-family:Georgia,serif;font-size:25px;font-weight:800;margin:18px 0 4px}.edsa-cert-preview .gold{color:#a96f00;font-weight:900}.edsa-cert-preview .line{width:70%;height:1px;background:#d5a62a;margin:12px auto}.edsa-cert-preview .qr{width:58px;height:58px;border:3px solid #d5a62a;margin:15px auto 4px;display:grid;place-items:center;font-size:8px;font-weight:900}
+      .edsa-values{display:grid;grid-template-columns:1fr 1fr;gap:10px}.edsa-value{padding:17px;border-radius:16px;background:#0b1525;border:1px solid #1d2b3f}.edsa-value b{color:#fff;font-size:13px}.edsa-value p{color:#94a3b8;font-size:11px;line-height:1.5;margin:6px 0 0}
+      .edsa-verify{margin-top:30px;border-radius:22px;padding:28px 20px;text-align:center;background:linear-gradient(145deg,#111c2d,#08111e);border:1px solid #263449}.edsa-verify h2{margin:6px 0 8px}.edsa-verify p{color:#94a3b8;font-size:12px}.edsa-verify-row{display:flex;max-width:540px;margin:18px auto 0;gap:8px}.edsa-verify-row input{flex:1;min-width:0;background:#020617;border:1px solid #334155;border-radius:11px;padding:12px;color:#fff;font-weight:700}.edsa-v2-footer{margin:42px -16px -16px;padding:28px 16px;background:#030712;border-top:1px solid #172235;text-align:center;color:#64748b;font-size:11px}.edsa-v2-footer strong{color:#fff}.edsa-admin{margin-top:10px;color:#475569!important;font-size:9px!important;background:none!important;border:0!important;padding:4px!important}
+      @media(min-width:640px){.edsa-links{display:flex}.edsa-stats{grid-template-columns:repeat(4,1fr)}.edsa-course-grid{grid-template-columns:repeat(2,1fr)}.edsa-how{grid-template-columns:repeat(4,1fr)}.edsa-proof{grid-template-columns:1.05fr .95fr;padding:32px}.edsa-values{grid-template-columns:repeat(4,1fr)}}
+      @media(min-width:1024px){.edsa-nav{padding:12px 18px}.edsa-hero{padding:64px 40px 48px}.edsa-course-grid{grid-template-columns:repeat(3,1fr)}.edsa-section{padding-top:58px}}
+    `;
+    w.document.head.appendChild(style);
+
+    catalog.innerHTML=`
+      <div class="edsa-v2">
+        <nav class="edsa-nav">
+          <a class="edsa-brand" href="#" onclick="navToCatalog();return false;">
+            <div class="edsa-logo">E</div><div><strong>EDSA ACADEMY</strong><span>Digital Skills & Certification</span></div>
+          </a>
+          <div class="edsa-links">
+            <a href="#edsa-courses">Courses</a><a href="#edsa-how">How It Works</a><a href="/verify">Verify Certificate</a>
+          </div>
+          <div class="edsa-nav-actions"><a class="edsa-btn edsa-btn-gold" href="#edsa-courses">Take an Exam</a></div>
+        </nav>
+
+        <section class="edsa-hero">
+          <div class="edsa-eyebrow">Examination • Certification • Verification</div>
+          <h1>Master the <span>Digital Frontier.</span></h1>
+          <p>Build practical digital knowledge, demonstrate what you know through a structured examination, and earn an EDSA certificate with online verification.</p>
+          <div class="edsa-hero-actions"><a class="edsa-btn edsa-btn-gold" href="#edsa-courses">Explore Courses →</a><a class="edsa-btn edsa-btn-dark" href="/verify">Verify a Certificate</a></div>
+          <div class="edsa-stats">
+            <div class="edsa-stat"><b>6</b><span>Professional Subjects</span></div>
+            <div class="edsa-stat"><b>50</b><span>Questions / Exam</span></div>
+            <div class="edsa-stat"><b>80%</b><span>Passing Mark</span></div>
+            <div class="edsa-stat"><b>QR</b><span>Online Verification</span></div>
+          </div>
+        </section>
+
+        <section class="edsa-section" id="edsa-courses">
+          <div class="edsa-section-head"><div class="edsa-kicker">Choose Your Path</div><h2>Professional Digital Skills Exams</h2><p>Select a subject and demonstrate your knowledge through the EDSA assessment pathway.</p></div>
+          <div class="edsa-course-grid" id="edsa-course-grid"></div>
+        </section>
+
+        <section class="edsa-section" id="edsa-how">
+          <div class="edsa-section-head"><div class="edsa-kicker">Simple Process</div><h2>How EDSA Works</h2><p>From choosing a subject to receiving a verifiable certificate.</p></div>
+          <div class="edsa-how">
+            <div class="edsa-how-card"><div class="edsa-how-num">01 — CHOOSE</div><h3>Select Your Course</h3><p>Choose the digital skills subject you want to assess.</p></div>
+            <div class="edsa-how-card"><div class="edsa-how-num">02 — ACCESS</div><h3>Get Exam Access</h3><p>Complete the activation process and receive your exam key.</p></div>
+            <div class="edsa-how-card"><div class="edsa-how-num">03 — EXAM</div><h3>Take the Assessment</h3><p>Complete the 50-question examination within the allotted time.</p></div>
+            <div class="edsa-how-card"><div class="edsa-how-num">04 — EARN</div><h3>Get Certified</h3><p>Score 80% or higher and receive your EDSA certificate.</p></div>
+          </div>
+        </section>
+
+        <section class="edsa-proof">
+          <div><div class="edsa-kicker">Digital Proof</div><h2>Certificate. Achievement. Verification.</h2><p>Every successful candidate receives a unique certificate ID and QR code. The QR code opens EDSA's verification page so the certificate information can be checked online.</p><a class="edsa-btn edsa-btn-gold" href="/verify">Verify a Certificate →</a></div>
+          <div class="edsa-cert-preview"><div class="small">ETHIOPIAN DIGITAL SKILLS ACADEMY</div><div class="title">CERTIFICATE</div><div class="gold">OF ACHIEVEMENT</div><div class="line"></div><div>This certifies that</div><strong style="font-size:18px">EDSA STUDENT</strong><div>has successfully passed the examination for</div><strong>Digital Skills</strong><div class="qr">QR<br>VERIFY</div><div class="small">UNIQUE CERTIFICATE ID</div></div>
+        </section>
+
+        <section class="edsa-section">
+          <div class="edsa-section-head"><div class="edsa-kicker">Why EDSA</div><h2>Built Around Demonstrated Knowledge</h2></div>
+          <div class="edsa-values">
+            <div class="edsa-value"><b>Structured Assessment</b><p>Each subject uses a dedicated 50-question examination.</p></div>
+            <div class="edsa-value"><b>Clear Passing Standard</b><p>An 80% score is required to pass the examination.</p></div>
+            <div class="edsa-value"><b>Digital Certificate</b><p>Successful candidates receive a downloadable certificate.</p></div>
+            <div class="edsa-value"><b>QR Verification</b><p>Certificate IDs can be checked through the public verification system.</p></div>
+          </div>
+        </section>
+
+        <section class="edsa-verify">
+          <div class="edsa-kicker">Already Certified?</div><h2>Verify an EDSA Certificate</h2><p>Enter a certificate ID to check its verification record.</p>
+          <div class="edsa-verify-row"><input id="edsaVerifyId" placeholder="e.g. EDSA-2026-000184"><a class="edsa-btn edsa-btn-gold" id="edsaVerifyBtn" href="/verify">Verify</a></div>
+        </section>
+
+        <footer class="edsa-v2-footer"><strong>EDSA — Ethiopian Digital Skills Academy</strong><br><span>Digital Skills Examination & Certification</span><br><br>© EDSA Management Academy • Director: Cherenet Molla Alem<br><a href="mailto:cherentmolla27@gmail.com" style="color:#f4c542;text-decoration:none">cherentmolla27@gmail.com</a><br><button class="edsa-admin" onclick="openAdminModal()">Admin</button></footer>
+      </div>
+    `;
+
+    const grid=w.document.getElementById("edsa-course-grid");
+    courseNodes.forEach(n=>grid.appendChild(n));
+    const verifyInput=w.document.getElementById("edsaVerifyId"), verifyBtn=w.document.getElementById("edsaVerifyBtn");
+    verifyInput.addEventListener("input",function(){const id=this.value.trim();verifyBtn.href=id?"/verify?id="+encodeURIComponent(id):"/verify";});
   }
 
   function initialize(w){
     if(!w||!w.document||w.__EDSA_CERT_READY)return false;
     if(!w.selectCourse||!w.verifyAndStartExam)return false;
     w.__EDSA_CERT_READY=true;
-
     w.generatePDF=function(){};
 
     function getCertificate(){
@@ -51,127 +152,45 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
       if(!state.issueDate)state.issueDate=new Date().toISOString();
       return {id:state.certificateId,name:state.studentName||"",course:(state.selectedCourse&&state.selectedCourse.title)||"",issueDate:state.issueDate,score:state.score||""};
     }
-
-    function saveLocalRecord(d){
-      try{
-        const records=JSON.parse(w.localStorage.getItem("EDSA_CERTIFICATES")||"{}");
-        records[d.id]={id:d.id,name:d.name,course:d.course,issueDate:d.issueDate,score:d.score||"",status:"Valid",issuedBy:"Ethiopian Digital Skills Academy"};
-        w.localStorage.setItem("EDSA_CERTIFICATES",JSON.stringify(records));
-      }catch(_){}
-    }
-
-    async function registerPublicCertificate(d){
-      try{
-        const response=await fetch("/api/register-certificate",{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify(d)
-        });
-        const data=await response.json().catch(()=>({}));
-        if(!response.ok||!data.ok)throw new Error(data.error||"Public registration failed");
-        return true;
-      }catch(error){
-        console.error("EDSA public certificate registration failed:",error);
-        return false;
-      }
-    }
-
-    async function issueCertificateAutomatically(){
-      const d=getCertificate();
-      saveLocalRecord(d);
-      return registerPublicCertificate(d);
-    }
-
+    function saveLocalRecord(d){try{const records=JSON.parse(w.localStorage.getItem("EDSA_CERTIFICATES")||"{}");records[d.id]={id:d.id,name:d.name,course:d.course,issueDate:d.issueDate,score:d.score||"",status:"Valid",issuedBy:"Ethiopian Digital Skills Academy"};w.localStorage.setItem("EDSA_CERTIFICATES",JSON.stringify(records));}catch(_){}}
+    async function registerPublicCertificate(d){try{const r=await fetch("/api/register-certificate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok)throw new Error(data.error||"Public registration failed");return true;}catch(e){console.error("EDSA public certificate registration failed:",e);return false;}}
+    async function issueCertificateAutomatically(){const d=getCertificate();saveLocalRecord(d);return registerPublicCertificate(d);}
     w.EDSA_ISSUE_CERTIFICATE=issueCertificateAutomatically;
-
-    // Register a certificate as soon as the exam result is passed. This runs
-    // before the student chooses PNG/PDF/Print, so public verification does
-    // not depend on downloading the certificate.
-    try{
-      w.eval("(function(){const originalRenderResult=renderResult;renderResult=function(passed,score,correctCount){if(passed&&window.EDSA_ISSUE_CERTIFICATE){window.EDSA_ISSUE_CERTIFICATE();}return originalRenderResult(passed,score,correctCount);};})();");
-    }catch(error){
-      console.error("EDSA automatic certificate hook failed:",error);
-    }
+    try{w.eval("(function(){const originalRenderResult=renderResult;renderResult=function(passed,score,correctCount){if(passed&&window.EDSA_ISSUE_CERTIFICATE){window.EDSA_ISSUE_CERTIFICATE();}return originalRenderResult(passed,score,correctCount);};})();");}catch(e){console.error("EDSA automatic certificate hook failed:",e);}
 
     function drawCertificate(callback){
-      const canvas=w.document.getElementById("certCanvas");
-      if(!canvas)return;
-      canvas.width=1536;canvas.height=1080;
-      const ctx=canvas.getContext("2d");
-      const d=getCertificate();
-      ctx.fillStyle="#F7F4EC";ctx.fillRect(0,0,1536,1080);
-      ctx.strokeStyle="#D5A62A";ctx.lineWidth=5;ctx.strokeRect(18,18,1500,1044);
+      const canvas=w.document.getElementById("certCanvas");if(!canvas)return;
+      canvas.width=1536;canvas.height=1080;const ctx=canvas.getContext("2d");const d=getCertificate();
+      ctx.fillStyle="#F7F4EC";ctx.fillRect(0,0,1536,1080);ctx.strokeStyle="#D5A62A";ctx.lineWidth=5;ctx.strokeRect(18,18,1500,1044);
       ctx.fillStyle="#07111D";ctx.beginPath();ctx.moveTo(20,20);ctx.lineTo(1516,20);ctx.lineTo(1516,190);ctx.bezierCurveTo(1180,310,350,300,20,160);ctx.closePath();ctx.fill();
       ctx.strokeStyle="#D9A72E";ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(20,160);ctx.bezierCurveTo(360,302,1180,310,1516,190);ctx.stroke();
-      ctx.fillStyle="#07111D";ctx.fillRect(20,960,1496,100);
-      ctx.textAlign="center";
-      ctx.fillStyle="#F4C542";ctx.font="bold 96px Arial";ctx.fillText("EDSA",768,105);
-      ctx.fillStyle="#FFFFFF";ctx.font="bold 24px Arial";ctx.fillText("ETHIOPIAN DIGITAL SKILLS ACADEMY",768,145);
-      ctx.fillStyle="#E0A82D";ctx.font="bold 22px Arial";ctx.fillText("MASTER THE DIGITAL FRONTIER",768,178);
-      ctx.fillStyle="#0B1320";ctx.font="bold 70px Georgia";ctx.fillText("CERTIFICATE",650,380);
-      ctx.fillStyle="#B47C12";ctx.font="bold 30px Arial";ctx.fillText("OF ACHIEVEMENT",650,425);
-      ctx.fillStyle="#111827";ctx.font="bold 25px Arial";ctx.fillText("THIS IS TO CERTIFY THAT",650,480);
-      ctx.fillStyle="#101B31";ctx.font="italic 58px cursive";ctx.fillText(d.name||"Student Name",650,560);
-      ctx.strokeStyle="#C99A28";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(300,580);ctx.lineTo(1000,580);ctx.stroke();
-      ctx.fillStyle="#111827";ctx.font="21px Arial";ctx.fillText("has successfully completed and passed the examination for the course",650,625);
-      ctx.fillStyle="#15233E";ctx.font="bold 36px Arial";ctx.fillText(d.course||"Digital Marketing Essentials",650,670);
-      ctx.font="20px Arial";ctx.fillStyle="#111827";ctx.fillText("offered by Ethiopian Digital Skills Academy (EDSA)",650,710);ctx.fillText("and is hereby awarded this certificate for outstanding performance.",650,742);
-      ctx.fillStyle="#111827";ctx.font="bold 18px Arial";ctx.fillText("VERIFY CERTIFICATE",1300,430);
-      ctx.strokeStyle="#D5A62A";ctx.lineWidth=5;ctx.strokeRect(1210,450,180,180);
-      const q=w.document.getElementById("qrcode");
-      if(q){
-        q.innerHTML="";
-        const url=location.origin+VERIFY_BASE+"?id="+encodeURIComponent(d.id);
-        try{new w.QRCode(q,{text:url,width:164,height:164});}catch(_){}
-        setTimeout(function(){const qrCanvas=q.querySelector("canvas");if(qrCanvas)ctx.drawImage(qrCanvas,1218,458,164,164);finishCertificate(ctx,d,callback);},300);
-      }else finishCertificate(ctx,d,callback);
-      saveLocalRecord(d);
+      ctx.fillStyle="#07111D";ctx.fillRect(20,960,1496,100);ctx.textAlign="center";
+      ctx.fillStyle="#F4C542";ctx.font="bold 96px Arial";ctx.fillText("EDSA",768,105);ctx.fillStyle="#FFFFFF";ctx.font="bold 24px Arial";ctx.fillText("ETHIOPIAN DIGITAL SKILLS ACADEMY",768,145);ctx.fillStyle="#E0A82D";ctx.font="bold 22px Arial";ctx.fillText("MASTER THE DIGITAL FRONTIER",768,178);
+      ctx.fillStyle="#0B1320";ctx.font="bold 70px Georgia";ctx.fillText("CERTIFICATE",650,380);ctx.fillStyle="#B47C12";ctx.font="bold 30px Arial";ctx.fillText("OF ACHIEVEMENT",650,425);ctx.fillStyle="#111827";ctx.font="bold 25px Arial";ctx.fillText("THIS IS TO CERTIFY THAT",650,480);ctx.fillStyle="#101B31";ctx.font="italic 58px cursive";ctx.fillText(d.name||"Student Name",650,560);
+      ctx.strokeStyle="#C99A28";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(300,580);ctx.lineTo(1000,580);ctx.stroke();ctx.fillStyle="#111827";ctx.font="21px Arial";ctx.fillText("has successfully completed and passed the examination for the course",650,625);ctx.fillStyle="#15233E";ctx.font="bold 36px Arial";ctx.fillText(d.course||"Digital Marketing Essentials",650,670);ctx.font="20px Arial";ctx.fillStyle="#111827";ctx.fillText("offered by Ethiopian Digital Skills Academy (EDSA)",650,710);ctx.fillText("and is hereby awarded this certificate.",650,742);
+      ctx.fillStyle="#111827";ctx.font="bold 18px Arial";ctx.fillText("VERIFY CERTIFICATE",1300,430);ctx.strokeStyle="#D5A62A";ctx.lineWidth=5;ctx.strokeRect(1210,450,180,180);
+      const q=w.document.getElementById("qrcode");if(q){q.innerHTML="";const url=location.origin+VERIFY_BASE+"?id="+encodeURIComponent(d.id);try{new w.QRCode(q,{text:url,width:164,height:164});}catch(_){}setTimeout(function(){const qrCanvas=q.querySelector("canvas");if(qrCanvas)ctx.drawImage(qrCanvas,1218,458,164,164);finishCertificate(ctx,d,callback);},300);}else finishCertificate(ctx,d,callback);saveLocalRecord(d);
     }
-
     function finishCertificate(ctx,d,callback){
-      ctx.textAlign="center";ctx.fillStyle="#111827";ctx.font="16px Arial";
-      ctx.fillText("Scan to verify authenticity",1300,665);ctx.fillText("or visit:",1300,692); ctx.font="bold 15px Arial"; ctx.fillText(location.host+"/verify?id="+d.id,1300,716);
-      ctx.fillStyle="#B47C12";ctx.fillText("ID: "+d.id,1300,746);
-      ctx.textAlign="left";ctx.fillStyle="#111827";ctx.font="bold 18px Arial";ctx.fillText("Issue Date",180,835);
-      ctx.font="20px Arial";ctx.fillText(new Date(d.issueDate).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),180,865);
-      ctx.font="bold 18px Arial";ctx.fillText("Certificate ID",180,910);ctx.fillStyle="#B47C12";ctx.fillText(d.id,180,938);
-      ctx.textAlign="center";ctx.fillStyle="#101B31";ctx.font="italic 40px cursive";ctx.fillText("Cherenet Molla Alem",1110,840);
-      ctx.strokeStyle="#C99A28";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(980,865);ctx.lineTo(1240,865);ctx.stroke();
-      ctx.fillStyle="#B47C12";ctx.font="bold 18px Arial";ctx.fillText("Director",1110,895);
-      ctx.fillStyle="#111827";ctx.font="17px Arial";ctx.fillText("Ethiopian Digital Skills Academy",1110,925);
-      ctx.fillStyle="#FFFFFF";ctx.font="16px Arial";ctx.fillText("edsa-academy.vercel.app",430,1018);ctx.fillText("info@edsa-academy.com",780,1018);ctx.fillText("Ethiopia",1160,1018);
+      ctx.textAlign="center";ctx.fillStyle="#111827";ctx.font="16px Arial";ctx.fillText("Scan to verify authenticity",1300,665);ctx.fillText("or visit:",1300,692);ctx.font="bold 15px Arial";ctx.fillText(location.host+"/verify?id="+d.id,1300,716);ctx.fillStyle="#B47C12";ctx.fillText("ID: "+d.id,1300,746);
+      ctx.textAlign="left";ctx.fillStyle="#111827";ctx.font="bold 18px Arial";ctx.fillText("Issue Date",180,835);ctx.font="20px Arial";ctx.fillText(new Date(d.issueDate).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),180,865);ctx.font="bold 18px Arial";ctx.fillText("Certificate ID",180,910);ctx.fillStyle="#B47C12";ctx.fillText(d.id,180,938);
+      ctx.textAlign="center";ctx.fillStyle="#101B31";ctx.font="italic 40px cursive";ctx.fillText("Cherenet Molla Alem",1110,840);ctx.strokeStyle="#C99A28";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(980,865);ctx.lineTo(1240,865);ctx.stroke();ctx.fillStyle="#B47C12";ctx.font="bold 18px Arial";ctx.fillText("Director",1110,895);ctx.fillStyle="#111827";ctx.font="17px Arial";ctx.fillText("Ethiopian Digital Skills Academy",1110,925);
       if(callback)callback(d.id);
     }
-
     w.drawCertificateCanvas=drawCertificate;
     w.downloadCertificate=function(){drawCertificate(function(){const doc=new w.jspdf.jsPDF({orientation:"landscape",unit:"mm",format:"a4"});doc.addImage(w.document.getElementById("certCanvas").toDataURL("image/png"),"PNG",0,0,297,210);doc.save(cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.pdf");});};
     w.saveCertificateImage=function(){drawCertificate(function(){const a=w.document.createElement("a");a.download=cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.png";a.href=w.document.getElementById("certCanvas").toDataURL("image/png");a.click();});};
     w.printCertificate=function(){drawCertificate(function(){const p=w.open("","_blank");if(!p)return;p.document.write("<img style='width:100%' src='"+w.document.getElementById("certCanvas").toDataURL("image/png")+"' onload='print()'>");p.document.close();});};
+    enhanceHomepage(w);
     return true;
   }
 
   frame.addEventListener("load",function(){
     const w=frame.contentWindow;
-
-    // Expose the app's global lexical variables so the enhancement scripts
-    // can safely integrate with the existing application.
     try{w.eval("window.COURSES = COURSES; window.state = state;");}catch(_){}
-
-    const bankScript=frame.contentDocument.createElement("script");
-    bankScript.src="/question-banks.js";
-    bankScript.onload=function(){
-      const engineScript=frame.contentDocument.createElement("script");
-      engineScript.src="/question-engine.js";
-      engineScript.onload=function(){
-        if(w.EDSA_INSTALL_QUESTION_ENGINE)w.EDSA_INSTALL_QUESTION_ENGINE();
-        let tries=0;
-        const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);
-      };
-      frame.contentDocument.head.appendChild(engineScript);
-    };
-    bankScript.onerror=function(){
-      let tries=0;const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);
-    };
+    const bankScript=frame.contentDocument.createElement("script");bankScript.src="/question-banks.js";
+    bankScript.onload=function(){const engineScript=frame.contentDocument.createElement("script");engineScript.src="/question-engine.js";engineScript.onload=function(){if(w.EDSA_INSTALL_QUESTION_ENGINE)w.EDSA_INSTALL_QUESTION_ENGINE();let tries=0;const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);};frame.contentDocument.head.appendChild(engineScript);};
+    bankScript.onerror=function(){let tries=0;const timer=setInterval(function(){if(initialize(w)||tries++>80)clearInterval(timer);},100);};
     frame.contentDocument.head.appendChild(bankScript);
   });
   frame.src="/edsa-app.html";
