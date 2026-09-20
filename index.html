@@ -178,7 +178,7 @@ iframe{border:0;width:100%;height:100vh;min-height:100vh;display:block;overflow:
     w.downloadCertificate=function(){drawCertificate(function(){const doc=new w.jspdf.jsPDF({orientation:"landscape",unit:"mm",format:"a4"});doc.addImage(w.document.getElementById("certCanvas").toDataURL("image/png"),"PNG",0,0,297,210);doc.save(cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.pdf");});};
     w.saveCertificateImage=function(){drawCertificate(function(){const a=w.document.createElement("a");a.download=cleanName(w.state.studentName)+"_"+w.state.certificateId+"_Certificate.png";a.href=w.document.getElementById("certCanvas").toDataURL("image/png");a.click();});};
     w.printCertificate=function(){drawCertificate(function(){const p=w.open("","_blank");if(!p)return;p.document.write("<img style='width:100%' src='"+w.document.getElementById("certCanvas").toDataURL("image/png")+"' onload='print()'>");p.document.close();});};
-    enhanceHomepage(w);
+    try{enhanceHomepage(w);}catch(e){console.error("EDSA homepage enhancement failed:",e);try{const cat=w.document.getElementById("stepCatalog");if(cat){cat.style.display="block";cat.style.visibility="visible";cat.style.opacity="1";cat.innerHTML='<div style="padding:60px 24px;text-align:center;font-family:Arial,sans-serif;color:#0b2145"><h1 style="font-size:42px">EDSA Academy</h1><p style="font-size:18px">Digital Skills Examination & Certification</p><p style="color:#64748b">Please refresh the page to load the academy homepage.</p></div>';}}catch(_){}}}
     return true;
   }
 
