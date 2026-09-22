@@ -1,1 +1,8 @@
-{}
+{
+  "cherentmolla27@gmail.com": {
+    "name": "Cherent Molla",
+    "email": "cherentmolla27@gmail.com",
+    "passwordHash": "scrypt$128be5c331ef519c345ffea23eb42103$ba7dc744524986e9a9557376415c45a7f00610dd44918b85c0d4cd07c3e70053969fc4d4111a728e0772a20f742c0f6badf7185e441064cc897368a8cf1da938",
+    "createdAt": "2026-09-22T12:18:46.782Z"
+  }
+}
