@@ -1059,6 +1059,9 @@ function generate50Questions(courseKey, courseTitle) {
         profile.courses[id] = next;
         all[email] = profile;
         localStorage.setItem("EDSA_STUDENT_JOURNEY", JSON.stringify(all));
+        // Immediately sync course progress to Supabase instead of waiting for the
+        // background interval. This keeps attempts/pass/fail data current.
+        if (window.EDSA_DB_SYNC) window.EDSA_DB_SYNC.push();
       } catch (e) {
         console.warn("[EDSA] Student journey save failed:", e);
       }
@@ -1631,6 +1634,8 @@ function generate50Questions(courseKey, courseTitle) {
       records[state.certificateId] = record;
       localStorage.setItem("EDSA_CERTIFICATES", JSON.stringify(records));
       renderCertificateRegistry();
+      // Immediately sync the certificate to Supabase too.
+      if (window.EDSA_DB_SYNC) window.EDSA_DB_SYNC.push();
       try {
         const response = await fetch("/api/register-certificate", {
           method: "POST",
