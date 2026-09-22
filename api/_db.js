@@ -16,6 +16,7 @@ async function supabaseRequest(path, options = {}) {
     ...options,
     headers: {
       apikey: SECRET,
+      Authorization: "Bearer " + SECRET,
       "Content-Type": "application/json",
       Prefer: "return=representation",
       ...(options.headers || {})
