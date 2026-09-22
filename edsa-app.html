@@ -1299,81 +1299,257 @@ function generate50Questions(courseKey, courseTitle) {
       navToCatalog();
     }
 
-    // DRAW CANVAS CERTIFICATE FOR IMAGE SAVE & PRINT
+    // DRAW THE OFFICIAL EDSA CERTIFICATE FOR IMAGE SAVE, PDF & PRINT
+    // Approved design: dark navy + gold EDSA branding, white certificate paper,
+    // curved gold header, logo, seals, signature area and QR verification.
     function drawCertificateCanvas(callback) {
       const canvas = document.getElementById("certCanvas");
+      if (!canvas) return;
       const ctx = canvas.getContext("2d");
+      const W = 1400, H = 900;
+      canvas.width = W;
+      canvas.height = H;
+
       if (!state.certificateId) state.certificateId = "EDSA-" + new Date().getFullYear() + "-" + String(Date.now()).slice(-6);
       if (!state.certificateIssueDate) state.certificateIssueDate = new Date().toISOString().slice(0, 10);
+
       const certId = state.certificateId;
-      const dateStr = new Date(state.certificateIssueDate + "T00:00:00").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const dateStr = new Date(state.certificateIssueDate + "T00:00:00")
+        .toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
-      // Background
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(0, 0, 1200, 850);
+      const navy = "#061426";
+      const navy2 = "#0B1C34";
+      const gold = "#C9972B";
+      const gold2 = "#E7BE55";
+      const cream = "#FBFAF5";
+      const ink = "#101B30";
+      const muted = "#526174";
 
-      // Border
-      ctx.strokeStyle = "#0EA5E9";
-      ctx.lineWidth = 12;
-      ctx.strokeRect(30, 30, 1140, 790);
+      ctx.fillStyle = cream;
+      ctx.fillRect(0, 0, W, H);
 
-      ctx.strokeStyle = "#0284C7";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(45, 45, 1110, 760);
+      // Subtle premium paper texture.
+      for (let y = 0; y < H; y += 18) {
+        ctx.strokeStyle = "rgba(20,40,70,0.025)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.quadraticCurveTo(W / 2, y + 7, W, y);
+        ctx.stroke();
+      }
 
-      // Header
-      ctx.fillStyle = "#0EA5E9";
-      ctx.font = "bold 38px sans-serif";
+      // Navy header.
+      ctx.fillStyle = navy;
+      ctx.fillRect(0, 0, W, 225);
+
+      // Curved gold ribbon.
+      ctx.fillStyle = gold;
+      ctx.beginPath();
+      ctx.moveTo(0, 128);
+      ctx.quadraticCurveTo(330, 330, 700, 250);
+      ctx.quadraticCurveTo(1080, 170, 1400, 90);
+      ctx.lineTo(1400, 125);
+      ctx.quadraticCurveTo(1080, 255, 700, 285);
+      ctx.quadraticCurveTo(320, 360, 0, 168);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = navy;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(W, 0);
+      ctx.lineTo(W, 88);
+      ctx.quadraticCurveTo(1080, 220, 700, 235);
+      ctx.quadraticCurveTo(330, 305, 0, 145);
+      ctx.closePath();
+      ctx.fill();
+
+      // Gold frame.
+      ctx.strokeStyle = gold2;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(14, 14, W - 28, H - 28);
+      ctx.strokeStyle = "rgba(201,151,43,0.55)";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(28, 28, W - 56, H - 56);
+
+      // EDSA logo mark.
+      ctx.save();
+      ctx.translate(270, 91);
+      ctx.fillStyle = gold2;
+      ctx.strokeStyle = gold2;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, -40); ctx.lineTo(48, -15); ctx.lineTo(0, 10); ctx.lineTo(-48, -15); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = navy;
+      ctx.font = "bold 29px Georgia, serif";
       ctx.textAlign = "center";
-      ctx.fillText("ETHIOPIAN DIGITAL SOCIAL MEDIA ACADEMY", 600, 180);
+      ctx.fillText("G", 0, -6);
+      ctx.strokeStyle = gold2;
+      ctx.beginPath(); ctx.moveTo(-32, 20); ctx.quadraticCurveTo(0, 45, 32, 20); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-25, 31); ctx.quadraticCurveTo(0, 58, 25, 31); ctx.stroke();
+      ctx.restore();
 
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "24px sans-serif";
-      ctx.fillText("CERTIFICATE OF ACHIEVEMENT", 600, 240);
-
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "20px sans-serif";
-      ctx.fillText("This official certificate verifies that", 600, 320);
-
-      // Name
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 44px sans-serif";
-      ctx.fillText(state.studentName.toUpperCase(), 600, 400);
-
-      // Description
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "20px sans-serif";
-      ctx.fillText(`has successfully passed with a score of ${state.score}% for`, 600, 470);
-
-      // Course Title
-      ctx.fillStyle = "#0EA5E9";
-      ctx.font = "bold 34px sans-serif";
-      ctx.fillText(state.selectedCourse.title, 600, 530);
-
-      // Footer Meta
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = "18px sans-serif";
+      // EDSA header.
       ctx.textAlign = "left";
-      ctx.fillText(`Issue Date: ${dateStr}`, 100, 710);
-      ctx.fillText(`Certificate ID: ${certId}`, 100, 745);
+      ctx.fillStyle = gold2;
+      ctx.font = "bold 92px Georgia, serif";
+      ctx.fillText("EDSA", 390, 104);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 23px Arial, sans-serif";
+      ctx.fillText("ETHIOPIAN DIGITAL SKILLS ACADEMY", 393, 140);
+      ctx.fillStyle = gold2;
+      ctx.font = "bold 19px Arial, sans-serif";
+      ctx.fillText("MASTER THE DIGITAL FRONTIER", 393, 174);
 
-      ctx.textAlign = "right";
-      ctx.fillText(`Director: Cherenet Molla Alem`, 1100, 710);
+      // Top-right gold achievement seal.
+      ctx.save();
+      ctx.translate(1180, 103);
+      ctx.fillStyle = navy2;
+      ctx.strokeStyle = gold2;
+      ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.arc(0, 0, 59, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, 48, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = gold2;
+      ctx.textAlign = "center";
+      ctx.font = "bold 14px Arial, sans-serif";
+      ctx.fillText("EMPOWERING", 0, -6);
+      ctx.fillText("DIGITAL", 0, 11);
+      ctx.fillText("FUTURES", 0, 28);
+      for (let i = 0; i < 16; i++) {
+        const a = (Math.PI * 2 * i) / 16;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * 66, Math.sin(a) * 66);
+        ctx.lineTo(Math.cos(a) * 75, Math.sin(a) * 75);
+        ctx.stroke();
+      }
+      ctx.restore();
 
-      // QR Code
+      // Main certificate title.
+      ctx.textAlign = "center";
+      ctx.fillStyle = ink;
+      ctx.font = "bold 61px Georgia, serif";
+      ctx.fillText("CERTIFICATE", 560, 305);
+      ctx.fillStyle = gold;
+      ctx.font = "bold 26px Georgia, serif";
+      ctx.fillText("OF ACHIEVEMENT", 560, 340);
+      ctx.strokeStyle = gold;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(360, 329); ctx.lineTo(445, 329); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(675, 329); ctx.lineTo(760, 329); ctx.stroke();
+
+      ctx.fillStyle = ink;
+      ctx.font = "19px Arial, sans-serif";
+      ctx.fillText("THIS IS TO CERTIFY THAT", 560, 391);
+
+      // Student name.
+      ctx.fillStyle = ink;
+      ctx.font = "italic 50px 'Brush Script MT', 'Segoe Script', cursive";
+      const studentName = String(state.studentName || "EDSA STUDENT");
+      ctx.fillText(studentName, 560, 455);
+      ctx.strokeStyle = gold;
+      ctx.lineWidth = 1.5;
+      const nameW = Math.min(720, Math.max(300, ctx.measureText(studentName).width + 40));
+      ctx.beginPath(); ctx.moveTo(560 - nameW / 2, 470); ctx.lineTo(560 + nameW / 2, 470); ctx.stroke();
+
+      ctx.fillStyle = ink;
+      ctx.font = "17px Arial, sans-serif";
+      ctx.fillText("has successfully completed and passed the examination for the course", 560, 510);
+      ctx.font = "bold 26px Arial, sans-serif";
+      ctx.fillText(state.selectedCourse ? state.selectedCourse.title : "EDSA Professional Course", 560, 545);
+      ctx.font = "17px Arial, sans-serif";
+      ctx.fillText("offered by Ethiopian Digital Skills Academy (EDSA)", 560, 580);
+      ctx.fillText("and is hereby awarded this certificate for outstanding performance.", 560, 608);
+
+      // QR verification block.
       const qrDiv = document.getElementById("qrcode");
       qrDiv.innerHTML = "";
       new QRCode(qrDiv, {
-        text: `${window.location.origin}/verify?id=${encodeURIComponent(certId)}`,
-        width: 100,
-        height: 100
+        text: window.location.origin + "/verify?id=" + encodeURIComponent(certId),
+        width: 150,
+        height: 150,
+        colorDark: "#111111",
+        colorLight: "#FFFFFF"
       });
 
       setTimeout(() => {
         const qrCanvas = qrDiv.querySelector("canvas");
         if (qrCanvas) {
-          ctx.drawImage(qrCanvas, 550, 630, 100, 100);
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(1015, 355, 170, 170);
+          ctx.strokeStyle = gold;
+          ctx.lineWidth = 3;
+          ctx.strokeRect(1015, 355, 170, 170);
+          ctx.drawImage(qrCanvas, 1025, 365, 150, 150);
         }
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = ink;
+        ctx.font = "bold 13px Arial, sans-serif";
+        ctx.fillText("VERIFY CERTIFICATE", 1100, 340);
+        ctx.font = "12px Arial, sans-serif";
+        ctx.fillText("Scan to verify authenticity", 1100, 548);
+        ctx.fillText("or visit", 1100, 567);
+        ctx.fillStyle = gold;
+        ctx.font = "bold 11px Arial, sans-serif";
+        ctx.fillText("edsa-academy.vercel.app/verify", 1100, 585);
+        ctx.fillText("ID: " + certId, 1100, 602);
+
+        // Date and certificate ID.
+        ctx.textAlign = "left";
+        ctx.fillStyle = ink;
+        ctx.font = "bold 15px Arial, sans-serif";
+        ctx.fillText("Issue Date", 125, 705);
+        ctx.fillStyle = muted;
+        ctx.font = "15px Arial, sans-serif";
+        ctx.fillText(dateStr, 125, 731);
+        ctx.strokeStyle = gold;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(125, 744); ctx.lineTo(335, 744); ctx.stroke();
+
+        ctx.fillStyle = ink;
+        ctx.font = "bold 15px Arial, sans-serif";
+        ctx.fillText("Certificate ID", 125, 773);
+        ctx.fillStyle = gold;
+        ctx.font = "bold 14px Arial, sans-serif";
+        ctx.fillText(certId, 125, 798);
+
+        // Gold embossed seal.
+        ctx.save();
+        ctx.translate(570, 742);
+        ctx.fillStyle = "#F5D477";
+        ctx.strokeStyle = gold;
+        ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.arc(0, 0, 54, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(0, 0, 45, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = ink;
+        ctx.textAlign = "center";
+        ctx.font = "bold 20px Georgia, serif";
+        ctx.fillText("EDSA", 0, 6);
+        ctx.font = "bold 8px Arial, sans-serif";
+        ctx.fillText("ETHIOPIAN DIGITAL", 0, -24);
+        ctx.fillText("SKILLS ACADEMY", 0, 35);
+        ctx.restore();
+
+        // Director signature area.
+        ctx.textAlign = "center";
+        ctx.strokeStyle = gold;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(795, 748); ctx.lineTo(1115, 748); ctx.stroke();
+        ctx.fillStyle = ink;
+        ctx.font = "bold 15px Arial, sans-serif";
+        ctx.fillText("Director", 955, 776);
+        ctx.font = "15px Arial, sans-serif";
+        ctx.fillText("Ethiopian Digital Skills Academy", 955, 800);
+
+        // Navy footer.
+        ctx.fillStyle = navy;
+        ctx.fillRect(0, 832, W, 68);
+        ctx.fillStyle = gold2;
+        ctx.font = "12px Arial, sans-serif";
+        ctx.fillText("◉   edsa-academy.vercel.app     |     ✉   info@edsa-academy.com     |     ⌖   Ethiopia", 700, 872);
+
         if (callback) callback(certId);
       }, 300);
     }
