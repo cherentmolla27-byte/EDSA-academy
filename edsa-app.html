@@ -1615,6 +1615,62 @@ function generate50Questions(courseKey, courseTitle) {
       window.EDSA_INSTALL_QUESTION_ENGINE();
     }
 
+    // Developer certificate test mode.
+    // /edsa-app.html?test=certificate simulates a perfect exam result without
+    // requiring the tester to answer all 50 questions. It creates a clearly
+    // labeled TEST certificate record so the full certificate/QR/verification
+    // pipeline can be checked without changing the real 50-question exam.
+    (function handleCertificateTestMode() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("test") !== "certificate") return;
+
+        setTimeout(async () => {
+          const course = COURSES.find(c => c.id === (params.get("course") || "smm")) || COURSES[0];
+          state.selectedCourse = course;
+          state.studentName = "EDSA TEST STUDENT";
+          state.accessKey = "EDSA-CERT-TEST";
+          state.userAnswers = {};
+          state.currentPage = 1;
+          state.score = 100;
+          state.certificateId = "EDSA-" + new Date().getFullYear() + "-" + String(Math.floor(100000 + Math.random() * 900000));
+          state.certificateIssueDate = new Date().toISOString().slice(0, 10);
+
+          // Mark every answer correct only for this simulation.
+          course.questions.forEach((q, i) => { state.userAnswers[i] = q.correct; });
+
+          document.getElementById("userStatus").innerText = "TEST MODE: Certificate Pipeline";
+          document.getElementById("examCourseTitle").innerText = course.title + " — TEST";
+          await ensureCertificateRecord();
+
+          const record = {
+            id: state.certificateId,
+            name: state.studentName,
+            course: "TEST — " + course.title,
+            issueDate: state.certificateIssueDate,
+            score: 100,
+            status: "Valid",
+            issuedBy: "Ethiopian Digital Skills Academy"
+          };
+
+          // Keep the generated certificate visibly marked as a test.
+          state.studentName = "EDSA TEST STUDENT";
+          state.certificateTestMode = true;
+          const records = getLocalCertificateRecords();
+          records[state.certificateId] = record;
+          localStorage.setItem("EDSA_CERTIFICATES", JSON.stringify(records));
+
+          showSection("stepResult");
+          renderResult(true, 100, course.questions.length);
+          document.getElementById("resultTitle").innerText = "TEST CERTIFICATE — PASS";
+          document.getElementById("resultMessage").innerText =
+            "This is a developer test certificate. It does not represent a real student result.";
+        }, 150);
+      } catch (e) {
+        console.error("[EDSA] Certificate test mode error:", e);
+      }
+    })();
+
     // Direct-launch support for the public homepage.
     // /edsa-app.html?course=smm (etc.) opens the selected payment screen.
     // /edsa-app.html?admin=1 opens the admin login.
