@@ -71,8 +71,18 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <div class="edsa-dash-head"><div><h1>Student Dashboard</h1><p id="dashEmail"></p></div><div class="edsa-dash-actions"><button class="edsa-dash-btn light" onclick="EDSA_SHOW_HOME()">Home</button><button class="edsa-dash-btn blue" onclick="EDSA_LOGOUT()">Sign Out</button></div></div>
 <div class="edsa-welcome"><div class="k">WELCOME BACK</div><h2 id="dashName">Student</h2><p>Your EDSA learning and certification dashboard. Choose a course below to continue to the existing payment and examination system.</p></div>
 <div class="edsa-dash-grid">
-<div class="edsa-dash-card"><h3>Your Courses</h3><p>Available EDSA professional subjects.</p><div id="dashCourses"></div></div>
-<div class="edsa-dash-card"><h3>Certification Progress</h3><p>Use the existing EDSA exam flow to earn a verified certificate.</p><div class="edsa-progress"><i id="dashProgress"></i></div><div id="dashProgressText" class="edsa-status">0% — No exam started</div></div>
+<div class="edsa-dash-card">
+<h3>Your EDSA Journey</h3>
+<p>Your activity across all six professional subjects.</p>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0">
+<div style="background:#eff6ff;border-radius:12px;padding:12px;text-align:center"><b id="dashAttemptedCount" style="display:block;color:#1677ff;font-size:22px">0</b><span style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:800">Attempted</span></div>
+<div style="background:#f0fdf4;border-radius:12px;padding:12px;text-align:center"><b id="dashPassedCount" style="display:block;color:#16a34a;font-size:22px">0</b><span style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:800">Passed</span></div>
+<div style="background:#fffbeb;border-radius:12px;padding:12px;text-align:center"><b id="dashCertificateCount" style="display:block;color:#ca8a04;font-size:22px">0</b><span style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:800">Certificates</span></div>
+</div>
+<div class="edsa-progress"><i id="dashProgress"></i></div><div id="dashProgressText" class="edsa-status">0% — Start your first course</div>
+<div id="dashJourneySummary" class="edsa-empty" style="margin-top:14px">No course activity yet.</div>
+</div>
+<div class="edsa-dash-card"><h3>Your Courses</h3><p>Start as a guest or continue your tracked student journey.</p><div id="dashCourses"></div></div>
 </div></div></div>
 
 <script>
@@ -91,10 +101,20 @@ function EDSA_SHOW_LOGIN(){const p=EDSA_getProfile();if(p){EDSA_RENDER_DASH(p);r
 function EDSA_SHOW_REGISTER(){EDSA_setView("edsaRegisterScreen")}
 function EDSA_REGISTER(){const name=document.getElementById("registerName").value.trim(),email=document.getElementById("registerEmail").value.trim();if(!name||!email){alert("Please enter your full name and email.");return}const p={name,email,createdAt:new Date().toISOString()};localStorage.setItem("EDSA_STUDENT_PROFILE",JSON.stringify(p));EDSA_RENDER_DASH(p)}
 function EDSA_SIGN_IN(){const name=document.getElementById("loginName").value.trim(),email=document.getElementById("loginEmail").value.trim(),p=EDSA_getProfile();if(!name||!email){alert("Please enter your full name and email.");return}if(p&&p.email.toLowerCase()===email.toLowerCase()){if(p.name.toLowerCase()!==name.toLowerCase()){alert("The name does not match the saved student profile.");return}EDSA_RENDER_DASH(p)}else{alert("No student profile found for this email. Create a Student Profile first.");EDSA_SHOW_REGISTER()}}
-function EDSA_RENDER_DASH(p){document.getElementById("dashName").textContent=p.name;document.getElementById("dashEmail").textContent=p.email;const grid=document.getElementById("dashCourses");grid.innerHTML=EDSA_COURSES.map(c=>'<div class="edsa-course-mini"><div><strong>'+c[1]+'</strong><br><span>'+c[2]+'</span></div><button class="edsa-dash-btn blue" onclick="EDSA_OPEN_COURSE(\''+c[0]+'\')">Start</button></div>').join("");EDSA_setView("edsaDashboard")}
+function EDSA_getJourney(){try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(e){return {}}}
+function EDSA_getCourseJourney(email,id){const all=EDSA_getJourney();const p=all[email]||{};return (p.courses&&p.courses[id])||{status:"not-started",attempts:0,bestScore:null,lastScore:null}}
+function EDSA_SAVE_JOURNEY(email,id,data){if(!email)return;const all=EDSA_getJourney();const p=all[email]||{courses:{}};p.courses=p.courses||{};p.courses[id]=Object.assign(p.courses[id]||{},data,{updatedAt:new Date().toISOString()});all[email]=p;localStorage.setItem("EDSA_STUDENT_JOURNEY",JSON.stringify(all))}
+function EDSA_OPEN_STUDENT_COURSE(id){const p=EDSA_getProfile();EDSA_OPEN_COURSE(id,p)}
+function EDSA_RENDER_DASH(p){document.getElementById("dashName").textContent=p.name;document.getElementById("dashEmail").textContent=p.email;const journey=EDSA_getJourney()[p.email]||{courses:{}};const courses=journey.courses||{};let attempted=0,passed=0,certificates=0;
+const grid=document.getElementById("dashCourses");
+grid.innerHTML=EDSA_COURSES.map(c=>{const j=courses[c[0]]||{status:"not-started",attempts:0};const status=j.status==="passed"?"Passed ✓":j.status==="failed"?"Retake available":j.status==="started"?"In progress":"Not started";const score=j.bestScore!=null?("Best: "+j.bestScore+"%"):"";if(j.attempts>0)attempted++;if(j.status==="passed")passed++;if(j.certificateId)certificates++;const btn=j.status==="passed"?"Retake / Improve":j.status==="started"?"Continue":"Start Course";return '<div class="edsa-course-mini"><div><strong>'+c[1]+'</strong><br><span>'+c[2]+'</span><br><span class="edsa-status">'+status+(score?" • "+score:"")+(j.certificateId?" • Certificate ✓":"")+'</span></div><button class="edsa-dash-btn blue" onclick="EDSA_OPEN_STUDENT_COURSE(\''+c[0]+'\')">'+btn+'</button></div>'}).join("");
+document.getElementById("dashAttemptedCount").textContent=attempted;document.getElementById("dashPassedCount").textContent=passed;document.getElementById("dashCertificateCount").textContent=certificates;
+const pct=Math.round((passed/EDSA_COURSES.length)*100);document.getElementById("dashProgress").style.width=pct+"%";document.getElementById("dashProgressText").textContent=pct+"% certification progress — "+passed+" of "+EDSA_COURSES.length+" courses passed";
+document.getElementById("dashJourneySummary").textContent=attempted?("You have attempted "+attempted+" course"+(attempted===1?"":"s")+". "+passed+" passed and "+certificates+" certificate"+(certificates===1?"":"s")+" earned."): "No course activity yet. Start any course below.";
+EDSA_setView("edsaDashboard")}
 function EDSA_LOGOUT(){EDSA_setView("edsaPublicHome")}
 function EDSA_SHOW_COURSES(){const g=document.getElementById("publicCourseGrid");g.classList.add("show");document.getElementById("edsaPublicCourses").scrollIntoView({behavior:"smooth"})}
-function EDSA_OPEN_COURSE(id){window.location.href="/edsa-app.html?course="+encodeURIComponent(String(id))}
+function EDSA_OPEN_COURSE(id,profile){let url="/edsa-app.html?course="+encodeURIComponent(String(id));const p=profile||EDSA_getProfile();if(p){url+="&studentEmail="+encodeURIComponent(p.email)+"&studentName="+encodeURIComponent(p.name)}window.location.href=url}
 function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
 </script>
 </body></html>
