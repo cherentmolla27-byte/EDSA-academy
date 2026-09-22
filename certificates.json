@@ -60,5 +60,14 @@
     "score": "100",
     "status": "Valid",
     "issuedBy": "Ethiopian Digital Skills Academy"
+  },
+  "EDSA-2026-464365": {
+    "id": "EDSA-2026-464365",
+    "name": "EDSA TEST STUDENT",
+    "course": "Social Media Management",
+    "issueDate": "2026-09-22",
+    "score": "100",
+    "status": "Valid",
+    "issuedBy": "Ethiopian Digital Skills Academy"
   }
 }
