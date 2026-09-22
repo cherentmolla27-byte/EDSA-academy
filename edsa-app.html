@@ -358,7 +358,8 @@
 
   <script>
     // ADMIN SECURITY SETTINGS
-    const SECURE_ADMIN_PIN = "EDSA26";
+    // The real admin PIN is stored only in the Vercel environment variable EDSA_ADMIN_PIN.
+    // Never place the administrator PIN in this public HTML file.
     const MAX_FAILED_ATTEMPTS = 3;
     const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
@@ -1501,19 +1502,32 @@ function generate50Questions(courseKey, courseTitle) {
       }
     }
 
-    function openAdminModal() {
+    async function openAdminModal() {
       document.getElementById("adminModal").classList.remove("hidden");
       checkLockoutState();
 
-      if (state.adminAuthenticated) {
-        document.getElementById("adminAuthView").classList.add("hidden");
-        document.getElementById("adminDashboardView").classList.remove("hidden");
-        renderKeysTable();
-        renderCertificateRegistry();
-        renderAdminDashboard();
-      } else {
+      try {
+        const response = await fetch("/api/admin-me", { cache: "no-store" });
+        const result = await response.json().catch(() => ({}));
+
+        if (response.ok && result.ok && result.user && result.user.role === "admin") {
+          state.adminAuthenticated = true;
+          document.getElementById("adminAuthView").classList.add("hidden");
+          document.getElementById("adminDashboardView").classList.remove("hidden");
+          renderKeysTable();
+          renderCertificateRegistry();
+          renderAdminDashboard();
+        } else {
+          state.adminAuthenticated = false;
+          document.getElementById("adminAuthView").classList.remove("hidden");
+          document.getElementById("adminDashboardView").classList.add("hidden");
+          document.getElementById("adminPinInput").value = "";
+        }
+      } catch (error) {
+        state.adminAuthenticated = false;
         document.getElementById("adminAuthView").classList.remove("hidden");
         document.getElementById("adminDashboardView").classList.add("hidden");
+        console.warn("[EDSA] Admin session check failed:", error);
       }
     }
 
@@ -1521,12 +1535,45 @@ function generate50Questions(courseKey, courseTitle) {
       document.getElementById("adminModal").classList.add("hidden");
     }
 
-    function authenticateAdmin() {
+    async function authenticateAdmin() {
       if (checkLockoutState()) return;
 
-      const pin = document.getElementById("adminPinInput").value.trim();
-      
-      if (pin === SECURE_ADMIN_PIN) {
+      const pinInput = document.getElementById("adminPinInput");
+      const loginBtn = document.getElementById("adminLoginBtn");
+      const pin = pinInput.value.trim();
+      if (!pin) {
+        alert("Please enter the administrator PIN.");
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.classList.add("opacity-50", "cursor-not-allowed");
+      loginBtn.textContent = "Checking...";
+
+      try {
+        const response = await fetch("/api/admin-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pin })
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result.ok) {
+          state.failedAttempts += 1;
+          localStorage.setItem("EDSA_FAILED_ATTEMPTS", state.failedAttempts.toString());
+
+          if (state.failedAttempts >= MAX_FAILED_ATTEMPTS) {
+            state.lockUntil = Date.now() + LOCKOUT_DURATION_MS;
+            localStorage.setItem("EDSA_LOCK_UNTIL", state.lockUntil.toString());
+            checkLockoutState();
+          } else {
+            const attemptsLeft = MAX_FAILED_ATTEMPTS - state.failedAttempts;
+            alert(result.error || `Incorrect PIN code. You have ${attemptsLeft} attempt(s) remaining.`);
+          }
+          pinInput.value = "";
+          return;
+        }
+
         state.adminAuthenticated = true;
         state.failedAttempts = 0;
         state.lockUntil = 0;
@@ -1538,18 +1585,14 @@ function generate50Questions(courseKey, courseTitle) {
         renderKeysTable();
         renderCertificateRegistry();
         renderAdminDashboard();
-      } else {
-        state.failedAttempts += 1;
-        localStorage.setItem("EDSA_FAILED_ATTEMPTS", state.failedAttempts.toString());
-
-        if (state.failedAttempts >= MAX_FAILED_ATTEMPTS) {
-          state.lockUntil = Date.now() + LOCKOUT_DURATION_MS;
-          localStorage.setItem("EDSA_LOCK_UNTIL", state.lockUntil.toString());
-          checkLockoutState();
-        } else {
-          const attemptsLeft = MAX_FAILED_ATTEMPTS - state.failedAttempts;
-          alert(`Incorrect PIN code. You have ${attemptsLeft} attempt(s) remaining before a 15-minute lockout.`);
-        }
+        pinInput.value = "";
+      } catch (error) {
+        console.error("[EDSA] Admin login failed:", error);
+        alert("Admin login could not be completed. Please try again.");
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        loginBtn.textContent = "Login";
       }
     }
 
