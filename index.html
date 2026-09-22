@@ -51,21 +51,23 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <div class="edsa-login-card">
 <div class="brand">EDSA ACADEMY</div><h2>Welcome Back</h2><p>Sign in to keep your EDSA experience organized with your student dashboard.</p>
 <div style="padding:12px 13px;background:#eff6ff;border-radius:12px;color:#475569;font-size:10px;line-height:1.55;margin-bottom:18px">📊 <strong style="color:#0b2145">With a profile:</strong> access your dashboard and keep your EDSA activity organized.<br>🚀 <strong style="color:#0b2145">Without a profile:</strong> you can still take an exam as a guest from the course page.</div>
-<label>Full Name</label><input id="loginName" type="text" placeholder="Enter your full name">
-<label>Email</label><input id="loginEmail" type="email" placeholder="Enter your email">
-<button onclick="EDSA_SIGN_IN()">Sign In to Dashboard</button>
+<label>Email</label><input id="loginEmail" type="email" autocomplete="email" placeholder="Enter your email">
+<label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password">
+<button onclick="EDSA_SIGN_IN()">Sign In Securely</button>
 <div style="text-align:center;margin-top:15px;font-size:11px;color:#64748b">New to EDSA? <button onclick="EDSA_SHOW_REGISTER()" style="border:0;background:none;color:#1677ff;font-weight:900;cursor:pointer">Create Student Profile</button></div>
 <div class="edsa-login-links"><button onclick="EDSA_SHOW_HOME()">← Back to Home</button><button onclick="EDSA_SHOW_COURSES()">Continue as Guest →</button></div>
-<div class="edsa-note">Profiles are currently stored on this device. Different students can use separate email profiles on the same device. Your browser may still offer its own autofill suggestions.</div>
+<div class="edsa-note">Your EDSA account is secured with server-side authentication. Your password is never stored in your browser.</div>
 </div></div>
 
 <div class="edsa-signin-screen" id="edsaRegisterScreen">
 <div class="edsa-login-card"><div class="brand">EDSA ACADEMY</div><h2>Create Your Student Profile</h2><p>Set up an optional EDSA profile so your dashboard is ready when you return.</p>
-<label>Full Name</label><input id="registerName" type="text" placeholder="Your full name">
-<label>Email</label><input id="registerEmail" type="email" placeholder="you@example.com">
-<button onclick="EDSA_REGISTER()">Create Profile</button>
+<label>Full Name</label><input id="registerName" type="text" autocomplete="name" placeholder="Your full name">
+<label>Email</label><input id="registerEmail" type="email" autocomplete="email" placeholder="you@example.com">
+<label>Password</label><input id="registerPassword" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+<label>Confirm Password</label><input id="registerPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat your password">
+<button onclick="EDSA_REGISTER()">Create Secure Account</button>
 <div class="edsa-login-links"><button onclick="EDSA_SHOW_LOGIN()">← Sign In</button><button onclick="EDSA_SHOW_COURSES()">Continue as Guest →</button></div>
-<div class="edsa-note">Each email can have its own EDSA student profile on this device. Your browser may still offer autofill suggestions, which are controlled by the browser.</div></div></div>
+<div class="edsa-note">Your account is stored securely by EDSA. Passwords are protected server-side and sessions use an HttpOnly cookie.</div></div></div>
 
 <div class="edsa-dashboard" id="edsaDashboard"><div class="edsa-dash-wrap">
 <div class="edsa-dash-head"><div><h1>Student Dashboard</h1><p id="dashEmail"></p></div><div class="edsa-dash-actions"><button class="edsa-dash-btn light" onclick="EDSA_SHOW_HOME()">Home</button><button class="edsa-dash-btn blue" onclick="EDSA_LOGOUT()">Sign Out</button></div></div>
@@ -144,37 +146,31 @@ function EDSA_SHOW_LOGIN(){
   if(e)e.value="";
 }
 function EDSA_SHOW_REGISTER(){EDSA_setView("edsaRegisterScreen")}
-function EDSA_REGISTER(){
-  const n=document.getElementById("registerName"),e=document.getElementById("registerEmail");
-  const name=n?n.value.trim():"",email=e?e.value.trim():"";
-  if(!name||!email){alert("Please enter your full name and email.");return}
-  if(EDSA_FIND_ACCOUNT(email)){
-    alert("An EDSA profile already exists for this email. Please sign in instead.");
-    EDSA_SHOW_LOGIN();
-    const le=document.getElementById("loginEmail");if(le)le.value=email;
-    return;
-  }
-  const p={name:name,email:email,createdAt:new Date().toISOString()};
-  EDSA_SAVE_ACCOUNT(p);
-  EDSA_RENDER_DASH(p);
+async function EDSA_REGISTER(){
+  const n=document.getElementById("registerName"),e=document.getElementById("registerEmail"),p=document.getElementById("registerPassword"),pc=document.getElementById("registerPasswordConfirm");
+  const name=n?n.value.trim():"",email=e?e.value.trim():"",password=p?p.value:"",confirmPassword=pc?pc.value:"";
+  if(!name||!email||!password){alert("Please complete your name, email and password.");return}
+  if(password.length<8){alert("Password must be at least 8 characters.");return}
+  if(password!==confirmPassword){alert("Passwords do not match.");return}
+  try{
+    const response=await fetch("/api/auth-register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,password})});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok||!result.ok){alert(result.error||"Account registration failed.");return}
+    EDSA_SAVE_ACCOUNT(result.user);
+    EDSA_RENDER_DASH(result.user);
+  }catch(error){console.error("EDSA registration error",error);alert("Could not connect to EDSA authentication.");}
 }
-function EDSA_SIGN_IN(){
-  const n=document.getElementById("loginName"),e=document.getElementById("loginEmail");
-  const name=n?n.value.trim():"",email=e?e.value.trim():"";
-  if(!name||!email){alert("Please enter your full name and email.");return}
-  const p=EDSA_FIND_ACCOUNT(email);
-  if(!p){
-    alert("No student profile found for this email. Create a Student Profile first.");
-    EDSA_SHOW_REGISTER();
-    const re=document.getElementById("registerEmail");if(re)re.value=email;
-    return;
-  }
-  if(String(p.name||"").toLowerCase()!==name.toLowerCase()){
-    alert("The name does not match the saved student profile.");
-    return;
-  }
-  EDSA_SAVE_ACCOUNT(p);
-  EDSA_RENDER_DASH(p);
+async function EDSA_SIGN_IN(){
+  const e=document.getElementById("loginEmail"),p=document.getElementById("loginPassword");
+  const email=e?e.value.trim():"",password=p?p.value:"";
+  if(!email||!password){alert("Please enter your email and password.");return}
+  try{
+    const response=await fetch("/api/auth-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password})});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok||!result.ok){alert(result.error||"Invalid email or password.");return}
+    EDSA_SAVE_ACCOUNT(result.user);
+    EDSA_RENDER_DASH(result.user);
+  }catch(error){console.error("EDSA sign-in error",error);alert("Could not connect to EDSA authentication.");}
 }
 function EDSA_getJourney(){
   try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(e){return {}}
@@ -245,7 +241,8 @@ function EDSA_RENDER_DASH(p){
     EDSA_setView("edsaDashboard");
   }
 }
-function EDSA_LOGOUT(){
+async function EDSA_LOGOUT(){
+  try{await fetch("/api/auth-logout",{method:"POST"});}catch(_){}
   localStorage.removeItem("EDSA_ACTIVE_EMAIL");
   localStorage.removeItem("EDSA_STUDENT_PROFILE");
   EDSA_SHOW_HOME();
@@ -265,9 +262,13 @@ function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
 
 document.addEventListener("DOMContentLoaded",function(){
   try{
-    const profile=EDSA_getProfile();
-    if(profile)console.log("[EDSA] Active student:",profile.email);
     document.querySelectorAll("button").forEach(function(b){b.type="button"});
+    fetch("/api/auth-me",{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(result){
+      if(result&&result.ok&&result.user){
+        EDSA_SAVE_ACCOUNT(result.user);
+        EDSA_RENDER_DASH(result.user);
+      }
+    }).catch(function(){});
   }catch(e){console.error("EDSA boot error",e)}
 });
 </script>
