@@ -18,6 +18,34 @@
     }
   }
 
+  function saveProfile(p) {
+    if (!p || !p.email) return;
+    try {
+      const accounts = JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS") || "{}");
+      const email = String(p.email).trim().toLowerCase();
+      accounts[email] = Object.assign({}, accounts[email] || {}, p);
+      localStorage.setItem("EDSA_STUDENT_ACCOUNTS", JSON.stringify(accounts));
+      localStorage.setItem("EDSA_ACTIVE_EMAIL", email);
+      localStorage.setItem("EDSA_STUDENT_PROFILE", JSON.stringify(accounts[email]));
+    } catch (_) {}
+  }
+
+  async function getServerProfile() {
+    try {
+      const response = await fetch("/api/auth-me", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store"
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok && result.ok && result.user && result.user.email) {
+        saveProfile(result.user);
+        return result.user;
+      }
+    } catch (_) {}
+    return null;
+  }
+
   function journey() {
     try {
       const value = JSON.parse(localStorage.getItem(JOURNEY_KEY) || "{}");
@@ -42,7 +70,9 @@
 
   async function push() {
     if (syncing) return false;
-    const p = profile();
+
+    let p = profile();
+    if (!p || !p.email) p = await getServerProfile();
     if (!p || !p.email) return false;
 
     syncing = true;
@@ -57,6 +87,11 @@
           certificates: certificates()
         })
       });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        console.warn("[EDSA] Student sync failed:", response.status, result.error || "Unknown error");
+      }
       return response.ok;
     } catch (error) {
       console.warn("[EDSA] Student database sync unavailable:", error);
@@ -67,7 +102,8 @@
   }
 
   async function pull() {
-    const p = profile();
+    let p = profile();
+    if (!p || !p.email) p = await getServerProfile();
     if (!p || !p.email) return false;
 
     try {
@@ -131,12 +167,12 @@
   window.EDSA_DB_SYNC = { push, pull, syncNow };
 
   document.addEventListener("DOMContentLoaded", function () {
-    // The certificate functions are declared by edsa-app.html later in the
-    // page, so install the branded renderer after the page has initialized.
     setTimeout(function () {
-      installGoldCertificateRenderer();
+      if (typeof installGoldCertificateRenderer === "function") {
+        installGoldCertificateRenderer();
+      }
       syncNow();
-      setInterval(syncNow, 15000);
+      setInterval(syncNow, 5000);
     }, 1200);
   });
 
