@@ -189,3 +189,80 @@
     } catch (_) {}
   });
 })();
+  // Step 12: record each completed exam in Supabase without changing payment handling.
+  (function installExamAttemptRecorder() {
+    let tries = 0;
+    const timer = setInterval(function () {
+      tries++;
+      if (typeof window.startTimer === "function" && !window.__EDSA_START_TIMER_WRAPPED) {
+        const originalStartTimer = window.startTimer;
+        window.startTimer = function () {
+          window.__EDSA_EXAM_STARTED_AT = new Date().toISOString();
+          window.__EDSA_EXAM_ATTEMPT_RECORDED = false;
+          return originalStartTimer.apply(this, arguments);
+        };
+        window.__EDSA_START_TIMER_WRAPPED = true;
+      }
+
+      if (typeof window.renderResult === "function" && !window.__EDSA_RESULT_WRAPPED) {
+        const originalRenderResult = window.renderResult;
+        window.renderResult = function (passed, score, correctCount) {
+          const result = originalRenderResult.apply(this, arguments);
+          recordExamAttempt(passed, score);
+          return result;
+        };
+        window.__EDSA_RESULT_WRAPPED = true;
+      }
+
+      if ((window.__EDSA_START_TIMER_WRAPPED && window.__EDSA_RESULT_WRAPPED) || tries > 120) {
+        clearInterval(timer);
+      }
+    }, 100);
+
+    async function recordExamAttempt(passed, score) {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("test") === "certificate") return;
+      } catch (_) {}
+
+      if (window.__EDSA_EXAM_ATTEMPT_RECORDED) return;
+      const numericScore = Number(score);
+      if (!Number.isFinite(numericScore)) return;
+
+      const courseTitle = String(
+        (document.getElementById("examCourseTitle") || {}).innerText || ""
+      ).trim();
+      if (!courseTitle) return;
+
+      window.__EDSA_EXAM_ATTEMPT_RECORDED = true;
+      const completedAt = new Date().toISOString();
+      const startedAt = window.__EDSA_EXAM_STARTED_AT || completedAt;
+
+      try {
+        const response = await fetch("/api/exam-attempt", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            courseTitle,
+            score: numericScore,
+            passed: !!passed,
+            startedAt,
+            completedAt
+          })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) {
+          window.__EDSA_EXAM_ATTEMPT_RECORDED = false;
+          console.warn("[EDSA] Exam attempt sync failed:", response.status, result.error || "Unknown error");
+        } else {
+          console.log("[EDSA] Exam attempt saved:", result.attempt && result.attempt.id);
+        }
+      } catch (error) {
+        window.__EDSA_EXAM_ATTEMPT_RECORDED = false;
+        console.warn("[EDSA] Exam attempt sync unavailable:", error);
+      }
+    }
+  })();
+
+})();
