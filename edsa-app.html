@@ -1236,7 +1236,12 @@ function generate50Questions(courseKey, courseTitle) {
       const percentage = Math.round((correctAnswers / questions.length) * 100);
       state.score = percentage;
 
-      renderResult(percentage >= 80, percentage, correctAnswers);
+      const passed = percentage >= 80;
+      renderResult(passed, percentage, correctAnswers);
+      // Record the real completed exam directly from the submission path.
+      if (typeof window.EDSA_RECORD_EXAM_ATTEMPT === "function") {
+        window.EDSA_RECORD_EXAM_ATTEMPT(passed, percentage);
+      }
     }
 
     function renderResult(passed, score, correctCount) {
