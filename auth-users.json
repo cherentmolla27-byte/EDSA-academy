@@ -4,5 +4,11 @@
     "email": "cherentmolla27@gmail.com",
     "passwordHash": "scrypt$128be5c331ef519c345ffea23eb42103$ba7dc744524986e9a9557376415c45a7f00610dd44918b85c0d4cd07c3e70053969fc4d4111a728e0772a20f742c0f6badf7185e441064cc897368a8cf1da938",
     "createdAt": "2026-09-22T12:18:46.782Z"
+  },
+  "temsgenmollaalem@gmail.com": {
+    "name": "Temsgen",
+    "email": "temsgenmollaalem@gmail.com",
+    "passwordHash": "scrypt$dca8d21e04fee546c1f26c2ea0a63d94$3049ed51d7dbfc4cfaf0287269ba39f2ab705f4f0dc6b2f58cad84f30da5f9e5cec2d066c7c9c5e5669347e7ccf9e7f0aaeff5a2770af8844515f11213772062",
+    "createdAt": "2026-09-22T12:33:42.350Z"
   }
 }
