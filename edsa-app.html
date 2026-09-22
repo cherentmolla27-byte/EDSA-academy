@@ -955,6 +955,7 @@ function generate50Questions(courseKey, courseTitle) {
     let state = {
       selectedCourse: null,
       studentName: "",
+      studentEmail: "",
       accessKey: "",
       score: 0,
       userAnswers: {},
@@ -1001,8 +1002,35 @@ function generate50Questions(courseKey, courseTitle) {
       showSection("stepCatalog");
     }
 
+    function saveStudentJourneyUpdate(status, score, extra = {}) {
+      const email = String(state.studentEmail || "").trim().toLowerCase();
+      if (!email || !state.selectedCourse) return;
+      try {
+        const all = JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY") || "{}");
+        const profile = all[email] || { courses: {} };
+        profile.courses = profile.courses || {};
+        const id = state.selectedCourse.id;
+        const current = profile.courses[id] || { attempts: 0 };
+        const next = Object.assign({}, current, extra);
+        next.status = status || current.status || "started";
+        next.attempts = Math.max(Number(current.attempts || 0), Number(extra.attempts || current.attempts || 0));
+        if (score !== undefined && score !== null) {
+          next.lastScore = score;
+          next.bestScore = current.bestScore == null ? score : Math.max(Number(current.bestScore), Number(score));
+        }
+        next.lastAttempt = new Date().toISOString();
+        if (state.studentName) next.studentName = state.studentName;
+        profile.courses[id] = next;
+        all[email] = profile;
+        localStorage.setItem("EDSA_STUDENT_JOURNEY", JSON.stringify(all));
+      } catch (e) {
+        console.warn("[EDSA] Student journey save failed:", e);
+      }
+    }
+
     function selectCourse(courseId) {
       state.selectedCourse = COURSES.find(c => c.id === courseId);
+      if (state.studentEmail) saveStudentJourneyUpdate("started", null, { courseTitle: state.selectedCourse.title });
       document.getElementById("selectedCourseTitle").innerText = `Selected: ${state.selectedCourse.title}`;
       document.getElementById("userStatus").innerText = `Selected: ${state.selectedCourse.title}`;
       showSection("stepPayment");
@@ -1044,6 +1072,7 @@ function generate50Questions(courseKey, courseTitle) {
       state.accessKey = inputKey;
       state.userAnswers = {};
       state.currentPage = 1;
+      if (state.studentEmail) saveStudentJourneyUpdate("started", null, { attempts: Number((JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY") || "{}")[state.studentEmail.toLowerCase()]?.courses?.[state.selectedCourse.id]?.attempts) || 0) + 1, courseTitle: state.selectedCourse.title });
 
       document.getElementById("examCourseTitle").innerText = state.selectedCourse.title;
       document.getElementById("userStatus").innerText = `Exam Active: ${state.selectedCourse.title}`;
@@ -1158,6 +1187,7 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     function renderResult(passed, score, correctCount) {
+      if (state.studentEmail) saveStudentJourneyUpdate(passed ? "passed" : "failed", score, { courseTitle: state.selectedCourse ? state.selectedCourse.title : "", passed: !!passed });
       const icon = document.getElementById("resultIcon");
       const title = document.getElementById("resultTitle");
       const scoreTxt = document.getElementById("resultScore");
@@ -1199,7 +1229,14 @@ function generate50Questions(courseKey, courseTitle) {
 
       document.getElementById("userStatus").innerText = passed ? "Passed - Certificate Issued" : "Failed - Key Expired";
       if (passed) {
-        ensureCertificateRecord().catch(err => console.error("[EDSA] Certificate registration error:", err));
+        ensureCertificateRecord().then(record => {
+          if (state.studentEmail) saveStudentJourneyUpdate("passed", score, {
+            courseTitle: state.selectedCourse ? state.selectedCourse.title : "",
+            certificateId: record.id,
+            certificateDate: record.issueDate,
+            certificateStatus: "Valid"
+          });
+        }).catch(err => console.error("[EDSA] Certificate registration error:", err));
       }
       showSection("stepResult");
     }
@@ -1627,7 +1664,7 @@ function generate50Questions(courseKey, courseTitle) {
 
         setTimeout(async () => {
           const baseCourse = COURSES.find(c => c.id === (params.get("course") || "smm")) || COURSES[0];
-          const course = { ...baseCourse, title: "TEST — " + baseCourse.title };
+          const course = baseCourse;
           state.selectedCourse = course;
           state.studentName = "EDSA TEST STUDENT";
           state.accessKey = "EDSA-CERT-TEST";
@@ -1641,7 +1678,7 @@ function generate50Questions(courseKey, courseTitle) {
           course.questions.forEach((q, i) => { state.userAnswers[i] = q.correct; });
 
           document.getElementById("userStatus").innerText = "TEST MODE: Certificate Pipeline";
-          document.getElementById("examCourseTitle").innerText = course.title + " — TEST";
+          document.getElementById("examCourseTitle").innerText = course.title;
           await ensureCertificateRecord();
 
           // Keep the generated certificate visibly marked as a test.
@@ -1666,6 +1703,10 @@ function generate50Questions(courseKey, courseTitle) {
         const params = new URLSearchParams(window.location.search);
         const courseId = params.get("course");
         const openAdmin = params.get("admin") === "1";
+        const studentEmail = params.get("studentEmail");
+        const studentName = params.get("studentName");
+        if (studentEmail) state.studentEmail = studentEmail.trim().toLowerCase();
+        if (studentName) state.studentName = studentName.trim();
 
         if (courseId) {
           setTimeout(() => {
