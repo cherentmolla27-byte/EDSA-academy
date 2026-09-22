@@ -1626,7 +1626,8 @@ function generate50Questions(courseKey, courseTitle) {
         if (params.get("test") !== "certificate") return;
 
         setTimeout(async () => {
-          const course = COURSES.find(c => c.id === (params.get("course") || "smm")) || COURSES[0];
+          const baseCourse = COURSES.find(c => c.id === (params.get("course") || "smm")) || COURSES[0];
+          const course = { ...baseCourse, title: "TEST — " + baseCourse.title };
           state.selectedCourse = course;
           state.studentName = "EDSA TEST STUDENT";
           state.accessKey = "EDSA-CERT-TEST";
@@ -1643,22 +1644,8 @@ function generate50Questions(courseKey, courseTitle) {
           document.getElementById("examCourseTitle").innerText = course.title + " — TEST";
           await ensureCertificateRecord();
 
-          const record = {
-            id: state.certificateId,
-            name: state.studentName,
-            course: "TEST — " + course.title,
-            issueDate: state.certificateIssueDate,
-            score: 100,
-            status: "Valid",
-            issuedBy: "Ethiopian Digital Skills Academy"
-          };
-
           // Keep the generated certificate visibly marked as a test.
-          state.studentName = "EDSA TEST STUDENT";
           state.certificateTestMode = true;
-          const records = getLocalCertificateRecords();
-          records[state.certificateId] = record;
-          localStorage.setItem("EDSA_CERTIFICATES", JSON.stringify(records));
 
           showSection("stepResult");
           renderResult(true, 100, course.questions.length);
