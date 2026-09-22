@@ -281,6 +281,41 @@
             Export creates an updated <span class="text-slate-300 font-semibold">certificates.json</span>. Upload/replace that file in the GitHub project to make the new certificates publicly verifiable.
           </div>
         </div>
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">EDSA Admin Dashboard</h4>
+              <p class="text-[11px] text-slate-400 mt-1">Local operational overview from student profiles, exam activity, keys and certificates.</p>
+            </div>
+            <button onclick="renderAdminDashboard()" class="text-[10px] text-sky-400 font-bold">Refresh</button>
+          </div>
+          <div id="adminStatsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-black/70 border border-slate-800 rounded-lg p-3">
+              <h5 class="text-[10px] font-bold text-slate-300 uppercase">Course Statistics</h5>
+              <div id="adminCourseStats" class="mt-2 space-y-2"></div>
+            </div>
+            <div class="bg-black/70 border border-slate-800 rounded-lg p-3">
+              <h5 class="text-[10px] font-bold text-slate-300 uppercase">Recent Activity</h5>
+              <div id="adminRecentActivity" class="mt-2 space-y-2 max-h-52 overflow-y-auto"></div>
+            </div>
+          </div>
+          <div class="bg-black/70 border border-slate-800 rounded-lg p-3">
+            <div class="flex justify-between items-center gap-2">
+              <h5 class="text-[10px] font-bold text-slate-300 uppercase">Students</h5>
+              <span id="adminStudentCount" class="text-[10px] text-sky-400 font-bold">0</span>
+            </div>
+            <div id="adminStudentList" class="mt-2 space-y-2 max-h-48 overflow-y-auto"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button onclick="exportAdminReport()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-lg text-xs"><i class="fa-solid fa-file-export mr-1"></i> Export Admin Report</button>
+            <button onclick="clearLocalAdminActivity()" class="bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700 font-bold py-2 rounded-lg text-xs"><i class="fa-solid fa-trash-can mr-1"></i> Clear Local Activity</button>
+          </div>
+          <div class="text-[10px] leading-relaxed text-slate-500 bg-slate-950 rounded-lg p-3">
+            This dashboard is device-local until a server/database is connected. Chapa payment records are intentionally not added yet.
+          </div>
+        </div>
+
         <div class="space-y-2">
           <div class="flex justify-between items-center">
             <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Active & Used Keys</h4>
@@ -1066,7 +1101,21 @@ function generate50Questions(courseKey, courseTitle) {
 
       keyObj.used = true;
       keyObj.usedBy = name;
+      keyObj.usedAt = new Date().toISOString();
+      keyObj.usedCourse = state.selectedCourse ? state.selectedCourse.id : "";
+      keyObj.usedEmail = state.studentEmail || "";
       saveStoredKeys(keys);
+      saveLocalPaymentRecord({
+        id: "PAY-" + Date.now(),
+        date: new Date().toISOString(),
+        name: name,
+        email: state.studentEmail || "",
+        course: state.selectedCourse ? state.selectedCourse.title : "",
+        courseId: state.selectedCourse ? state.selectedCourse.id : "",
+        amount: 200,
+        status: "Activated",
+        activationKey: inputKey
+      });
 
       state.studentName = name;
       state.accessKey = inputKey;
@@ -1461,6 +1510,7 @@ function generate50Questions(courseKey, courseTitle) {
         document.getElementById("adminDashboardView").classList.remove("hidden");
         renderKeysTable();
         renderCertificateRegistry();
+        renderAdminDashboard();
       } else {
         document.getElementById("adminAuthView").classList.remove("hidden");
         document.getElementById("adminDashboardView").classList.add("hidden");
@@ -1487,6 +1537,7 @@ function generate50Questions(courseKey, courseTitle) {
         document.getElementById("adminDashboardView").classList.remove("hidden");
         renderKeysTable();
         renderCertificateRegistry();
+        renderAdminDashboard();
       } else {
         state.failedAttempts += 1;
         localStorage.setItem("EDSA_FAILED_ATTEMPTS", state.failedAttempts.toString());
@@ -1579,6 +1630,93 @@ function generate50Questions(courseKey, courseTitle) {
       if (!confirm("Clear certificate records stored on this device? This does not remove records already published in certificates.json.")) return;
       localStorage.removeItem("EDSA_CERTIFICATES");
       renderCertificateRegistry();
+    }
+
+    function getLocalPaymentRecords() {
+      try { const r=JSON.parse(localStorage.getItem("EDSA_PAYMENT_RECORDS")||"[]"); return Array.isArray(r)?r:[]; }
+      catch (_) { return []; }
+    }
+
+    function saveLocalPaymentRecord(record) {
+      const records=getLocalPaymentRecords();
+      records.unshift(record);
+      localStorage.setItem("EDSA_PAYMENT_RECORDS",JSON.stringify(records.slice(0,500)));
+    }
+
+    function getLocalStudentAccounts() {
+      try { const r=JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS")||"{}"); return r&&typeof r==="object"?r:{}; }
+      catch (_) { return {}; }
+    }
+
+    function renderAdminDashboard() {
+      const stats=document.getElementById("adminStatsGrid");
+      const courseBox=document.getElementById("adminCourseStats");
+      const activityBox=document.getElementById("adminRecentActivity");
+      const studentBox=document.getElementById("adminStudentList");
+      if(!stats||!courseBox||!activityBox||!studentBox) return;
+
+      const accounts=getLocalStudentAccounts();
+      const journey=(()=>{try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(_){return {}}})();
+      const payments=getLocalPaymentRecords();
+      const certs=getLocalCertificateRecords();
+      const keys=getStoredKeys();
+      const students=Object.values(accounts);
+      let attempts=0,passed=0;
+      const courseRows=COURSES.map(c=>{
+        let a=0,p=0,best=[];
+        Object.values(journey).forEach(st=>{
+          const j=st.courses&&st.courses[c.id];
+          if(j){a+=Number(j.attempts||0);if(j.status==="passed")p++;if(j.bestScore!=null)best.push(Number(j.bestScore));}
+        });
+        attempts+=a; passed+=p;
+        return {c,a,p,best:best.length?Math.max(...best):null};
+      });
+      const revenue=payments.reduce((sum,r)=>sum+Number(r.amount||0),0);
+      const activeKeys=keys.filter(k=>!k.used).length;
+      const usedKeys=keys.filter(k=>k.used).length;
+
+      const card=(value,label,cls)=>'<div class="bg-black/70 border border-slate-800 rounded-lg p-3"><b class="block text-lg '+cls+'">'+value+'</b><span class="text-[9px] text-slate-500 uppercase">'+label+'</span></div>';
+      stats.innerHTML=card(students.length,"Students","text-sky-400")+card(attempts,"Attempts","text-white")+card(passed,"Passes","text-emerald-400")+card(revenue+" ETB","Recorded Revenue","text-yellow-400");
+
+      courseBox.innerHTML=courseRows.map(x=>'<div class="flex justify-between gap-2 text-[10px]"><span class="text-slate-300 truncate">'+escapeHtml(x.c.title)+'</span><span class="text-slate-500 whitespace-nowrap">'+x.a+' attempts • '+x.p+' passed'+(x.best!=null?' • best '+x.best+'%':'')+'</span></div>').join("");
+
+      const events=[];
+      payments.forEach(r=>events.push({date:r.date||"",html:'<strong class="text-slate-200">'+escapeHtml(r.name||"Student")+'</strong> activated <span class="text-sky-400">'+escapeHtml(r.course||"Course")+'</span> • 200 ETB'}));
+      Object.values(journey).forEach(st=>Object.values(st.courses||{}).forEach(j=>{if(j.lastAttempt)events.push({date:j.lastAttempt,html:'<strong class="text-slate-200">'+escapeHtml(j.studentName||"Student")+'</strong> • '+escapeHtml(j.courseTitle||"Course")+' • '+(j.status==="passed"?'Passed':'Attempt recorded')+(j.lastScore!=null?' • '+j.lastScore+'%':'')})));
+      events.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+      activityBox.innerHTML=events.slice(0,10).map(e=>'<div class="border-b border-slate-800 pb-2"><div class="text-[10px]">'+e.html+'</div><div class="text-[9px] text-slate-600 mt-1">'+escapeHtml(formatRegistryDate(e.date))+'</div></div>').join("")||'<div class="text-[10px] text-slate-500">No activity recorded yet.</div>';
+
+      document.getElementById("adminStudentCount").textContent=students.length;
+      studentBox.innerHTML=students.map(st=>{
+        const email=String(st.email||"").toLowerCase();
+        const jp=journey[email]||{courses:{}};
+        let at=0,pa=0,cs=0;
+        Object.values(jp.courses||{}).forEach(j=>{at+=Number(j.attempts||0);if(j.status==="passed")pa++;if(j.certificateId)cs++;});
+        return '<div class="bg-black/60 border border-slate-800 rounded-lg p-2.5"><div class="flex justify-between gap-2"><strong class="text-[10px] text-white">'+escapeHtml(st.name||"Student")+'</strong><span class="text-[9px] text-slate-500">'+escapeHtml(st.email||"")+'</span></div><div class="text-[9px] text-slate-500 mt-1">'+at+' attempts • '+pa+' passed • '+cs+' certificates</div></div>';
+      }).join("")||'<div class="text-[10px] text-slate-500">No student profiles on this device.</div>';
+
+      const note=document.getElementById("adminStatsGrid");
+      if(note) note.title='Active keys: '+activeKeys+' • Used keys: '+usedKeys;
+    }
+
+    function exportAdminReport() {
+      const report={
+        generatedAt:new Date().toISOString(),
+        students:getLocalStudentAccounts(),
+        journey:(()=>{try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(_){return {}}})(),
+        paymentRecords:getLocalPaymentRecords(),
+        certificates:getLocalCertificateRecords(),
+        keys:getStoredKeys()
+      };
+      const blob=new Blob([JSON.stringify(report,null,2)+"\\n"],{type:"application/json"});
+      const url=URL.createObjectURL(blob); const a=document.createElement("a");
+      a.href=url; a.download="edsa-admin-report.json"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    function clearLocalAdminActivity() {
+      if(!confirm("Clear local payment/activity records? Student profiles, certificates and keys will remain.")) return;
+      localStorage.removeItem("EDSA_PAYMENT_RECORDS");
+      renderAdminDashboard();
     }
 
     function generateKeys() {
