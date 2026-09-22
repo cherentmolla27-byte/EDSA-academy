@@ -95,60 +95,180 @@ const EDSA_COURSES=[
 ["fme","Financial Management for Entrepreneurs","Budgeting, cash flow, financial decisions and entrepreneurial finance."],
 ["dbi","Data Analysis & Business Intelligence","Data, dashboards, analytics, databases and business intelligence."]
 ];
-function EDSA_getAccounts(){try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS")||"{}")}catch(e){return {}}}
-function EDSA_getProfile(){try{const accounts=EDSA_getAccounts(),active=localStorage.getItem("EDSA_ACTIVE_EMAIL");if(active&&accounts[active])return accounts[active];const legacy=JSON.parse(localStorage.getItem("EDSA_STUDENT_PROFILE")||"null");if(legacy&&legacy.email){accounts[legacy.email.toLowerCase()]=legacy;localStorage.setItem("EDSA_STUDENT_ACCOUNTS",JSON.stringify(accounts));localStorage.setItem("EDSA_ACTIVE_EMAIL",legacy.email.toLowerCase());return legacy}return null}catch(e){return null}}
-function EDSA_SAVE_ACCOUNT(p){const accounts=EDSA_getAccounts();const key=p.email.toLowerCase();accounts[key]=p;localStorage.setItem("EDSA_STUDENT_ACCOUNTS",JSON.stringify(accounts));localStorage.setItem("EDSA_ACTIVE_EMAIL",key);localStorage.setItem("EDSA_STUDENT_PROFILE",JSON.stringify(p))}
-function EDSA_FIND_ACCOUNT(email){const accounts=EDSA_getAccounts();return accounts[String(email||"").trim().toLowerCase()]||null}
-function EDSA_setView(id){["edsaPublicHome","edsaLoginScreen","edsaRegisterScreen","edsaDashboard"].forEach(x=>{const el=document.getElementById(x);if(el)el.style.display="none"});const el=document.getElementById(id);if(el)el.style.display=id==="edsaLoginScreen"||id==="edsaRegisterScreen"?"flex":"block";window.scrollTo({top:0,behavior:"smooth"})}
+
+function EDSA_getAccounts(){
+  try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS")||"{}")}catch(e){return {}}
+}
+function EDSA_getProfile(){
+  try{
+    const accounts=EDSA_getAccounts();
+    const active=(localStorage.getItem("EDSA_ACTIVE_EMAIL")||"").toLowerCase();
+    if(active&&accounts[active]) return accounts[active];
+    const legacy=JSON.parse(localStorage.getItem("EDSA_STUDENT_PROFILE")||"null");
+    if(legacy&&legacy.email){
+      const key=legacy.email.toLowerCase();
+      accounts[key]=legacy;
+      localStorage.setItem("EDSA_STUDENT_ACCOUNTS",JSON.stringify(accounts));
+      localStorage.setItem("EDSA_ACTIVE_EMAIL",key);
+      return legacy;
+    }
+  }catch(e){}
+  return null;
+}
+function EDSA_SAVE_ACCOUNT(p){
+  const accounts=EDSA_getAccounts();
+  const key=String(p.email||"").trim().toLowerCase();
+  accounts[key]=p;
+  localStorage.setItem("EDSA_STUDENT_ACCOUNTS",JSON.stringify(accounts));
+  localStorage.setItem("EDSA_ACTIVE_EMAIL",key);
+  localStorage.setItem("EDSA_STUDENT_PROFILE",JSON.stringify(p));
+}
+function EDSA_FIND_ACCOUNT(email){
+  const accounts=EDSA_getAccounts();
+  return accounts[String(email||"").trim().toLowerCase()]||null;
+}
+function EDSA_setView(id){
+  ["edsaPublicHome","edsaLoginScreen","edsaRegisterScreen","edsaDashboard"].forEach(function(x){
+    const el=document.getElementById(x);
+    if(el) el.style.display="none";
+  });
+  const target=document.getElementById(id);
+  if(target) target.style.display=(id==="edsaLoginScreen"||id==="edsaRegisterScreen")?"flex":"block";
+  window.scrollTo(0,0);
+}
 function EDSA_SHOW_HOME(){EDSA_setView("edsaPublicHome")}
-function EDSA_SHOW_LOGIN(){EDSA_setView("edsaLoginScreen");document.getElementById("loginName").value="";document.getElementById("loginEmail").value=""}
+function EDSA_SHOW_LOGIN(){
+  EDSA_setView("edsaLoginScreen");
+  const n=document.getElementById("loginName"), e=document.getElementById("loginEmail");
+  if(n)n.value="";
+  if(e)e.value="";
+}
 function EDSA_SHOW_REGISTER(){EDSA_setView("edsaRegisterScreen")}
-function EDSA_REGISTER(){const name=document.getElementById("registerName").value.trim(),email=document.getElementById("registerEmail").value.trim();if(!name||!email){alert("Please enter your full name and email.");return}const existing=EDSA_FIND_ACCOUNT(email);if(existing){alert("An EDSA profile already exists for this email. Please sign in instead.");EDSA_SHOW_LOGIN();document.getElementById("loginEmail").value=email;return}const p={name,email,createdAt:new Date().toISOString()};EDSA_SAVE_ACCOUNT(p);EDSA_RENDER_DASH(p)}
-function EDSA_SIGN_IN(){const name=document.getElementById("loginName").value.trim(),email=document.getElementById("loginEmail").value.trim();if(!name||!email){alert("Please enter your full name and email.");return}const p=EDSA_FIND_ACCOUNT(email);if(!p){alert("No student profile found for this email. Create a Student Profile first.");EDSA_SHOW_REGISTER();document.getElementById("registerEmail").value=email;return}if(p.name.toLowerCase()!==name.toLowerCase()){alert("The name does not match the saved student profile.");return}EDSA_SAVE_ACCOUNT(p);EDSA_RENDER_DASH(p)}
-function EDSA_getJourney(){try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(e){return {}}}
-function EDSA_getCourseJourney(email,id){const all=EDSA_getJourney();const p=all[email]||{};return (p.courses&&p.courses[id])||{status:"not-started",attempts:0,bestScore:null,lastScore:null}}
-function EDSA_SAVE_JOURNEY(email,id,data){if(!email)return;const all=EDSA_getJourney();const p=all[email]||{courses:{}};p.courses=p.courses||{};p.courses[id]=Object.assign(p.courses[id]||{},data,{updatedAt:new Date().toISOString()});all[email]=p;localStorage.setItem("EDSA_STUDENT_JOURNEY",JSON.stringify(all))}
-function EDSA_OPEN_STUDENT_COURSE(id){const p=EDSA_getProfile();if(!p){EDSA_SHOW_LOGIN();return}EDSA_OPEN_COURSE(id,p)}
-function EDSA_OPEN_CERTIFICATE(id){if(!id)return;window.location.href="/verify?id="+encodeURIComponent(id)}
-function EDSA_FORMAT_ACTIVITY_DATE(value){if(!value)return"Date not available";const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"})+" • "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}
-function EDSA_OPEN_CERTIFICATE(id){if(!id)return;window.location.href="/verify?id="+encodeURIComponent(id)}
-function EDSA_FORMAT_ACTIVITY_DATE(value){if(!value)return"Date not available";const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"})+" • "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}
+function EDSA_REGISTER(){
+  const n=document.getElementById("registerName"),e=document.getElementById("registerEmail");
+  const name=n?n.value.trim():"",email=e?e.value.trim():"";
+  if(!name||!email){alert("Please enter your full name and email.");return}
+  if(EDSA_FIND_ACCOUNT(email)){
+    alert("An EDSA profile already exists for this email. Please sign in instead.");
+    EDSA_SHOW_LOGIN();
+    const le=document.getElementById("loginEmail");if(le)le.value=email;
+    return;
+  }
+  const p={name:name,email:email,createdAt:new Date().toISOString()};
+  EDSA_SAVE_ACCOUNT(p);
+  EDSA_RENDER_DASH(p);
+}
+function EDSA_SIGN_IN(){
+  const n=document.getElementById("loginName"),e=document.getElementById("loginEmail");
+  const name=n?n.value.trim():"",email=e?e.value.trim():"";
+  if(!name||!email){alert("Please enter your full name and email.");return}
+  const p=EDSA_FIND_ACCOUNT(email);
+  if(!p){
+    alert("No student profile found for this email. Create a Student Profile first.");
+    EDSA_SHOW_REGISTER();
+    const re=document.getElementById("registerEmail");if(re)re.value=email;
+    return;
+  }
+  if(String(p.name||"").toLowerCase()!==name.toLowerCase()){
+    alert("The name does not match the saved student profile.");
+    return;
+  }
+  EDSA_SAVE_ACCOUNT(p);
+  EDSA_RENDER_DASH(p);
+}
+function EDSA_getJourney(){
+  try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(e){return {}}
+}
+function EDSA_getCourseJourney(email,id){
+  const all=EDSA_getJourney(),p=all[String(email||"").toLowerCase()]||{};
+  return (p.courses&&p.courses[id])||{status:"not-started",attempts:0,bestScore:null,lastScore:null};
+}
+function EDSA_SAVE_JOURNEY(email,id,data){
+  if(!email)return;
+  const all=EDSA_getJourney(),key=String(email).toLowerCase();
+  const p=all[key]||{courses:{}};
+  p.courses=p.courses||{};
+  p.courses[id]=Object.assign({},p.courses[id]||{},data,{updatedAt:new Date().toISOString()});
+  all[key]=p;
+  localStorage.setItem("EDSA_STUDENT_JOURNEY",JSON.stringify(all));
+}
+function EDSA_OPEN_STUDENT_COURSE(id){
+  const p=EDSA_getProfile();
+  if(!p){EDSA_SHOW_LOGIN();return}
+  EDSA_OPEN_COURSE(id,p);
+}
+function EDSA_OPEN_CERTIFICATE(id){
+  if(id) window.location.href="/verify?id="+encodeURIComponent(id);
+}
+function EDSA_FORMAT_ACTIVITY_DATE(value){
+  if(!value)return "Date not available";
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime()))return String(value);
+  return d.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"})+" • "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+}
 function EDSA_RENDER_DASH(p){
-const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
-set("dashName",p.name);set("dashEmail",p.email);
-const profileName=document.getElementById("dashProfileName");if(profileName)profileName.textContent=p.name;
-const profileEmail=document.getElementById("dashProfileEmail");if(profileEmail)profileEmail.textContent=p.email;
-const profileDate=document.getElementById("dashProfileDate");if(profileDate)profileDate.textContent=p.createdAt?EDSA_FORMAT_ACTIVITY_DATE(p.createdAt):"—";
-const journey=EDSA_getJourney()[p.email.toLowerCase()]||{courses:{}};
-const courses=journey.courses||{};
-let attempted=0,passed=0,certificates=0;
-const grid=document.getElementById("dashCourses");
-if(grid){
-grid.innerHTML=EDSA_COURSES.map(c=>{
-const j=courses[c[0]]||{status:"not-started",attempts:0};
-const status=j.status==="passed"?"Passed ✓":j.status==="failed"?"Retake available":j.status==="started"?"In progress":"Not started";
-const score=j.bestScore!=null?("Best: "+j.bestScore+"%"):"";
-if(j.attempts>0)attempted++;if(j.status==="passed")passed++;if(j.certificateId)certificates++;
-const btn=j.status==="passed"?"Retake / Improve":j.status==="started"?"Continue":"Start Course";
-const certBtn=j.certificateId?'<button class="edsa-cert-btn" onclick="EDSA_OPEN_CERTIFICATE(\''+j.certificateId+'\')">Verify Certificate</button>':"";
-return '<div class="edsa-course-mini"><div style="min-width:0;flex:1"><strong>'+c[1]+'</strong><br><span>'+c[2]+'</span><br><span class="edsa-status">'+status+(score?" • "+score:"")+(j.lastScore!=null&&j.lastScore!==j.bestScore?" • Last: "+j.lastScore+"%":"")+(j.certificateId?" • Certificate ✓":"")+'</span></div><div class="edsa-course-actions">'+certBtn+'<button class="edsa-dash-btn blue" onclick="EDSA_OPEN_STUDENT_COURSE(\''+c[0]+'\')">'+btn+'</button></div></div>'
-}).join("");
+  try{
+    const set=function(id,value){const el=document.getElementById(id);if(el)el.textContent=value};
+    set("dashName",p.name);set("dashEmail",p.email);set("dashProfileName",p.name);set("dashProfileEmail",p.email);
+    set("dashProfileDate",p.createdAt?EDSA_FORMAT_ACTIVITY_DATE(p.createdAt):"—");
+    const all=EDSA_getJourney(),journey=all[String(p.email||"").toLowerCase()]||{courses:{}},courses=journey.courses||{};
+    let attempted=0,passed=0,certificates=0;
+    const grid=document.getElementById("dashCourses");
+    if(grid){
+      grid.innerHTML=EDSA_COURSES.map(function(c){
+        const j=courses[c[0]]||{status:"not-started",attempts:0};
+        if(j.attempts>0)attempted++;
+        if(j.status==="passed")passed++;
+        if(j.certificateId)certificates++;
+        const status=j.status==="passed"?"Passed ✓":j.status==="failed"?"Retake available":j.status==="started"?"In progress":"Not started";
+        const score=j.bestScore!=null?"Best: "+j.bestScore+"%":"";
+        const btn=j.status==="passed"?"Retake / Improve":j.status==="started"?"Continue":"Start Course";
+        const cert=j.certificateId?'<button type="button" class="edsa-cert-btn" data-cert="'+String(j.certificateId).replace(/"/g,"&quot;")+'">Verify Certificate</button>':"";
+        return '<div class="edsa-course-mini"><div style="min-width:0;flex:1"><strong>'+c[1]+'</strong><br><span>'+c[2]+'</span><br><span class="edsa-status">'+status+(score?" • "+score:"")+(j.lastScore!=null&&j.lastScore!==j.bestScore?" • Last: "+j.lastScore+"%":"")+(j.certificateId?" • Certificate ✓":"")+'</span></div><div class="edsa-course-actions">'+cert+'<button type="button" class="edsa-dash-btn blue" data-course="'+c[0]+'">'+btn+'</button></div></div>';
+      }).join("");
+      grid.querySelectorAll("[data-course]").forEach(function(b){b.addEventListener("click",function(){EDSA_OPEN_STUDENT_COURSE(b.getAttribute("data-course"))})});
+      grid.querySelectorAll("[data-cert]").forEach(function(b){b.addEventListener("click",function(){EDSA_OPEN_CERTIFICATE(b.getAttribute("data-cert"))})});
+    }
+    set("dashAttemptedCount",attempted);set("dashPassedCount",passed);set("dashCertificateCount",certificates);
+    const pct=Math.round((passed/EDSA_COURSES.length)*100),progress=document.getElementById("dashProgress");
+    if(progress)progress.style.width=pct+"%";
+    set("dashProgressText",pct+"% certification progress — "+passed+" of "+EDSA_COURSES.length+" courses passed");
+    set("dashJourneySummary",attempted?"You have attempted "+attempted+" course"+(attempted===1?"":"s")+". "+passed+" passed and "+certificates+" certificate"+(certificates===1?"":"s")+" earned.":"No course activity yet. Start any course below.");
+    const activity=document.getElementById("dashActivity");
+    if(activity){
+      const items=EDSA_COURSES.map(function(c){const j=courses[c[0]];return j&&j.lastAttempt?{course:c[1],status:j.status||"started",score:j.lastScore,date:j.lastAttempt}:null}).filter(Boolean).sort(function(a,b){return String(b.date).localeCompare(String(a.date))}).slice(0,4);
+      activity.innerHTML=items.length?items.map(function(x){return '<div class="edsa-activity-item"><strong>'+x.course+'</strong><span>'+(x.status==="passed"?"Passed ✓":x.status==="failed"?"Attempt failed":"Exam started")+(x.score!=null?" • Score: "+x.score+"%":"")+" • "+EDSA_FORMAT_ACTIVITY_DATE(x.date)+'</span></div>'}).join(""):'<div class="edsa-empty">Your recent activity will appear here after you start an exam.</div>';
+    }
+    EDSA_setView("edsaDashboard");
+  }catch(error){
+    console.error("EDSA dashboard error",error);
+    EDSA_setView("edsaDashboard");
+  }
 }
-set("dashAttemptedCount",attempted);set("dashPassedCount",passed);set("dashCertificateCount",certificates);
-const pct=Math.round((passed/EDSA_COURSES.length)*100);
-const progress=document.getElementById("dashProgress");if(progress)progress.style.width=pct+"%";
-set("dashProgressText",pct+"% certification progress — "+passed+" of "+EDSA_COURSES.length+" courses passed");
-set("dashJourneySummary",attempted?("You have attempted "+attempted+" course"+(attempted===1?"":"s")+". "+passed+" passed and "+certificates+" certificate"+(certificates===1?"":"s")+" earned."):"No course activity yet. Start any course below.");
-const activity=document.getElementById("dashActivity");
-if(activity){
-const items=EDSA_COURSES.map(c=>{const j=courses[c[0]];return j&&j.lastAttempt?{course:c[1],status:j.status||"started",score:j.lastScore,date:j.lastAttempt}:null}).filter(Boolean).sort((x,y)=>String(y.date).localeCompare(String(x.date))).slice(0,4);
-activity.innerHTML=items.length?items.map(x=>'<div class="edsa-activity-item"><strong>'+x.course+'</strong><span>'+(x.status==="passed"?"Passed ✓":x.status==="failed"?"Attempt failed":"Exam started")+(x.score!=null?" • Score: "+x.score+"%":"")+' • '+EDSA_FORMAT_ACTIVITY_DATE(x.date)+'</span></div>').join(""):'<div class="edsa-empty">Your recent activity will appear here after you start an exam.</div>';
+function EDSA_LOGOUT(){
+  localStorage.removeItem("EDSA_ACTIVE_EMAIL");
+  localStorage.removeItem("EDSA_STUDENT_PROFILE");
+  EDSA_SHOW_HOME();
 }
-EDSA_setView("edsaDashboard")
+function EDSA_SHOW_COURSES(){
+  const g=document.getElementById("publicCourseGrid"),section=document.getElementById("edsaPublicCourses");
+  if(g)g.classList.add("show");
+  if(section)section.scrollIntoView({behavior:"smooth",block:"start"});
 }
-function EDSA_LOGOUT(){localStorage.removeItem("EDSA_ACTIVE_EMAIL");localStorage.removeItem("EDSA_STUDENT_PROFILE");document.getElementById("loginName").value="";document.getElementById("loginEmail").value="";EDSA_setView("edsaPublicHome")}
-function EDSA_SHOW_COURSES(){const g=document.getElementById("publicCourseGrid");g.classList.add("show");document.getElementById("edsaPublicCourses").scrollIntoView({behavior:"smooth"})}
-function EDSA_OPEN_COURSE(id,profile){let url="/edsa-app.html?course="+encodeURIComponent(String(id));const p=profile||EDSA_getProfile();if(p){url+="&studentEmail="+encodeURIComponent(p.email)+"&studentName="+encodeURIComponent(p.name)}window.location.href=url}
+function EDSA_OPEN_COURSE(id,profile){
+  let url="/edsa-app.html?course="+encodeURIComponent(String(id));
+  const p=profile||EDSA_getProfile();
+  if(p)url+="&studentEmail="+encodeURIComponent(p.email)+"&studentName="+encodeURIComponent(p.name);
+  window.location.href=url;
+}
 function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
+
+document.addEventListener("DOMContentLoaded",function(){
+  try{
+    const profile=EDSA_getProfile();
+    if(profile)console.log("[EDSA] Active student:",profile.email);
+    document.querySelectorAll("button").forEach(function(b){b.type="button"});
+  }catch(e){console.error("EDSA boot error",e)}
+});
 </script>
 </body></html>
