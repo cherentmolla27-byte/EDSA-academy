@@ -27,8 +27,15 @@ module.exports = async function handler(req, res) {
     const body = req.body || {};
     const email = auth.normalizeEmail(session.email);
     const name = auth.validateName(session.name) || cleanText(body.studentName, 120) || "EDSA Student";
-    const courseId = cleanText(body.courseId, 100);
-    const courseTitle = cleanText(body.courseTitle, 200) || courseId || "EDSA Course";
+    const courseTitle = cleanText(body.courseTitle, 200) || "EDSA Course";
+    const courseId = cleanText(body.courseId, 100) || ({
+      "Social Media Management": "smm",
+      "Digital Marketing Essentials": "dme",
+      "Project & Business Management": "pbm",
+      "Graphic Design for Marketers": "gdm",
+      "Financial Management": "fme",
+      "Data Analysis & BI": "dbi"
+    }[courseTitle] || courseTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100));
     const score = asInt(body.score);
     const passed = body.passed === true || (score != null && score >= 80);
     const startedAt = body.startedAt ? new Date(body.startedAt).toISOString() : new Date().toISOString();
