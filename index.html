@@ -56,7 +56,7 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <button onclick="EDSA_SIGN_IN()">Sign In to Dashboard</button>
 <div style="text-align:center;margin-top:15px;font-size:11px;color:#64748b">New to EDSA? <button onclick="EDSA_SHOW_REGISTER()" style="border:0;background:none;color:#1677ff;font-weight:900;cursor:pointer">Create Student Profile</button></div>
 <div class="edsa-login-links"><button onclick="EDSA_SHOW_HOME()">← Back to Home</button><button onclick="EDSA_SHOW_COURSES()">Continue as Guest →</button></div>
-<div class="edsa-note">Student profiles are currently stored on this device. This optional profile does not replace the existing payment or exam security system.</div>
+<div class="edsa-note">Profiles are currently stored on this device. Different students can use separate email profiles on the same device. Your browser may still offer its own autofill suggestions.</div>
 </div></div>
 
 <div class="edsa-signin-screen" id="edsaRegisterScreen">
@@ -65,7 +65,7 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <label>Email</label><input id="registerEmail" type="email" placeholder="you@example.com">
 <button onclick="EDSA_REGISTER()">Create Profile</button>
 <div class="edsa-login-links"><button onclick="EDSA_SHOW_LOGIN()">← Sign In</button><button onclick="EDSA_SHOW_COURSES()">Continue as Guest →</button></div>
-<div class="edsa-note">This first version is a dashboard/profile layer only. It does not replace the existing payment or exam security system.</div></div></div>
+<div class="edsa-note">Each email can have its own EDSA student profile on this device. Your browser may still offer autofill suggestions, which are controlled by the browser.</div></div></div>
 
 <div class="edsa-dashboard" id="edsaDashboard"><div class="edsa-dash-wrap">
 <div class="edsa-dash-head"><div><h1>Student Dashboard</h1><p id="dashEmail"></p></div><div class="edsa-dash-actions"><button class="edsa-dash-btn light" onclick="EDSA_SHOW_HOME()">Home</button><button class="edsa-dash-btn blue" onclick="EDSA_LOGOUT()">Sign Out</button></div></div>
@@ -94,13 +94,16 @@ const EDSA_COURSES=[
 ["fme","Financial Management for Entrepreneurs","Budgeting, cash flow, financial decisions and entrepreneurial finance."],
 ["dbi","Data Analysis & Business Intelligence","Data, dashboards, analytics, databases and business intelligence."]
 ];
-function EDSA_getProfile(){try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_PROFILE")||"null")}catch(e){return null}}
+function EDSA_getAccounts(){try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS")||"{}")}catch(e){return {}}}
+function EDSA_getProfile(){try{const accounts=EDSA_getAccounts(),active=localStorage.getItem("EDSA_ACTIVE_EMAIL");if(active&&accounts[active])return accounts[active];const legacy=JSON.parse(localStorage.getItem("EDSA_STUDENT_PROFILE")||"null");if(legacy&&legacy.email){accounts[legacy.email.toLowerCase()]=legacy;localStorage.setItem("EDSA_STUDENT_ACCOUNTS",JSON.stringify(accounts));localStorage.setItem("EDSA_ACTIVE_EMAIL",legacy.email.toLowerCase());return legacy}return null}catch(e){return null}}
+function EDSA_SAVE_ACCOUNT(p){const accounts=EDSA_getAccounts();const key=p.email.toLowerCase();accounts[key]=p;localStorage.setItem("EDSA_STUDENT_ACCOUNTS",JSON.stringify(accounts));localStorage.setItem("EDSA_ACTIVE_EMAIL",key);localStorage.setItem("EDSA_STUDENT_PROFILE",JSON.stringify(p))}
+function EDSA_FIND_ACCOUNT(email){const accounts=EDSA_getAccounts();return accounts[String(email||"").trim().toLowerCase()]||null}
 function EDSA_setView(id){["edsaPublicHome","edsaLoginScreen","edsaRegisterScreen","edsaDashboard"].forEach(x=>{const el=document.getElementById(x);if(el)el.style.display="none"});const el=document.getElementById(id);if(el)el.style.display=id==="edsaLoginScreen"||id==="edsaRegisterScreen"?"flex":"block";window.scrollTo({top:0,behavior:"smooth"})}
 function EDSA_SHOW_HOME(){EDSA_setView("edsaPublicHome")}
-function EDSA_SHOW_LOGIN(){const p=EDSA_getProfile();if(p){EDSA_RENDER_DASH(p);return}EDSA_setView("edsaLoginScreen")}
+function EDSA_SHOW_LOGIN(){EDSA_setView("edsaLoginScreen");document.getElementById("loginName").value="";document.getElementById("loginEmail").value=""}
 function EDSA_SHOW_REGISTER(){EDSA_setView("edsaRegisterScreen")}
-function EDSA_REGISTER(){const name=document.getElementById("registerName").value.trim(),email=document.getElementById("registerEmail").value.trim();if(!name||!email){alert("Please enter your full name and email.");return}const p={name,email,createdAt:new Date().toISOString()};localStorage.setItem("EDSA_STUDENT_PROFILE",JSON.stringify(p));EDSA_RENDER_DASH(p)}
-function EDSA_SIGN_IN(){const name=document.getElementById("loginName").value.trim(),email=document.getElementById("loginEmail").value.trim(),p=EDSA_getProfile();if(!name||!email){alert("Please enter your full name and email.");return}if(p&&p.email.toLowerCase()===email.toLowerCase()){if(p.name.toLowerCase()!==name.toLowerCase()){alert("The name does not match the saved student profile.");return}EDSA_RENDER_DASH(p)}else{alert("No student profile found for this email. Create a Student Profile first.");EDSA_SHOW_REGISTER()}}
+function EDSA_REGISTER(){const name=document.getElementById("registerName").value.trim(),email=document.getElementById("registerEmail").value.trim();if(!name||!email){alert("Please enter your full name and email.");return}const existing=EDSA_FIND_ACCOUNT(email);if(existing){alert("An EDSA profile already exists for this email. Please sign in instead.");EDSA_SHOW_LOGIN();document.getElementById("loginEmail").value=email;return}const p={name,email,createdAt:new Date().toISOString()};EDSA_SAVE_ACCOUNT(p);EDSA_RENDER_DASH(p)}
+function EDSA_SIGN_IN(){const name=document.getElementById("loginName").value.trim(),email=document.getElementById("loginEmail").value.trim();if(!name||!email){alert("Please enter your full name and email.");return}const p=EDSA_FIND_ACCOUNT(email);if(!p){alert("No student profile found for this email. Create a Student Profile first.");EDSA_SHOW_REGISTER();document.getElementById("registerEmail").value=email;return}if(p.name.toLowerCase()!==name.toLowerCase()){alert("The name does not match the saved student profile.");return}EDSA_SAVE_ACCOUNT(p);EDSA_RENDER_DASH(p)}
 function EDSA_getJourney(){try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(e){return {}}}
 function EDSA_getCourseJourney(email,id){const all=EDSA_getJourney();const p=all[email]||{};return (p.courses&&p.courses[id])||{status:"not-started",attempts:0,bestScore:null,lastScore:null}}
 function EDSA_SAVE_JOURNEY(email,id,data){if(!email)return;const all=EDSA_getJourney();const p=all[email]||{courses:{}};p.courses=p.courses||{};p.courses[id]=Object.assign(p.courses[id]||{},data,{updatedAt:new Date().toISOString()});all[email]=p;localStorage.setItem("EDSA_STUDENT_JOURNEY",JSON.stringify(all))}
@@ -112,7 +115,7 @@ document.getElementById("dashAttemptedCount").textContent=attempted;document.get
 const pct=Math.round((passed/EDSA_COURSES.length)*100);document.getElementById("dashProgress").style.width=pct+"%";document.getElementById("dashProgressText").textContent=pct+"% certification progress — "+passed+" of "+EDSA_COURSES.length+" courses passed";
 document.getElementById("dashJourneySummary").textContent=attempted?("You have attempted "+attempted+" course"+(attempted===1?"":"s")+". "+passed+" passed and "+certificates+" certificate"+(certificates===1?"":"s")+" earned."): "No course activity yet. Start any course below.";
 EDSA_setView("edsaDashboard")}
-function EDSA_LOGOUT(){EDSA_setView("edsaPublicHome")}
+function EDSA_LOGOUT(){localStorage.removeItem("EDSA_ACTIVE_EMAIL");localStorage.removeItem("EDSA_STUDENT_PROFILE");document.getElementById("loginName").value="";document.getElementById("loginEmail").value="";EDSA_setView("edsaPublicHome")}
 function EDSA_SHOW_COURSES(){const g=document.getElementById("publicCourseGrid");g.classList.add("show");document.getElementById("edsaPublicCourses").scrollIntoView({behavior:"smooth"})}
 function EDSA_OPEN_COURSE(id,profile){let url="/edsa-app.html?course="+encodeURIComponent(String(id));const p=profile||EDSA_getProfile();if(p){url+="&studentEmail="+encodeURIComponent(p.email)+"&studentName="+encodeURIComponent(p.name)}window.location.href=url}
 function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
