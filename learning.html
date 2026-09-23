@@ -13,9 +13,14 @@
 <header class="top"><div class="brand">EDSA ACADEMY<small>LEARNING CENTER</small></div><div><button class="btn light" onclick="location.href='/'">Dashboard</button> <button class="btn blue" onclick="location.href='/edsa-app.html'">Exam Portal</button></div></header>
 <main class="wrap">
 <section class="hero"><div class="tag">STEP 14 — LEARNING PLATFORM</div><h1>Learn. Practice. Get Certified.</h1><p id="welcome">Loading your student account...</p></section>
-<div class="grid">
-<aside class="panel"><h3 style="margin:0 0 10px">Your Courses</h3><div id="courseList" class="courses"></div></aside>
-<section class="panel"><div id="learningArea"><div class="empty">Select a course to begin learning.</div></div></section>
+<div id="courseHome" class="panel">
+<h2 style="margin:0 0 6px">Choose a Course</h2>
+<p style="margin:0 0 18px;color:#64748b;font-size:12px">Tap a course to enter it. Your lessons and progress stay inside that course.</p>
+<div id="courseList" class="courses"></div>
+</div>
+<div id="courseView" class="grid" style="display:none">
+<aside class="panel"><button class="btn light" style="margin-bottom:14px" onclick="showCourseHome()">← All Courses</button><div id="courseListInside" class="courses"></div></aside>
+<section class="panel"><div id="learningArea"></div></section>
 </div>
 </main>
 <script>
@@ -36,21 +41,36 @@ async function boot(){
   const r=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"}),x=await r.json().catch(()=>({}));
   if(!r.ok||!x.ok||!x.authenticated||!x.user||x.user.role!=="student"){location.href="/?login=1&return="+encodeURIComponent("/learning.html");return}
   state.email=x.user.email;state.name=x.user.name||"Student";load();
-  document.getElementById("welcome").textContent="Welcome, "+state.name+". Your lesson progress is saved on this device for this first learning-platform release.";
+   document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
   renderCourses();
   const q=new URLSearchParams(location.search).get("course");
-  selectCourse(COURSES[q]?q:"smm");
+  if(COURSES[q]) selectCourse(q); else showCourseHome();
  }catch(e){location.href="/?login=1&return="+encodeURIComponent("/learning.html")}
 }
+function courseCard(id,c){
+ const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);
+ return '<div class="course '+(state.courseId===id?"active":"")+'" onclick="selectCourse(\\''+id+'\\')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>'+c.title+'</strong><span>'+c.desc+'</span><b>'+pct+'% complete • '+(d.completed||[]).length+'/'+c.lessons.length+' lessons</b></div>';
+}
 function renderCourses(){
- const box=document.getElementById("courseList");
- box.innerHTML=Object.entries(COURSES).map(([id,c])=>{
-  const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);
-  return '<div class="course '+(state.courseId===id?"active":"")+'" onclick="selectCourse(\''+id+'\')"><strong>'+c.title+'</strong><span>'+c.desc+'</span><b>'+pct+'% complete</b></div>';
- }).join("");
+ const html=Object.entries(COURSES).map(([id,c])=>courseCard(id,c)).join("");
+ document.getElementById("courseList").innerHTML=html;
+ document.getElementById("courseListInside").innerHTML=html;
+}
+function showCourseHome(){
+ state.courseId="";
+ history.replaceState(null,"","/learning.html");
+ document.getElementById("courseHome").style.display="block";
+ document.getElementById("courseView").style.display="none";
+ renderCourses();
 }
 function selectCourse(id){
- state.courseId=id;state.lesson=0;renderCourses();renderCourse();
+ if(!COURSES[id])return;
+ state.courseId=id;state.lesson=0;
+ history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id));
+ document.getElementById("courseHome").style.display="none";
+ document.getElementById("courseView").style.display="grid";
+ renderCourses();renderCourse();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 function renderCourse(){
  const c=COURSES[state.courseId],d=state.done[state.courseId]||{completed:[]},completed=d.completed||[],pct=Math.round(completed.length/c.lessons.length*100);
