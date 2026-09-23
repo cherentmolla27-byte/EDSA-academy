@@ -2068,12 +2068,43 @@ function generate50Questions(courseKey, courseTitle) {
           // Mark every answer correct only for this simulation.
           course.questions.forEach((q, i) => { state.userAnswers[i] = q.correct; });
 
-          document.getElementById("userStatus").innerText = "TEST MODE: Certificate Pipeline";
-          document.getElementById("examCourseTitle").innerText = course.title;
-          await ensureCertificateRecord();
+          document.getElementById("userStatus").innerText = "TEST MODE: Certificate + Exam Submission";
+          document.getElementById("examCourseTitle").innerText = "TEST — " + course.title;
 
           // Keep the generated certificate visibly marked as a test.
           state.certificateTestMode = true;
+          await ensureCertificateRecord();
+
+          // Step 12 test: exercise the authenticated exam-submission API
+          // without requiring the tester to answer the 50-question exam.
+          // The TEST prefix makes this row unmistakable in Supabase.
+          window.__EDSA_EXAM_ATTEMPT_RECORDED = false;
+          try {
+            const testStartedAt = new Date(Date.now() - 60 * 1000).toISOString();
+            const testCompletedAt = new Date().toISOString();
+            const response = await fetch("/api/exam-attempt", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                courseTitle: "TEST — " + course.title,
+                courseId: "test-" + course.id,
+                score: 100,
+                passed: true,
+                startedAt: testStartedAt,
+                completedAt: testCompletedAt
+              })
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.ok) {
+              console.warn("[EDSA] TEST exam attempt save failed:", response.status, result.error || "Unknown error");
+            } else {
+              window.__EDSA_EXAM_ATTEMPT_RECORDED = true;
+              console.log("[EDSA] TEST exam attempt saved:", result.attempt && result.attempt.id);
+            }
+          } catch (error) {
+            console.warn("[EDSA] TEST exam attempt save unavailable:", error);
+          }
 
           showSection("stepResult");
           renderResult(true, 100, course.questions.length);
