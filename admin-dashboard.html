@@ -57,6 +57,7 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmtDate=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?String(v||""):d.toLocaleString();};
 let DATA={students:[],attempts:[],certificates:[],progress:[],payments:[],course_stats:[],stats:{}};
+let dashboardRefreshTimer=null;
 
 async function jsonFetch(url,options){
  const r=await fetch(url,Object.assign({credentials:"same-origin",cache:"no-store"},options||{}));
@@ -77,7 +78,7 @@ async function login(){
  finally{$("loginBtn").disabled=false;$("loginBtn").textContent="Sign in";}
 }
 
-async function logout(){await fetch("/api/auth-logout",{method:"POST",credentials:"same-origin"}).catch(()=>{});location.reload();}
+async function logout(){if(dashboardRefreshTimer)clearInterval(dashboardRefreshTimer);await fetch("/api/auth-logout",{method:"POST",credentials:"same-origin"}).catch(()=>{});location.reload();}
 
 function showDetail(html){$("detail").classList.remove("hidden");$("detail").innerHTML=html;}
 function closeDetail(){$("detail").classList.add("hidden");}
@@ -142,13 +143,20 @@ function renderAll(){
  $("updated").textContent="Updated "+fmtDate(DATA.generated_at);
 }
 
-async function loadDashboard(afterLogin=false){
+async function loadDashboard(afterLogin=false,silent=false){
  try{
   const {r,j}=await jsonFetch("/api/admin-dashboard");
   if(r.status===401){$("login").classList.remove("hidden");$("dashboard").classList.add("hidden");if(afterLogin)$("loginError").textContent=j.error||"Admin session was not accepted.";return false;}
-  if(!r.ok||!j.ok){if(afterLogin)$("loginError").textContent=j.error||"Dashboard could not be loaded.";else alert(j.error||"Dashboard could not be loaded.");return false;}
+  if(!r.ok||!j.ok){if(afterLogin)$("loginError").textContent=j.error||"Dashboard could not be loaded.";else if(!silent)alert(j.error||"Dashboard could not be loaded.");return false;}
   DATA=j;$("login").classList.add("hidden");$("dashboard").classList.remove("hidden");renderAll();return true;
- }catch(e){if(afterLogin)$("loginError").textContent="Dashboard connection error. Please try again.";else alert("Dashboard connection error.");return false;}
+ }catch(e){if(afterLogin)$("loginError").textContent="Dashboard connection error. Please try again.";else if(!silent)alert("Dashboard connection error.");return false;}
+}
+
+function startDashboardAutoRefresh(){
+ if(dashboardRefreshTimer)clearInterval(dashboardRefreshTimer);
+ dashboardRefreshTimer=setInterval(function(){
+   if(!document.hidden && !$("dashboard").classList.contains("hidden")) loadDashboard(false,true);
+ },10000);
 }
 
 $("loginBtn").addEventListener("click",login);
@@ -163,6 +171,6 @@ $("students").addEventListener("click",e=>{const row=e.target.closest(".student-
 $("attempts").addEventListener("click",e=>{const b=e.target.closest(".attempt-view");if(b)showAttempt(b.dataset.id);});
 $("certificates").addEventListener("click",e=>{const b=e.target.closest(".cert-view");if(b)showCertificate(b.dataset.id);});
 
-loadDashboard();
+loadDashboard().then(function(ok){if(ok)startDashboardAutoRefresh();});
 </script>
 </body></html>
