@@ -1,38 +1,168 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EDSA Admin Dashboard</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-slate-950 text-slate-100 min-h-screen"><div class="max-w-7xl mx-auto p-4 sm:p-6">
-<header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6"><div><p class="text-yellow-400 text-xs font-bold tracking-widest uppercase">EDSA Academy</p><h1 class="text-2xl sm:text-3xl font-black">Admin Dashboard</h1><p class="text-slate-400 text-sm">Live Supabase academy management.</p></div><div class="flex gap-2"><button onclick="loadDashboard()" class="px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm">Refresh</button><button onclick="logout()" class="px-4 py-2 rounded-lg bg-rose-900/60 font-bold text-sm">Logout</button><button onclick="location.href='/edsa-app.html'" class="px-4 py-2 rounded-lg bg-slate-800 font-bold text-sm">Academy</button></div></header>
-<section id="login" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="font-bold text-lg mb-2">Administrator Sign In</h2><p class="text-slate-400 text-sm mb-4">Use the existing EDSA administrator PIN.</p><input id="pin" type="password" placeholder="Admin PIN" class="w-full bg-black border border-slate-700 rounded-lg p-3 mb-3"><button onclick="login()" class="w-full bg-sky-500 text-slate-950 font-bold py-3 rounded-lg">Sign in</button><p id="loginError" class="text-rose-400 text-xs mt-3"></p></section>
-<main id="dashboard" class="hidden space-y-5"><div id="stats" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
-<section class="grid lg:grid-cols-2 gap-5"><div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="flex justify-between"><h2 class="font-bold mb-3">Students</h2><input id="studentSearch" oninput="renderStudents()" placeholder="Search" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-32"></div><div class="overflow-auto max-h-80"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Name</th><th class="text-left p-2">Email</th><th class="text-left p-2">Created</th></tr></thead><tbody id="students"></tbody></table></div></div>
-<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><h2 class="font-bold mb-3">Course Statistics</h2><div id="courses" class="space-y-2"></div></div></section>
-<section class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3"><h2 class="font-bold">Exam Attempts</h2><input id="examSearch" oninput="renderAttempts()" placeholder="Search student/course" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-44"></div><div class="overflow-auto max-h-96"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Student</th><th class="text-left p-2">Course</th><th class="text-left p-2">Score</th><th class="text-left p-2">Result</th><th class="text-left p-2">Date</th><th class="p-2"></th></tr></thead><tbody id="attempts"></tbody></table></div></section>
-<section class="grid lg:grid-cols-2 gap-5"><div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="flex justify-between"><h2 class="font-bold mb-3">Certificates</h2><input id="certSearch" oninput="renderCertificates()" placeholder="Search ID/name" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-32"></div><div class="overflow-auto max-h-72"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">ID</th><th class="text-left p-2">Student</th><th class="text-left p-2">Course</th><th class="text-left p-2">Status</th><th class="p-2"></th></tr></thead><tbody id="certificates"></tbody></table></div></div>
-<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><h2 class="font-bold mb-3">Payments</h2><div class="overflow-auto max-h-72"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Amount</th><th class="text-left p-2">Status</th><th class="text-left p-2">Date</th></tr></thead><tbody id="payments"></tbody></table></div></div></section>
-<section id="detail" class="hidden bg-slate-900 border border-yellow-500/30 rounded-2xl p-5"></section><p id="updated" class="text-center text-slate-600 text-xs"></p></main></div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSA Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="max-w-7xl mx-auto p-4 sm:p-6">
+<header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+<div><p class="text-yellow-400 text-xs font-bold tracking-widest uppercase">EDSA Academy</p><h1 class="text-2xl sm:text-3xl font-black">Admin Dashboard</h1><p class="text-slate-400 text-sm">Live Supabase academy management.</p></div>
+<div class="flex gap-2">
+<button id="refreshBtn" class="px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm">Refresh</button>
+<button id="logoutBtn" class="px-4 py-2 rounded-lg bg-rose-900/60 font-bold text-sm">Logout</button>
+<button id="academyBtn" class="px-4 py-2 rounded-lg bg-slate-800 font-bold text-sm">Academy</button>
+</div></header>
+
+<section id="login" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6">
+<h2 class="font-bold text-lg mb-2">Administrator Sign In</h2>
+<p class="text-slate-400 text-sm mb-4">Use the existing EDSA administrator PIN.</p>
+<input id="pin" type="password" autocomplete="current-password" placeholder="Admin PIN" class="w-full bg-black border border-slate-700 rounded-lg p-3 mb-3">
+<button id="loginBtn" class="w-full bg-sky-500 text-slate-950 font-bold py-3 rounded-lg">Sign in</button>
+<p id="loginError" class="text-rose-400 text-xs mt-3 min-h-4"></p>
+</section>
+
+<main id="dashboard" class="hidden space-y-5">
+<div id="stats" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+
+<section class="grid lg:grid-cols-2 gap-5">
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+<div class="flex justify-between gap-2"><h2 class="font-bold mb-3">Students</h2><input id="studentSearch" placeholder="Search" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-32"></div>
+<div class="overflow-auto max-h-80"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Name</th><th class="text-left p-2">Email</th><th class="text-left p-2">Created</th></tr></thead><tbody id="students"></tbody></table></div>
+</div>
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><h2 class="font-bold mb-3">Course Statistics</h2><div id="courses" class="space-y-2"></div></div>
+</section>
+
+<section class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3"><h2 class="font-bold">Exam Attempts</h2><input id="examSearch" placeholder="Search student/course" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-44"></div>
+<div class="overflow-auto max-h-96"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Student</th><th class="text-left p-2">Course</th><th class="text-left p-2">Score</th><th class="text-left p-2">Result</th><th class="text-left p-2">Date</th><th></th></tr></thead><tbody id="attempts"></tbody></table></div>
+</section>
+
+<section class="grid lg:grid-cols-2 gap-5">
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+<div class="flex justify-between gap-2"><h2 class="font-bold mb-3">Certificates</h2><input id="certSearch" placeholder="Search ID/name" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-32"></div>
+<div class="overflow-auto max-h-72"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">ID</th><th class="text-left p-2">Student</th><th class="text-left p-2">Course</th><th class="text-left p-2">Status</th><th></th></tr></thead><tbody id="certificates"></tbody></table></div>
+</div>
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><h2 class="font-bold mb-3">Payments</h2><div class="overflow-auto max-h-72"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Amount</th><th class="text-left p-2">Status</th><th class="text-left p-2">Date</th></tr></thead><tbody id="payments"></tbody></table></div></div>
+</section>
+
+<section id="detail" class="hidden bg-slate-900 border border-yellow-500/30 rounded-2xl p-5"></section>
+<p id="updated" class="text-center text-slate-600 text-xs"></p>
+</main></div>
+
 <script>
-const esc=v=>String(v??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));const date=v=>{const d=new Date(v);return isNaN(d)?String(v||""):d.toLocaleString()};
-let DATA={};
-async function login(){const e=document.getElementById("loginError"),pin=document.getElementById("pin").value.trim();e.textContent="";if(!pin){e.textContent="Enter the administrator PIN.";return}const r=await fetch("/api/admin-login",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({pin})}),j=await r.json().catch(()=>({}));if(!r.ok||!j.ok){e.textContent=j.error||"Login failed.";return}await loadDashboard()}
-async function logout(){await fetch("/api/auth-logout",{method:"POST",credentials:"same-origin"}).catch(()=>{});location.reload()}
-function renderStudents(){const q=(document.getElementById("studentSearch").value||"").toLowerCase();const a=(DATA.students||[]).filter(x=>(x.full_name+" "+x.email).toLowerCase().includes(q));document.getElementById("students").innerHTML=a.map(x=>'<tr data-student-id="'+esc(x.id)+'" class="student-row border-b border-slate-800/70 cursor-pointer hover:bg-slate-800"><td class="p-2 font-semibold">'+esc(x.full_name)+'</td><td class="p-2 text-slate-400">'+esc(x.email)+'</td><td class="p-2 text-slate-500">'+esc(date(x.created_at))+'</td></tr>').join("")||'<tr><td colspan="3" class="p-3 text-slate-500">No students.</td></tr>'}
-function showStudent(id){const s=(DATA.students||[]).find(x=>String(x.id)===String(id));if(!s)return;const p=(DATA.progress||[]).filter(x=>String(x.student_id)===String(id));const a=(DATA.attempts||[]).filter(x=>String(x.student_id)===String(id));const c=(DATA.certificates||[]).filter(x=>String(x.student_id)===String(id));document.getElementById("detail").classList.remove("hidden");document.getElementById("detail").innerHTML='<div class="flex justify-between"><div><h2 class="text-xl font-black">'+esc(s.full_name)+'</h2><p class="text-slate-400 text-sm">'+esc(s.email)+'</p></div><button onclick="document.getElementById(\'detail\').classList.add(\'hidden\')" class="text-slate-400">Close</button></div><div class="grid md:grid-cols-3 gap-3 mt-4"><div class="bg-black/40 p-3 rounded-lg">Progress<br><b>'+p.length+'</b></div><div class="bg-black/40 p-3 rounded-lg">Attempts<br><b>'+a.length+'</b></div><div class="bg-black/40 p-3 rounded-lg">Certificates<br><b>'+c.length+'</b></div></div><h3 class="font-bold mt-5 mb-2">Course Progress</h3>'+(p.map(x=>'<div class="border-b border-slate-800 py-2 text-sm">'+esc(x.course_title)+' — '+esc(x.latest_status||"Not started")+' — best '+esc(x.best_score??"-")+'%</div>').join("")||'<p class="text-slate-500 text-sm">No progress records.</p>')+'<h3 class="font-bold mt-5 mb-2">Exam History</h3>'+(a.map(x=>'<div class="border-b border-slate-800 py-2 text-sm">'+esc(x.course_title)+' — '+esc(x.score)+'% — '+(x.passed?"PASSED":"FAILED")+' — '+esc(date(x.completed_at||x.created_at))+'</div>').join("")||'<p class="text-slate-500 text-sm">No attempts.</p>')}
-function renderCertificates(){const q=(document.getElementById("certSearch").value||"").toLowerCase();const a=(DATA.certificates||[]).filter(x=>(x.certificate_id+" "+x.student_name+" "+x.course_title).toLowerCase().includes(q));document.getElementById("certificates").innerHTML=a.map(x=>'<tr class="border-b border-slate-800/70"><td class="p-2 font-mono text-yellow-400">'+esc(x.certificate_id)+'</td><td class="p-2">'+esc(x.student_name)+'</td><td class="p-2 text-slate-400">'+esc(x.course_title)+'</td><td class="p-2 text-xs">'+esc(String(x.status||"VALID").toUpperCase())+'</td><td class="p-2"><button onclick="showCertificate(\''+esc(x.certificate_id)+'\')" class="text-sky-400">View</button></td></tr>').join("")||'<tr><td colspan="5" class="p-3 text-slate-500">No certificates.</td></tr>'}
-function showCertificate(id){
-const c=(DATA.certificates||[]).find(x=>x.certificate_id===id);if(!c)return;
-const d=document.getElementById("detail");d.classList.remove("hidden");
-const status=String(c.status||"VALID").toUpperCase();const statusClass=status==="VALID"||status==="ISSUED"?"text-emerald-400":status==="REVOKED"||status==="INVALID"?"text-rose-400":"text-yellow-400";
-const verifyUrl="/verify?id="+encodeURIComponent(c.certificate_id||"");
-d.innerHTML='<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2"><div><h2 class="text-xl font-black">Certificate Details</h2><p class="text-slate-500 text-xs mt-1">Certificate management record</p></div><button onclick="document.getElementById(\\'detail\\').classList.add(\\'hidden\\')" class="text-slate-400">Close</button></div><div class="mt-4 grid md:grid-cols-2 gap-3 text-sm"><div><span class="text-slate-500">Certificate ID</span><br><b class="text-yellow-400 font-mono">'+esc(c.certificate_id)+'</b></div><div><span class="text-slate-500">Status</span><br><b class="'+statusClass+'">'+esc(status)+'</b></div><div><span class="text-slate-500">Student</span><br>'+esc(c.student_name)+'</div><div><span class="text-slate-500">Course</span><br>'+esc(c.course_title)+'</div><div><span class="text-slate-500">Score</span><br>'+esc(c.score)+'%</div><div><span class="text-slate-500">Issue Date</span><br>'+esc(c.issue_date)+'</div></div><div class="flex flex-wrap gap-2 mt-5"><a href="'+verifyUrl+'" target="_blank" class="px-3 py-2 rounded-lg bg-yellow-500 text-slate-950 font-bold text-xs">Open Verification</a><button onclick="showCertificateExam(\\''+esc(c.student_id||"")+'\\',\\''+esc(c.course_title||"")+'\\')" class="px-3 py-2 rounded-lg bg-slate-800 font-bold text-xs">View Matching Exam</button></div>';
+"use strict";
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtDate=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?String(v||""):d.toLocaleString();};
+let DATA={students:[],attempts:[],certificates:[],progress:[],payments:[],course_stats:[],stats:{}};
+
+async function jsonFetch(url,options){
+ const r=await fetch(url,Object.assign({credentials:"same-origin",cache:"no-store"},options||{}));
+ const j=await r.json().catch(()=>({}));
+ return {r,j};
 }
-function showCertificateExam(studentId,courseTitle){
-const a=(DATA.attempts||[]).filter(x=>String(x.student_id)===String(studentId)&&String(x.course_title||"")===String(courseTitle));
-const d=document.getElementById("detail");d.innerHTML+='<div class="mt-5 border-t border-slate-800 pt-4"><h3 class="font-bold mb-2">Matching Exam Attempts</h3>'+(a.map(x=>'<div class="border-b border-slate-800 py-2 text-sm">'+esc(x.course_title)+' — '+esc(x.score)+'% — '+(x.passed?'PASSED':'FAILED')+' — '+esc(date(x.completed_at||x.created_at))+'</div>').join("")||'<p class="text-slate-500 text-sm">No matching exam attempt found.</p>')+'</div>';
+
+async function login(){
+ $("loginError").textContent="";
+ const pin=$("pin").value.trim();
+ if(!pin){$("loginError").textContent="Enter the administrator PIN.";return;}
+ $("loginBtn").disabled=true;$("loginBtn").textContent="Signing in...";
+ try{
+   const {r,j}=await jsonFetch("/api/admin-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pin})});
+   if(!r.ok||!j.ok){$("loginError").textContent=j.error||"Admin sign-in failed.";return;}
+   await loadDashboard(true);
+ }catch(e){$("loginError").textContent="Connection error. Please try again.";}
+ finally{$("loginBtn").disabled=false;$("loginBtn").textContent="Sign in";}
+}
+
+async function logout(){await fetch("/api/auth-logout",{method:"POST",credentials:"same-origin"}).catch(()=>{});location.reload();}
+
+function showDetail(html){$("detail").classList.remove("hidden");$("detail").innerHTML=html;}
+function closeDetail(){$("detail").classList.add("hidden");}
+
+function renderStudents(){
+ const q=$("studentSearch").value.trim().toLowerCase();
+ const rows=DATA.students.filter(s=>(String(s.full_name)+" "+String(s.email)).toLowerCase().includes(q));
+ $("students").innerHTML=rows.map(s=>`<tr class="student-row border-b border-slate-800/70 cursor-pointer hover:bg-slate-800" data-id="${esc(s.id)}"><td class="p-2 font-semibold">${esc(s.full_name)}</td><td class="p-2 text-slate-400">${esc(s.email)}</td><td class="p-2 text-slate-500">${esc(fmtDate(s.created_at))}</td></tr>`).join("")||'<tr><td colspan="3" class="p-3 text-slate-500">No students.</td></tr>';
+}
+
+function showStudent(id){
+ const s=DATA.students.find(x=>String(x.id)===String(id));if(!s)return;
+ const p=DATA.progress.filter(x=>String(x.student_id)===String(id));
+ const a=DATA.attempts.filter(x=>String(x.student_id)===String(id));
+ const c=DATA.certificates.filter(x=>String(x.student_id)===String(id));
+ showDetail(`<div class="flex justify-between"><div><h2 class="text-xl font-black">${esc(s.full_name)}</h2><p class="text-slate-400 text-sm">${esc(s.email)}</p></div><button id="closeDetail" class="text-slate-400">Close</button></div>
+ <div class="grid md:grid-cols-3 gap-3 mt-4"><div class="bg-black/40 p-3 rounded-lg">Progress<br><b>${p.length}</b></div><div class="bg-black/40 p-3 rounded-lg">Attempts<br><b>${a.length}</b></div><div class="bg-black/40 p-3 rounded-lg">Certificates<br><b>${c.length}</b></div></div>
+ <h3 class="font-bold mt-5 mb-2">Course Progress</h3>${p.map(x=>`<div class="border-b border-slate-800 py-2 text-sm">${esc(x.course_title)} — ${esc(x.latest_status||"Not started")} — best ${esc(x.best_score??"-")}%</div>`).join("")||'<p class="text-slate-500 text-sm">No progress records.</p>'}
+ <h3 class="font-bold mt-5 mb-2">Exam History</h3>${a.map(x=>`<div class="border-b border-slate-800 py-2 text-sm">${esc(x.course_title)} — ${esc(x.score)}% — ${x.passed?"PASSED":"FAILED"} — ${esc(fmtDate(x.completed_at||x.created_at))}</div>`).join("")||'<p class="text-slate-500 text-sm">No attempts.</p>'}`);
+ $("closeDetail").onclick=closeDetail;
 }
 
 function renderAttempts(){
-const q=(document.getElementById("examSearch").value||"").toLowerCase();
-const a=(DATA.attempts||[]).filter(x=>{const s=(DATA.students||[]).find(v=>String(v.id)===String(x.student_id));return (String(s&&s.full_name||"")+" "+String(s&&s.email||"")+" "+String(x.course_title||"")+" "+String(x.course_id||"")).toLowerCase().includes(q);});
-renderAttempts();renderCertificates();document.getElementById("payments").innerHTML=(j.payments||[]).map(x=>'<tr class="border-b border-slate-800/70"><td class="p-2">'+esc(x.amount)+' ETB</td><td class="p-2">'+esc(x.status||"Recorded")+'</td><td class="p-2 text-slate-500">'+esc(date(x.created_at||x.payment_date))+'</td></tr>').join("")||'<tr><td colspan="3" class="p-3 text-slate-500">No payments.</td></tr>';document.getElementById("updated").textContent="Updated "+date(j.generated_at)}
-document.getElementById("students").addEventListener("click",function(event){const row=event.target.closest(".student-row");if(row)showStudent(row.dataset.studentId)});
+ const q=$("examSearch").value.trim().toLowerCase();
+ const rows=DATA.attempts.filter(a=>{const s=DATA.students.find(x=>String(x.id)===String(a.student_id));return (String(s?.full_name||"")+" "+String(s?.email||"")+" "+String(a.course_title||"")+" "+String(a.course_id||"")).toLowerCase().includes(q);});
+ $("attempts").innerHTML=rows.map(a=>{const s=DATA.students.find(x=>String(x.id)===String(a.student_id));return `<tr class="border-b border-slate-800/70"><td class="p-2">${esc(s?.full_name||"Unknown student")}</td><td class="p-2">${esc(a.course_title)}</td><td class="p-2">${esc(a.score)}%</td><td class="p-2 ${a.passed?"text-emerald-400":"text-rose-400"}">${a.passed?"PASSED":"FAILED"}</td><td class="p-2 text-slate-500">${esc(fmtDate(a.completed_at||a.created_at))}</td><td class="p-2"><button class="attempt-view text-sky-400" data-id="${esc(a.id)}">View</button></td></tr>`;}).join("")||'<tr><td colspan="6" class="p-3 text-slate-500">No matching attempts.</td></tr>';
+}
+
+function showAttempt(id){
+ const a=DATA.attempts.find(x=>String(x.id)===String(id));if(!a)return;
+ const s=DATA.students.find(x=>String(x.id)===String(a.student_id));
+ showDetail(`<div class="flex justify-between"><div><h2 class="text-xl font-black">Exam Attempt Details</h2><p class="text-slate-500 text-xs mt-1">Individual exam record</p></div><button id="closeDetail" class="text-slate-400">Close</button></div>
+ <div class="mt-4 grid md:grid-cols-2 gap-3 text-sm"><div><span class="text-slate-500">Student</span><br>${esc(s?.full_name||"Unknown")}</div><div><span class="text-slate-500">Email</span><br>${esc(s?.email||"")}</div><div><span class="text-slate-500">Course</span><br>${esc(a.course_title)}</div><div><span class="text-slate-500">Course ID</span><br>${esc(a.course_id)}</div><div><span class="text-slate-500">Score</span><br><b>${esc(a.score)}%</b></div><div><span class="text-slate-500">Result</span><br><b class="${a.passed?"text-emerald-400":"text-rose-400"}">${a.passed?"PASSED":"FAILED"}</b></div><div><span class="text-slate-500">Started</span><br>${esc(fmtDate(a.started_at))}</div><div><span class="text-slate-500">Completed</span><br>${esc(fmtDate(a.completed_at||a.created_at))}</div><div><span class="text-slate-500">Attempt ID</span><br><span class="font-mono text-xs">${esc(a.id)}</span></div></div>`);
+ $("closeDetail").onclick=closeDetail;
+}
+
+function renderCertificates(){
+ const q=$("certSearch").value.trim().toLowerCase();
+ const rows=DATA.certificates.filter(c=>(String(c.certificate_id)+" "+String(c.student_name)+" "+String(c.course_title)).toLowerCase().includes(q));
+ $("certificates").innerHTML=rows.map(c=>`<tr class="border-b border-slate-800/70"><td class="p-2 font-mono text-yellow-400">${esc(c.certificate_id)}</td><td class="p-2">${esc(c.student_name)}</td><td class="p-2 text-slate-400">${esc(c.course_title)}</td><td class="p-2 text-xs">${esc(String(c.status||"VALID").toUpperCase())}</td><td class="p-2"><button class="cert-view text-sky-400" data-id="${esc(c.certificate_id)}">View</button></td></tr>`).join("")||'<tr><td colspan="5" class="p-3 text-slate-500">No certificates.</td></tr>';
+}
+
+function showCertificate(id){
+ const c=DATA.certificates.find(x=>String(x.certificate_id)===String(id));if(!c)return;
+ const status=String(c.status||"VALID").toUpperCase();
+ const cls=(status==="VALID"||status==="ISSUED")?"text-emerald-400":(status==="REVOKED"||status==="INVALID")?"text-rose-400":"text-yellow-400";
+ const matching=DATA.attempts.filter(a=>String(a.student_id)===String(c.student_id)&&String(a.course_title||"")===String(c.course_title||""));
+ showDetail(`<div class="flex justify-between"><div><h2 class="text-xl font-black">Certificate Details</h2><p class="text-slate-500 text-xs mt-1">Certificate management record</p></div><button id="closeDetail" class="text-slate-400">Close</button></div>
+ <div class="mt-4 grid md:grid-cols-2 gap-3 text-sm"><div><span class="text-slate-500">Certificate ID</span><br><b class="text-yellow-400 font-mono">${esc(c.certificate_id)}</b></div><div><span class="text-slate-500">Status</span><br><b class="${cls}">${esc(status)}</b></div><div><span class="text-slate-500">Student</span><br>${esc(c.student_name)}</div><div><span class="text-slate-500">Course</span><br>${esc(c.course_title)}</div><div><span class="text-slate-500">Score</span><br>${esc(c.score)}%</div><div><span class="text-slate-500">Issue Date</span><br>${esc(c.issue_date)}</div></div>
+ <div class="flex flex-wrap gap-2 mt-5"><a href="/verify?id=${encodeURIComponent(c.certificate_id||"")}" target="_blank" class="px-3 py-2 rounded-lg bg-yellow-500 text-slate-950 font-bold text-xs">Open Verification</a></div>
+ <div class="mt-5 border-t border-slate-800 pt-4"><h3 class="font-bold mb-2">Matching Exam Attempts</h3>${matching.map(a=>`<div class="border-b border-slate-800 py-2 text-sm">${esc(a.course_title)} — ${esc(a.score)}% — ${a.passed?"PASSED":"FAILED"} — ${esc(fmtDate(a.completed_at||a.created_at))}</div>`).join("")||'<p class="text-slate-500 text-sm">No matching exam attempt found.</p>'}</div>`);
+ $("closeDetail").onclick=closeDetail;
+}
+
+function renderAll(){
+ const s=DATA.stats||{};
+ const cards=[[s.students,"Students","text-sky-400"],[s.attempts,"Exam Attempts","text-white"],[s.passed_attempts,"Passed","text-emerald-400"],[s.certificates,"Certificates","text-yellow-400"],[s.payments,"Payments","text-violet-400"],[Number(s.revenue_etb||0).toLocaleString()+" ETB","Revenue","text-yellow-300"]];
+ $("stats").innerHTML=cards.map(x=>`<div class="bg-slate-900 border border-slate-800 rounded-xl p-3"><b class="text-xl ${x[2]}">${esc(x[0])}</b><div class="text-[10px] text-slate-500 uppercase mt-1">${esc(x[1])}</div></div>`).join("");
+ renderStudents();renderAttempts();renderCertificates();
+ $("courses").innerHTML=(DATA.course_stats||[]).map(x=>`<div class="bg-black/40 border border-slate-800 rounded-lg p-3 flex justify-between gap-3"><b class="text-sm">${esc(x.course_title)}</b><span class="text-xs text-slate-400">${x.attempts} attempts • ${x.passed} passed • Avg ${x.average_score}%</span></div>`).join("")||'<div class="text-slate-500 text-sm">No exam data yet.</div>';
+ $("payments").innerHTML=(DATA.payments||[]).map(x=>`<tr class="border-b border-slate-800/70"><td class="p-2">${esc(x.amount)} ETB</td><td class="p-2">${esc(x.status||"Recorded")}</td><td class="p-2 text-slate-500">${esc(fmtDate(x.created_at||x.payment_date))}</td></tr>`).join("")||'<tr><td colspan="3" class="p-3 text-slate-500">No payments.</td></tr>';
+ $("updated").textContent="Updated "+fmtDate(DATA.generated_at);
+}
+
+async function loadDashboard(afterLogin=false){
+ try{
+  const {r,j}=await jsonFetch("/api/admin-dashboard");
+  if(r.status===401){$("login").classList.remove("hidden");$("dashboard").classList.add("hidden");if(afterLogin)$("loginError").textContent=j.error||"Admin session was not accepted.";return false;}
+  if(!r.ok||!j.ok){if(afterLogin)$("loginError").textContent=j.error||"Dashboard could not be loaded.";else alert(j.error||"Dashboard could not be loaded.");return false;}
+  DATA=j;$("login").classList.add("hidden");$("dashboard").classList.remove("hidden");renderAll();return true;
+ }catch(e){if(afterLogin)$("loginError").textContent="Dashboard connection error. Please try again.";else alert("Dashboard connection error.");return false;}
+}
+
+$("loginBtn").addEventListener("click",login);
+$("pin").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
+$("logoutBtn").addEventListener("click",logout);
+$("refreshBtn").addEventListener("click",()=>loadDashboard());
+$("academyBtn").addEventListener("click",()=>location.href="/edsa-app.html");
+$("studentSearch").addEventListener("input",renderStudents);
+$("examSearch").addEventListener("input",renderAttempts);
+$("certSearch").addEventListener("input",renderCertificates);
+$("students").addEventListener("click",e=>{const row=e.target.closest(".student-row");if(row)showStudent(row.dataset.id);});
+$("attempts").addEventListener("click",e=>{const b=e.target.closest(".attempt-view");if(b)showAttempt(b.dataset.id);});
+$("certificates").addEventListener("click",e=>{const b=e.target.closest(".cert-view");if(b)showCertificate(b.dataset.id);});
+
 loadDashboard();
-</script></body></html>
+</script>
+</body></html>
