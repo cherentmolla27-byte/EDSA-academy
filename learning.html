@@ -326,6 +326,8 @@ function prevLesson(){if(state.lesson>0)openLesson(state.lesson-1)}
 function nextLesson(){
   const total=getLessons(state.courseId).length;
   if(state.lesson<total-1){ openLesson(state.lesson+1); return; }
+  // After the final lesson, return to the course list instead of reopening the course view.
+  if(state.lesson===total-1){ showCourseHome(); return; }
   const d=state.done[state.courseId]||{completed:[]};
   const completed=new Set(d.completed||[]);
   completed.add(state.lesson);
