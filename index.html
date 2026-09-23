@@ -70,8 +70,8 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <div class="edsa-note">Your account is stored securely by EDSA. Passwords are protected server-side and sessions use an HttpOnly cookie.</div></div></div>
 
 <div class="edsa-dashboard" id="edsaDashboard"><div class="edsa-dash-wrap">
-<div class="edsa-dash-head"><div><h1>Student Dashboard</h1><p id="dashEmail"></p></div><div class="edsa-dash-actions"><button class="edsa-dash-btn light" onclick="EDSA_SHOW_HOME()">Home</button><button class="edsa-dash-btn blue" onclick="EDSA_LOGOUT()">Sign Out</button></div></div>
-<div class="edsa-welcome"><div class="k">WELCOME BACK</div><h2 id="dashName">Student</h2><p>Your EDSA learning and certification dashboard. Choose a course below to continue to the existing payment and examination system.</p></div><div class="edsa-dash-grid">
+<div class="edsa-dash-head"><div><h1>Student Dashboard</h1><p id="dashEmail"></p></div><div class="edsa-dash-actions"><button class="edsa-dash-btn light" onclick="EDSA_OPEN_LEARNING()">📚 Learning Center</button><button class="edsa-dash-btn light" onclick="EDSA_SHOW_HOME()">Home</button><button class="edsa-dash-btn blue" onclick="EDSA_LOGOUT()">Sign Out</button></div></div>
+<div class="edsa-welcome"><div class="k">WELCOME BACK</div><h2 id="dashName">Student</h2><p>Your EDSA learning and certification dashboard. Learn through the new Learning Center, then use the existing payment and examination system when you are ready for the final exam.</p></div><div class="edsa-dash-grid">
 <div class="edsa-dash-card">
 <h3>Your EDSA Journey</h3>
 <p>Your activity across all six professional subjects.</p>
@@ -84,8 +84,8 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <div id="dashJourneySummary" class="edsa-empty" style="margin-top:14px">No course activity yet.</div><div id="dashActivity" class="edsa-activity"></div>
 <div id="dashHistory"></div>
 </div>
-<div class="edsa-dash-card"><h3>Your Courses</h3><p>Choose a course to begin your authenticated student journey.<div id="dashCourses"></div></div>
-<div class="edsa-dash-card"><h3>Student Profile</h3><p>Your current EDSA account on this device.</p><div class="edsa-profile-box"><div class="edsa-profile-row"><span>Full Name</span><strong id="dashProfileName">Student</strong></div><div class="edsa-profile-row"><span>Email</span><strong id="dashProfileEmail">—</strong></div><div class="edsa-profile-row"><span>Member Since</span><strong id="dashProfileDate">—</strong></div></div><div class="edsa-mini-actions"><button onclick="EDSA_SHOW_HOME()">Browse Courses</button><a href="/verify">Verify a Certificate</a></div></div>
+<div class="edsa-dash-card"><h3>Your Courses</h3><p>Choose a course to learn, track progress, and continue to the final examination when ready.<div id="dashCourses"></div></div>
+<div class="edsa-dash-card"><h3>Student Profile</h3><p>Your current EDSA account on this device.</p><div class="edsa-profile-box"><div class="edsa-profile-row"><span>Full Name</span><strong id="dashProfileName">Student</strong></div><div class="edsa-profile-row"><span>Email</span><strong id="dashProfileEmail">—</strong></div><div class="edsa-profile-row"><span>Member Since</span><strong id="dashProfileDate">—</strong></div></div><div class="edsa-mini-actions"><button onclick="EDSA_OPEN_LEARNING()">📚 Open Learning Center</button><button onclick="EDSA_SHOW_HOME()">Browse Courses</button><a href="/verify">Verify a Certificate</a></div></div>
 </div></div></div>
 
 <script>
@@ -279,6 +279,11 @@ async function EDSA_OPEN_COURSE(id,profile){
   }
 }
 function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
+function EDSA_OPEN_LEARNING(id){
+  const p=EDSA_getProfile();
+  if(!p){EDSA_SHOW_LOGIN();return;}
+  window.location.href="/learning.html"+(id?"?course="+encodeURIComponent(id):"");
+}
 
 window.addEventListener("edsa:auth-ready",function(){if(window.EDSA_DB_SYNC)window.EDSA_DB_SYNC.syncNow()});
 document.addEventListener("DOMContentLoaded",function(){
