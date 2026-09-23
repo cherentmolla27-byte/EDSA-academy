@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSA Learning Center</title>
+<meta name="description" content="EDSA student learning center">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f9ff;color:#0b2145;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.top{background:#061a3b;color:#fff;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}.brand{font-weight:950;letter-spacing:.04em}.brand small{display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em;margin-top:3px}.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:850;cursor:pointer}.blue{background:#1677ff;color:#fff}.light{background:#fff;color:#0b2145;border:1px solid #dbeafe}.wrap{max-width:1150px;margin:auto;padding:25px 5% 60px}.hero{background:linear-gradient(120deg,#061a3b,#0b3f83 60%,#1677ff);color:#fff;border-radius:22px;padding:26px;margin-bottom:16px}.hero .tag{font-size:9px;letter-spacing:.16em;color:#bfdbfe;font-weight:900}.hero h1{font-size:32px;margin:8px 0}.hero p{margin:0;color:#dbeafe;font-size:13px;line-height:1.6}.grid{display:grid;grid-template-columns:1fr;gap:14px}.panel{background:#fff;border:1px solid #dbeafe;border-radius:18px;padding:19px;box-shadow:0 10px 28px rgba(15,66,120,.07)}.courses{display:grid;gap:8px}.course{padding:13px;border:1px solid #e2e8f0;border-radius:12px;cursor:pointer;background:#f8fbff}.course.active{border-color:#1677ff;background:#eff6ff}.course strong{display:block;font-size:12px}.course span{display:block;font-size:9px;color:#64748b;margin-top:3px}.course b{display:block;font-size:9px;color:#1677ff;margin-top:7px}.lesson-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.lesson-head h2{margin:0;font-size:22px}.lesson-head p{margin:5px 0 0;color:#64748b;font-size:11px;line-height:1.5}.bar{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:14px 0 5px}.bar i{display:block;height:100%;width:0;background:#1677ff}.progress-text{font-size:9px;color:#64748b;font-weight:800}.lessons{display:grid;gap:8px;margin-top:18px}.lesson{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer}.lesson.active{border-color:#1677ff;background:#eff6ff}.lesson.done{border-color:#bbf7d0;background:#f0fdf4}.num{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#eff6ff;color:#1677ff;font-weight:900;font-size:10px;flex:none}.done .num{background:#dcfce7;color:#16a34a}.lesson strong{font-size:11px;display:block}.lesson span{font-size:9px;color:#64748b}.check{margin-left:auto;color:#16a34a;font-weight:900}.viewer{margin-top:16px;background:#061a3b;color:#fff;border-radius:17px;padding:20px}.viewer h3{margin:0 0 8px;font-size:20px}.viewer p{color:#dbeafe;font-size:12px;line-height:1.75;margin:0}.video{margin-top:15px;background:#020617;border:1px solid #315b91;border-radius:12px;padding:18px;text-align:center}.video b{display:block;color:#60a5fa;font-size:15px}.video span{display:block;color:#94a3b8;font-size:10px;margin-top:5px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.empty{text-align:center;padding:35px;color:#64748b;font-size:12px;background:#f8fbff;border-radius:14px}@media(min-width:800px){.grid{grid-template-columns:300px 1fr}.courses{max-height:70vh;overflow:auto}.wrap{padding-top:30px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">EDSA ACADEMY<small>LEARNING CENTER</small></div><div><button class="btn light" onclick="location.href='/'">Dashboard</button> <button class="btn blue" onclick="location.href='/edsa-app.html'">Exam Portal</button></div></header>
+<main class="wrap">
+<section class="hero"><div class="tag">STEP 14 — LEARNING PLATFORM</div><h1>Learn. Practice. Get Certified.</h1><p id="welcome">Loading your student account...</p></section>
+<div class="grid">
+<aside class="panel"><h3 style="margin:0 0 10px">Your Courses</h3><div id="courseList" class="courses"></div></aside>
+<section class="panel"><div id="learningArea"><div class="empty">Select a course to begin learning.</div></div></section>
+</div>
+</main>
+<script>
+const COURSES={
+smm:{title:"Social Media Management",desc:"Social strategy, content, communities and platform management.",lessons:["Digital Social Media Foundations","Audience Research & Buyer Personas","Platform Selection & Strategy","Content Pillars & Planning","Content Calendars","Copywriting for Social Media","Visual Content & Branding","Short-Form Video Strategy","Community Management","Social Media Engagement","Hashtags, Keywords & Discovery","Analytics & Performance Metrics","Social Media Crisis Management","Campaign Planning & Optimization","Professional Social Media Workflow"]},
+dme:{title:"Digital Marketing Essentials",desc:"Digital campaigns, channels, analytics and marketing strategy.",lessons:["Digital Marketing Foundations","Customer Journey & Funnels","Market Research","Digital Marketing Strategy","Search Engine Basics","Content Marketing","Email Marketing","Social Advertising","Paid Search & Display","Landing Pages & Conversion","Analytics & KPIs","Remarketing & Retention","Campaign Budgeting","A/B Testing & Optimization","Integrated Digital Campaigns"]},
+pbm:{title:"Project & Business Management",desc:"Planning, operations, projects, leadership and business decisions.",lessons:["Business Management Foundations","Business Models","Goal Setting & SMART Objectives","Project Life Cycle","Project Scope & Requirements","Work Breakdown Structures","Scheduling & Milestones","Budgeting & Cost Control","Risk Management","Team Leadership","Communication Management","Operations & Process Improvement","Decision Making","Performance Measurement","Project Closeout & Review"]},
+gdm:{title:"Graphic Design for Marketers",desc:"Visual communication, design principles, branding and marketing graphics.",lessons:["Design Foundations","Color Theory","Typography","Layout & Composition","Visual Hierarchy","Brand Identity","Logo & Brand Systems","Social Media Graphics","Marketing Banners","Image Selection & Editing","Canva Workflow","Design for Mobile","Accessibility & Readability","Creative Briefs","Professional Design Review"]},
+fme:{title:"Financial Management for Entrepreneurs",desc:"Budgeting, cash flow, financial decisions and entrepreneurial finance.",lessons:["Finance Foundations","Revenue, Costs & Profit","Business Budgeting","Cash Flow Management","Pricing Decisions","Break-Even Analysis","Financial Statements","Assets & Liabilities","Working Capital","Financial Ratios","Investment Decisions","Risk & Contingency Planning","Record Keeping","Financial Performance Review","Entrepreneurial Finance Strategy"]},
+dbi:{title:"Data Analysis & Business Intelligence",desc:"Data, dashboards, analytics, databases and business intelligence.",lessons:["Data & Business Intelligence Foundations","Data Collection","Data Quality","Data Types & Structures","Spreadsheet Analysis","Descriptive Statistics","Data Visualization","Dashboard Design","KPIs & Business Metrics","Database Concepts","SQL Foundations","Business Reporting","Trend & Pattern Analysis","Decision-Making with Data","BI Project Workflow"]}
+};
+let state={email:"",name:"",courseId:"",lesson:0,done:{}};
+function key(){return "EDSA_LEARNING_"+state.email.toLowerCase()}
+function load(){try{state.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){state.done={}}}
+function save(){localStorage.setItem(key(),JSON.stringify(state.done))}
+async function boot(){
+ try{
+  const r=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"}),x=await r.json().catch(()=>({}));
+  if(!r.ok||!x.ok||!x.authenticated||!x.user||x.user.role!=="student"){location.href="/?login=1&return="+encodeURIComponent("/learning.html");return}
+  state.email=x.user.email;state.name=x.user.name||"Student";load();
+  document.getElementById("welcome").textContent="Welcome, "+state.name+". Your lesson progress is saved on this device for this first learning-platform release.";
+  renderCourses();
+  const q=new URLSearchParams(location.search).get("course");
+  selectCourse(COURSES[q]?q:"smm");
+ }catch(e){location.href="/?login=1&return="+encodeURIComponent("/learning.html")}
+}
+function renderCourses(){
+ const box=document.getElementById("courseList");
+ box.innerHTML=Object.entries(COURSES).map(([id,c])=>{
+  const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);
+  return '<div class="course '+(state.courseId===id?"active":"")+'" onclick="selectCourse(\''+id+'\')"><strong>'+c.title+'</strong><span>'+c.desc+'</span><b>'+pct+'% complete</b></div>';
+ }).join("");
+}
+function selectCourse(id){
+ state.courseId=id;state.lesson=0;renderCourses();renderCourse();
+}
+function renderCourse(){
+ const c=COURSES[state.courseId],d=state.done[state.courseId]||{completed:[]},completed=d.completed||[],pct=Math.round(completed.length/c.lessons.length*100);
+ const area=document.getElementById("learningArea");
+ area.innerHTML='<div class="lesson-head"><div><h2>'+c.title+'</h2><p>'+c.desc+'</p></div><button class="btn light" onclick="location.href=\'/edsa-app.html?course='+encodeURIComponent(state.courseId)+'\'">Go to Exam</button></div><div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+' of '+c.lessons.length+' lessons</div><div class="lessons">'+c.lessons.map((name,i)=>'<div class="lesson '+(state.lesson===i?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+name+'</strong><span>Lesson '+(i+1)+' • Reading + video slot</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div><div id="viewer"></div>';
+ openLesson(state.lesson);
+}
+const notes={
+"Foundations":"Understand the core ideas before using advanced tactics. Define the business objective, target audience, platform, content type and measurement method for every activity.",
+"Audience":"Start with the customer. Identify who they are, what problem they have, what they value, and where they spend time online. Use these insights to make content more relevant.",
+"Planning":"A strong plan connects business goals to content, campaigns, channels, timing and measurement. Keep a clear weekly workflow and review performance regularly.",
+"Analytics":"Measure outcomes, not just activity. Reach, engagement, clicks, conversions, cost and retention can tell different parts of the same story.",
+"Management":"Good management turns a strategy into repeatable actions: define responsibilities, deadlines, quality checks, communication routines and review points.",
+"Strategy":"Strategy is the choice of where to focus and why. Avoid trying to do everything at once; prioritize the audience, channels and activities that support the objective.",
+"Design":"Effective design makes information easier to understand. Use hierarchy, contrast, spacing, consistent typography and a clear visual focal point.",
+"Finance":"Financial management means understanding money coming in, money going out, profitability, liquidity and the decisions that affect the future of the business.",
+"Data":"Good decisions depend on useful data. Collect reliable information, clean it, analyze patterns, communicate findings and connect insights to business action."
+};
+function getNote(title){
+ const t=title.toLowerCase();
+ if(t.includes("audience")||t.includes("buyer")||t.includes("customer"))return notes.Audience;
+ if(t.includes("plan")||t.includes("campaign")||t.includes("calendar")||t.includes("workflow"))return notes.Planning;
+ if(t.includes("analytics")||t.includes("metric")||t.includes("kpi")||t.includes("performance"))return notes.Analytics;
+ if(t.includes("design")||t.includes("visual")||t.includes("color")||t.includes("typography")||t.includes("layout"))return notes.Design;
+ if(t.includes("finance")||t.includes("budget")||t.includes("cash")||t.includes("cost")||t.includes("profit")||t.includes("pricing"))return notes.Finance;
+ if(t.includes("data")||t.includes("database")||t.includes("statistics")||t.includes("dashboard")||t.includes("sql")||t.includes("bi"))return notes.Data;
+ if(t.includes("strategy")||t.includes("foundation")||t.includes("journey")||t.includes("model"))return notes.Strategy;
+ if(t.includes("management")||t.includes("leadership")||t.includes("operations")||t.includes("project"))return notes.Management;
+ return notes.Foundations;
+}
+function openLesson(i){
+ state.lesson=i;const c=COURSES[state.courseId],title=c.lessons[i],d=state.done[state.courseId]||{completed:[]},done=(d.completed||[]).includes(i);
+ const v=document.getElementById("viewer");if(!v)return;
+ v.innerHTML='<div class="viewer"><div style="font-size:9px;color:#93c5fd;font-weight:900;letter-spacing:.14em">LESSON '+(i+1)+' OF '+c.lessons.length+'</div><h3>'+title+'</h3><p>'+getNote(title)+'</p><div class="video"><b>🎥 Video Lesson Area</b><span>The learning platform is ready for video lessons. Course videos can be connected here as EDSA publishes each lesson.</span></div><div class="actions"><button class="btn '+(done?"light":"blue")+'" onclick="toggleDone()">'+(done?"✓ Lesson Completed — Mark Uncomplete":"Mark Lesson Complete ✓")+'</button>'+(i>0?'<button class="btn light" onclick="openLesson('+(i-1)+')">← Previous</button>':"")+(i<c.lessons.length-1?'<button class="btn light" onclick="openLesson('+(i+1)+')">Next →</button>':"")+'</div></div>';
+ document.querySelectorAll(".lesson").forEach((el,n)=>{el.classList.toggle("active",n===i)});
+}
+function toggleDone(){
+ const d=state.done[state.courseId]||{completed:[]};d.completed=d.completed||[];
+ const at=d.completed.indexOf(state.lesson);
+ if(at>=0)d.completed.splice(at,1);else d.completed.push(state.lesson);
+ d.completed.sort((a,b)=>a-b);state.done[state.courseId]=d;save();renderCourses();renderCourse();
+}
+boot();
+</script>
+</body>
+</html>
