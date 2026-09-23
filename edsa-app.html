@@ -1067,11 +1067,38 @@ function generate50Questions(courseKey, courseTitle) {
       }
     }
 
-    function selectCourse(courseId) {
+    async function selectCourse(courseId) {
+      // HARD GATE: no student account = no exam/payment flow.
+      try {
+        const response = await fetch("/api/auth-me", {
+          credentials: "same-origin",
+          cache: "no-store"
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok || !result.authenticated || !result.user || result.user.role !== "student") {
+          const returnUrl = window.location.pathname + window.location.search;
+          alert("Please sign in or create an EDSA student account before taking an exam.");
+          window.location.href = "/?login=1&return=" + encodeURIComponent(returnUrl);
+          return;
+        }
+
+        state.studentEmail = result.user.email;
+        state.studentName = result.user.name || "";
+      } catch (error) {
+        console.error("[EDSA] Required student sign-in check failed:", error);
+        alert("Please sign in before taking an exam.");
+        window.location.href = "/?login=1&return=" + encodeURIComponent(window.location.pathname + window.location.search);
+        return;
+      }
+
       state.selectedCourse = COURSES.find(c => c.id === courseId);
-      if (state.studentEmail) saveStudentJourneyUpdate("started", null, { courseTitle: state.selectedCourse.title });
+      if (!state.selectedCourse) return;
+
+      if (state.studentEmail) {
+        saveStudentJourneyUpdate("started", null, { courseTitle: state.selectedCourse.title });
+      }
       document.getElementById("selectedCourseTitle").innerText = `Selected: ${state.selectedCourse.title}`;
-      document.getElementById("userStatus").innerText = `Selected: ${state.selectedCourse.title}`;
+      document.getElementById("userStatus").innerText = `Signed in: ${state.studentName || state.studentEmail}`;
       showSection("stepPayment");
     }
 
@@ -2066,20 +2093,26 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     // Developer certificate test mode.
-    // /edsa-app.html?test=certificate simulates a perfect exam result without
-    // requiring the tester to answer all 50 questions. It creates a clearly
-    // labeled TEST certificate record so the full certificate/QR/verification
-    // pipeline can be checked without changing the real 50-question exam.
+    // Even this diagnostic route requires a real signed-in student session.
     (function handleCertificateTestMode() {
       try {
         const params = new URLSearchParams(window.location.search);
         if (params.get("test") !== "certificate") return;
 
         setTimeout(async () => {
+          const authResponse = await fetch("/api/auth-me", { credentials: "same-origin", cache: "no-store" });
+          const authResult = await authResponse.json().catch(() => ({}));
+          if (!authResponse.ok || !authResult.ok || !authResult.authenticated || !authResult.user || authResult.user.role !== "student") {
+            alert("Please sign in before using the certificate test.");
+            window.location.href = "/?login=1&return=" + encodeURIComponent(window.location.pathname + window.location.search);
+            return;
+          }
+
           const baseCourse = COURSES.find(c => c.id === (params.get("course") || "smm")) || COURSES[0];
           const course = baseCourse;
           state.selectedCourse = course;
-          state.studentName = "EDSA TEST STUDENT";
+          state.studentEmail = authResult.user.email;
+          state.studentName = authResult.user.name || "EDSA Student";
           state.accessKey = "EDSA-CERT-TEST";
           state.userAnswers = {};
           state.currentPage = 1;
