@@ -49,7 +49,7 @@ async function boot(){
 }
 function courseCard(id,c){
  const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);
- return '<div class="course '+(state.courseId===id?"active":"")+'" onclick="selectCourse(\\''+id+'\\')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>'+c.title+'</strong><span>'+c.desc+'</span><b>'+pct+'% complete • '+(d.completed||[]).length+'/'+c.lessons.length+' lessons</b></div>';
+ return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct}% complete • ${(d.completed||[]).length}/${c.lessons.length} lessons</b></div>`;
 }
 function renderCourses(){
  const html=Object.entries(COURSES).map(([id,c])=>courseCard(id,c)).join("");
