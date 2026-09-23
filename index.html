@@ -282,8 +282,8 @@ async function EDSA_OPEN_COURSE(id,profile){
 }
 function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
 function EDSA_OPEN_LEARNING(id){
-  const p=EDSA_getProfile();
-  if(!p){EDSA_SHOW_LOGIN();return;}
+  // Learning Center performs its own server-side student authentication check.
+  // Do not depend on the localStorage profile here.
   window.location.href="/learning.html"+(id?"?course="+encodeURIComponent(id):"");
 }
 
