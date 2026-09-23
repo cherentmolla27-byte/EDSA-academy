@@ -16,7 +16,8 @@ module.exports = async function handler(req, res) {
 
     const token = auth.createSession({ email, name: user.name, role: "student" });
     auth.setSessionCookie(res, token);
-    return auth.json(res, 200, { ok: true, user: { name: user.name, email: user.email, createdAt: user.createdAt } });
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    return auth.json(res, 200, { ok: true, authenticated: true, user: { name: user.name, email: user.email, role: "student", createdAt: user.createdAt } });
   } catch (err) {
     console.error("[EDSA auth login]", err);
     return auth.json(res, 500, { ok: false, error: "Sign-in is temporarily unavailable." });
