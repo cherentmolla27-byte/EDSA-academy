@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const auth = require("./_auth");
 const db = require("./_db");
 
@@ -11,26 +10,22 @@ function asInt(value) {
   return Number.isFinite(n) ? Math.round(n) : null;
 }
 
-function makeGuestEmail() {
-  return "guest+" + crypto.randomBytes(12).toString("hex") + "@edsa.local";
-}
-
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return auth.json(res, 405, { ok: false, error: "Method not allowed" });
   }
 
-  let session = auth.readSession(req);
-  if (session && session.role === "admin") {
-    return auth.json(res, 401, { ok: false, error: "Student sign-in required." });
+  const session = auth.readSession(req);
+  if (!session || session.role === "admin") {
+    return auth.json(res, 401, { ok: false, error: "Please sign in before submitting an exam." });
   }
+
   if (!db.dbConfigured()) {
     return auth.json(res, 503, { ok: false, error: "Student database is not configured yet." });
   }
 
   try {
     const body = req.body || {};
-    const requestedName = auth.validateName(body.studentName) || cleanText(body.studentName, 120);
     const courseTitle = cleanText(body.courseTitle, 200) || "EDSA Course";
     const courseId = cleanText(body.courseId, 100) || ({
       "Social Media Management": "smm",
@@ -49,21 +44,8 @@ module.exports = async function handler(req, res) {
       return auth.json(res, 400, { ok: false, error: "Valid course and score are required." });
     }
 
-    // EDSA intentionally allows guest exams. If the student is not signed in,
-    // create a signed guest session so every submitted attempt still has a
-    // stable student record and can appear in Admin > Exam Management.
-    if (!session) {
-      session = {
-        email: makeGuestEmail(),
-        name: requestedName || "EDSA Guest Student",
-        role: "guest"
-      };
-      const token = auth.createSession(session);
-      auth.setSessionCookie(res, token);
-    }
-
     const email = auth.normalizeEmail(session.email);
-    const name = auth.validateName(session.name) || requestedName || "EDSA Student";
+    const name = auth.validateName(session.name) || cleanText(body.studentName, 120) || "EDSA Student";
 
     const studentRows = await db.upsert("students", {
       email,
@@ -89,7 +71,7 @@ module.exports = async function handler(req, res) {
     return auth.json(res, 200, {
       ok: true,
       attempt: Array.isArray(rows) ? rows[0] || null : rows,
-      guest: session.role === "guest"
+      student: { name, email }
     });
   } catch (err) {
     console.error("[EDSA exam attempt]", err);
