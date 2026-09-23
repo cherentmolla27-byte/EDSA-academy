@@ -146,6 +146,12 @@ function EDSA_SHOW_LOGIN(){
   if(e)e.value="";
 }
 function EDSA_SHOW_REGISTER(){EDSA_setView("edsaRegisterScreen")}
+(function(){
+  try {
+    const params=new URLSearchParams(window.location.search);
+    if(params.get("login")==="1") setTimeout(function(){EDSA_SHOW_LOGIN()},0);
+  } catch(_) {}
+})();
 async function EDSA_REGISTER(){
   const n=document.getElementById("registerName"),e=document.getElementById("registerEmail"),p=document.getElementById("registerPassword"),pc=document.getElementById("registerPasswordConfirm");
   const name=n?n.value.trim():"",email=e?e.value.trim():"",password=p?p.value:"",confirmPassword=pc?pc.value:"";
@@ -157,6 +163,8 @@ async function EDSA_REGISTER(){
     const result=await response.json().catch(()=>({}));
     if(!response.ok||!result.ok){alert(result.error||"Account registration failed.");return}
     EDSA_SAVE_ACCOUNT(result.user);
+    const returnUrl=new URLSearchParams(window.location.search).get("return");
+    if(returnUrl && returnUrl.startsWith("/")){ window.location.href=returnUrl; return; }
     EDSA_RENDER_DASH(result.user);
   }catch(error){console.error("EDSA registration error",error);alert("Could not connect to EDSA authentication.");}
 }
@@ -169,6 +177,8 @@ async function EDSA_SIGN_IN(){
     const result=await response.json().catch(()=>({}));
     if(!response.ok||!result.ok){alert(result.error||"Invalid email or password.");return}
     EDSA_SAVE_ACCOUNT(result.user);
+    const returnUrl=new URLSearchParams(window.location.search).get("return");
+    if(returnUrl && returnUrl.startsWith("/")){ window.location.href=returnUrl; return; }
     EDSA_RENDER_DASH(result.user);
   }catch(error){console.error("EDSA sign-in error",error);alert("Could not connect to EDSA authentication.");}
 }
