@@ -173,14 +173,44 @@ async function EDSA_SIGN_IN(){
   const email=e?e.value.trim():"",password=p?p.value:"";
   if(!email||!password){alert("Please enter your email and password.");return}
   try{
-    const response=await fetch("/api/auth-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password})});
+    const response=await fetch("/api/auth-login",{
+      method:"POST",
+      credentials:"same-origin",
+      cache:"no-store",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email,password})
+    });
     const result=await response.json().catch(()=>({}));
-    if(!response.ok||!result.ok){alert(result.error||"Invalid email or password.");return}
-    EDSA_SAVE_ACCOUNT(result.user);
+    if(!response.ok||!result.ok){
+      alert(result.error||"Invalid email or password.");
+      return;
+    }
+
+    // Confirm the browser actually kept the new EDSA session cookie
+    // before navigating to a protected page.
+    const check=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"});
+    const session=await check.json().catch(()=>({}));
+    if(!check.ok||!session.ok||!session.authenticated||!session.user){
+      console.error("[EDSA] Login succeeded but session verification failed",{
+        loginStatus:response.status,
+        authStatus:check.status,
+        session
+      });
+      alert("Your password was accepted, but the sign-in session was not saved. Please try signing in again.");
+      return;
+    }
+
+    EDSA_SAVE_ACCOUNT(session.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
-    if(returnUrl && returnUrl.startsWith("/")){ window.location.href=returnUrl; return; }
-    EDSA_RENDER_DASH(result.user);
-  }catch(error){console.error("EDSA sign-in error",error);alert("Could not connect to EDSA authentication.");}
+    if(returnUrl && returnUrl.startsWith("/")){
+      window.location.href=returnUrl;
+      return;
+    }
+    EDSA_RENDER_DASH(session.user);
+  }catch(error){
+    console.error("EDSA sign-in error",error);
+    alert("Could not connect to EDSA authentication.");
+  }
 }
 function EDSA_getJourney(){
   try{return JSON.parse(localStorage.getItem("EDSA_STUDENT_JOURNEY")||"{}")}catch(e){return {}}
