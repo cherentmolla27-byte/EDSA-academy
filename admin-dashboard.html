@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSA Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="max-w-7xl mx-auto p-4 sm:p-6">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div>
+      <p class="text-yellow-400 text-xs font-bold tracking-widest uppercase">EDSA Academy</p>
+      <h1 class="text-2xl sm:text-3xl font-black">Admin Dashboard</h1>
+      <p class="text-slate-400 text-sm">Live Supabase academy management.</p>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="loadDashboard()" class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm">Refresh</button>
+      <button onclick="location.href='/edsa-app.html'" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 font-bold text-sm">Academy</button>
+    </div>
+  </header>
+
+  <section id="login" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="font-bold text-lg mb-2">Administrator Sign In</h2>
+    <p class="text-slate-400 text-sm mb-4">Use the existing EDSA administrator PIN.</p>
+    <input id="pin" type="password" placeholder="Admin PIN" class="w-full bg-black border border-slate-700 rounded-lg p-3 mb-3 outline-none focus:border-sky-500">
+    <button onclick="login()" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold py-3 rounded-lg">Sign in</button>
+    <p id="loginError" class="text-rose-400 text-xs mt-3"></p>
+  </section>
+
+  <main id="dashboard" class="hidden space-y-5">
+    <div id="stats" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+
+    <section class="grid lg:grid-cols-2 gap-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <h2 class="font-bold mb-3">Students</h2>
+        <div class="overflow-auto max-h-80">
+          <table class="w-full text-xs">
+            <thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Name</th><th class="text-left p-2">Email</th><th class="text-left p-2">Created</th></tr></thead>
+            <tbody id="students"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <h2 class="font-bold mb-3">Course Statistics</h2>
+        <div id="courses" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <h2 class="font-bold mb-3">Exam Attempts</h2>
+      <div class="overflow-auto max-h-96">
+        <table class="w-full text-xs">
+          <thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Course</th><th class="text-left p-2">Score</th><th class="text-left p-2">Result</th><th class="text-left p-2">Date</th></tr></thead>
+          <tbody id="attempts"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid lg:grid-cols-2 gap-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <h2 class="font-bold mb-3">Certificates</h2>
+        <div class="overflow-auto max-h-72">
+          <table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">ID</th><th class="text-left p-2">Student</th><th class="text-left p-2">Course</th></tr></thead><tbody id="certificates"></tbody></table>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <h2 class="font-bold mb-3">Payments</h2>
+        <div class="overflow-auto max-h-72">
+          <table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Amount</th><th class="text-left p-2">Status</th><th class="text-left p-2">Date</th></tr></thead><tbody id="payments"></tbody></table>
+        </div>
+      </div>
+    </section>
+    <p id="updated" class="text-center text-slate-600 text-xs"></p>
+  </main>
+</div>
+
+<script>
+const esc = v => String(v ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const date = v => { const d=new Date(v); return isNaN(d) ? String(v||"") : d.toLocaleDateString(); };
+
+async function login(){
+  const error=document.getElementById("loginError");
+  error.textContent="";
+  const pin=document.getElementById("pin").value.trim();
+  if(!pin){ error.textContent="Enter the administrator PIN."; return; }
+  const r=await fetch("/api/admin-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pin}),credentials:"same-origin"});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.ok){ error.textContent=j.error||"Login failed."; return; }
+  await loadDashboard();
+}
+
+async function loadDashboard(){
+  const r=await fetch("/api/admin-dashboard",{credentials:"same-origin",cache:"no-store"});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){ document.getElementById("login").classList.remove("hidden"); document.getElementById("dashboard").classList.add("hidden"); return; }
+  if(!r.ok||!j.ok){ alert(j.error||"Dashboard could not be loaded."); return; }
+
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+
+  const s=j.stats;
+  const cards=[
+    [s.students,"Students","text-sky-400"],[s.attempts,"Exam Attempts","text-white"],
+    [s.passed_attempts,"Passed","text-emerald-400"],[s.certificates,"Certificates","text-yellow-400"],
+    [s.payments,"Payments","text-violet-400"],[Number(s.revenue_etb||0).toLocaleString()+" ETB","Revenue","text-yellow-300"]
+  ];
+  document.getElementById("stats").innerHTML=cards.map(x=>'<div class="bg-slate-900 border border-slate-800 rounded-xl p-3"><b class="text-xl '+x[2]+'">'+esc(x[0])+'</b><div class="text-[10px] text-slate-500 uppercase mt-1">'+esc(x[1])+'</div></div>').join("");
+
+  document.getElementById("students").innerHTML=(j.students||[]).map(x=>'<tr class="border-b border-slate-800/70"><td class="p-2 font-semibold">'+esc(x.full_name)+'</td><td class="p-2 text-slate-400">'+esc(x.email)+'</td><td class="p-2 text-slate-500">'+esc(date(x.created_at))+'</td></tr>').join("") || '<tr><td colspan="3" class="p-3 text-slate-500">No students.</td></tr>';
+
+  document.getElementById("courses").innerHTML=(j.course_stats||[]).map(x=>'<div class="bg-black/40 border border-slate-800 rounded-lg p-3 flex justify-between gap-3"><div><b class="text-sm">'+esc(x.course_title)+'</b><div class="text-xs text-slate-500">'+esc(x.course_id)+'</div></div><div class="text-right text-xs"><div>'+x.attempts+' attempts • '+x.passed+' passed</div><div class="text-slate-500">Avg '+x.average_score+'%</div></div></div>').join("") || '<div class="text-slate-500 text-sm">No exam data yet.</div>';
+
+  document.getElementById("attempts").innerHTML=(j.attempts||[]).map(x=>'<tr class="border-b border-slate-800/70"><td class="p-2">'+esc(x.course_title)+'</td><td class="p-2">'+esc(x.score)+'%</td><td class="p-2 '+(x.passed?'text-emerald-400':'text-rose-400')+'">'+(x.passed?'PASSED':'FAILED')+'</td><td class="p-2 text-slate-500">'+esc(date(x.completed_at||x.created_at))+'</td></tr>').join("") || '<tr><td colspan="4" class="p-3 text-slate-500">No attempts yet.</td></tr>';
+
+  document.getElementById("certificates").innerHTML=(j.certificates||[]).map(x=>'<tr class="border-b border-slate-800/70"><td class="p-2 font-mono text-yellow-400">'+esc(x.certificate_id)+'</td><td class="p-2">'+esc(x.student_name)+'</td><td class="p-2 text-slate-400">'+esc(x.course_title)+'</td></tr>').join("") || '<tr><td colspan="3" class="p-3 text-slate-500">No certificates.</td></tr>';
+
+  document.getElementById("payments").innerHTML=(j.payments||[]).map(x=>'<tr class="border-b border-slate-800/70"><td class="p-2">'+esc(x.amount)+' ETB</td><td class="p-2">'+esc(x.status||"Recorded")+'</td><td class="p-2 text-slate-500">'+esc(date(x.created_at||x.payment_date))+'</td></tr>').join("") || '<tr><td colspan="3" class="p-3 text-slate-500">No payments.</td></tr>';
+
+  document.getElementById("updated").textContent="Updated "+new Date(j.generated_at).toLocaleString();
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
