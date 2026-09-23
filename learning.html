@@ -215,8 +215,8 @@ example:"A simple weekly workflow can be: Monday research and planning; Tuesday�
 ];
 const VIDEO_LESSONS={smm:[
  {id:"AbrwOkhoeKU",title:"Social Media Management for Beginners",url:"https://www.youtube.com/watch?v=AbrwOkhoeKU",note:"Lesson 1: foundations and what a social media manager actually does."},
- {id:null,title:"Audience Research & Buyer Personas — YouTube lesson",url:"https://www.youtube.com/results?search_query="+encodeURIComponent("audience research buyer personas social media marketing"),note:"Lesson 2: audience research and buyer personas."},
- {id:null,title:"Platform Selection & Social Media Strategy — YouTube lesson",url:"https://www.youtube.com/results?search_query="+encodeURIComponent("social media strategy choosing platforms target audience"),note:"Lesson 3: choosing platforms based on audience and goals."},
+ {id:"kYA-HJ-gCK0",title:"Buyer persona explained | How To Create A Buyer Persona",url:"https://www.youtube.com/watch?v=kYA-HJ-gCK0",note:"Lesson 2: understanding your ideal customer, habits, needs and buyer personas."},
+ {id:"WURrlOjhtkY",title:"Choosing the Right Social Media Platform for Your Business",url:"https://www.youtube.com/watch?v=WURrlOjhtkY",note:"Lesson 3: choosing platforms based on your audience, business and content strategy."},
  {id:"aJdcNeDIw1E",title:"Content Pillars for Social Media",url:"https://www.youtube.com/watch?v=aJdcNeDIw1E",note:"Lesson 4: content pillars and content strategy."},
  {id:"sTSTTRFhmis",title:"How To Create A Content Calendar For Social Media (+ Free Tools)",url:"https://www.youtube.com/watch?v=sTSTTRFhmis",note:"Lesson 5: step-by-step content calendar planning."},
  {id:null,title:"Social Media Copywriting — YouTube lesson",url:"https://www.youtube.com/results?search_query="+encodeURIComponent("social media copywriting captions hooks call to action"),note:"Lesson 6: captions, hooks and calls to action."},
@@ -251,7 +251,7 @@ async function boot(){
       load();
       document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
       renderCourses();
-      if(COURSES[q]) selectCourse(q);
+      if(COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); selectCourse(q,Number.isFinite(qi)?qi:0); }
       return;
     }
   }catch(e){}
@@ -267,21 +267,22 @@ function renderCourses(){
 }
 function showCourseHome(){
   state.courseId="";
+  state.lesson=0;
   document.getElementById("courseHome").style.display="";
   document.getElementById("courseView").style.display="none";
   renderCourses();
   history.replaceState(null,"","/learning.html");
 }
-function selectCourse(id){
+function selectCourse(id,lessonIndex=0){
   if(!COURSES[id]) return;
   state.courseId=id;
-  state.lesson=0;
+  state.lesson=Number.isFinite(Number(lessonIndex))?Math.max(0,Number(lessonIndex)):0;
   if(state.email) load();
   document.getElementById("courseHome").style.display="none";
   document.getElementById("courseView").style.display="grid";
   renderCourses();
   renderCourse();
-  history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id));
+  history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id)+"&lesson="+state.lesson);
 }
 function getLessons(id){
   if(id==="smm") return SMM_LESSONS;
@@ -311,17 +312,27 @@ function renderCourse(){
     '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
     '<div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div>'+
     '<div class="viewer"><h3>'+escapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+escapeHtml(l.example)+'</div></div>'+videoHtml+
-    '<div class="actions"><button class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button class="btn light" onclick="prevLesson()">← Previous</button><button class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>';
+    '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>';
 }
 function openLesson(i){
   const lessons=getLessons(state.courseId);
   if(i<0||i>=lessons.length)return;
   state.lesson=i;
+  history.replaceState(null,"","/learning.html?course="+encodeURIComponent(state.courseId)+"&lesson="+state.lesson);
   renderCourse();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function prevLesson(){if(state.lesson>0)openLesson(state.lesson-1)}
-function nextLesson(){if(state.lesson<getLessons(state.courseId).length-1)openLesson(state.lesson+1)}
+function nextLesson(){
+  const total=getLessons(state.courseId).length;
+  if(state.lesson<total-1){ openLesson(state.lesson+1); return; }
+  const d=state.done[state.courseId]||{completed:[]};
+  const completed=new Set(d.completed||[]);
+  completed.add(state.lesson);
+  d.completed=[...completed].sort((a,b)=>a-b);
+  state.done[state.courseId]=d; save(); renderCourse(); renderCourses();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 function toggleComplete(){
   const d=state.done[state.courseId]||{completed:[]};
   d.completed=d.completed||[];
