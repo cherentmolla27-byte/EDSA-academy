@@ -30,7 +30,7 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <button class="edsa-psign" onclick="EDSA_SHOW_LOGIN()">Sign In</button>
 </nav>
 <section class="edsa-hero-public"><div class="edsa-hero-inner">
-<div class="edsa-hero-copy"><div class="tag">ETHIOPIAN DIGITAL SKILLS ACADEMY</div><h1>Master the <span>Digital Frontier.</span></h1><p>Build practical digital skills, prove your knowledge through professional examinations, and earn certificates that can be verified online.</p><div class="edsa-pactions"><button class="edsa-pbtn primary" onclick="EDSA_SHOW_COURSES()">Get Started <b>→</b></button><button class="edsa-pbtn outline" onclick="EDSA_SHOW_LOGIN()">Student Sign In</button><a class="edsa-pbtn outline" href="/verify">Verify Certificate</a></div><div class="edsa-hero-note">✓ Student account required &nbsp; ✓ 80% passing standard &nbsp; ✓ QR verification</div></div>
+<div class="edsa-hero-copy"><div class="tag">ETHIOPIAN DIGITAL SKILLS ACADEMY</div><h1>Master the <span>Digital Frontier.</span></h1><p>Build practical digital skills, prove your knowledge through professional examinations, and earn certificates that can be verified online.</p><div class="edsa-pactions"><button class="edsa-pbtn primary" onclick="EDSA_START()">Get Started <b>→</b></button><button class="edsa-pbtn outline" onclick="EDSA_SHOW_LOGIN()">Student Sign In</button><a class="edsa-pbtn outline" href="/verify">Verify Certificate</a></div><div class="edsa-hero-note">✓ Student account required &nbsp; ✓ 80% passing standard &nbsp; ✓ QR verification</div></div>
 <div class="edsa-hero-art"><div class="art-glow"></div><div class="art-card main"><div class="art-top">EDSA ACADEMY</div><div class="art-title">LEARN.<br>DEMONSTRATE.<br><span>GET CERTIFIED.</span></div><div class="art-lines"><i></i><i></i><i></i></div></div><div class="art-card float-card"><b>80%</b><small>PASSING SCORE</small></div><div class="art-card float-card two"><b>QR ✓</b><small>VERIFIED</small></div></div>
 </div></section>
 <div class="edsa-public-stats"><div class="edsa-public-stat"><b>6+</b><span>Professional Subjects</span></div><div class="edsa-public-stat"><b>50</b><span>Questions / Exam</span></div><div class="edsa-public-stat"><b>80%</b><span>Passing Mark</span></div><div class="edsa-public-stat"><b>QR</b><span>Online Verification</span></div></div>
@@ -262,21 +262,23 @@ function EDSA_SHOW_COURSES(){
   if(g)g.classList.add("show");
   if(section)section.scrollIntoView({behavior:"smooth",block:"start"});
 }
+function EDSA_START(){
+  EDSA_SHOW_LOGIN();
+}
 async function EDSA_OPEN_COURSE(id,profile){
+  const returnUrl="/edsa-app.html?course="+encodeURIComponent(String(id));
   try{
     const response=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"});
     const result=await response.json().catch(()=>({}));
-    if(!response.ok||!result.ok||!result.authenticated||!result.user||result.user.role!=="student"){
-      const returnUrl="/edsa-app.html?course="+encodeURIComponent(String(id));
-      window.location.href="/?login=1&return="+encodeURIComponent(returnUrl);
+    if(response.ok&&result.ok&&result.authenticated&&result.user&&result.user.role==="student"){
+      EDSA_SAVE_ACCOUNT(result.user);
+      window.location.href=returnUrl;
       return;
     }
-    EDSA_SAVE_ACCOUNT(result.user);
-    window.location.href="/edsa-app.html?course="+encodeURIComponent(String(id));
   }catch(error){
-    console.error("EDSA course authentication error",error);
-    window.location.href="/?login=1&return="+encodeURIComponent("/edsa-app.html?course="+encodeURIComponent(String(id)));
+    console.error("EDSA course authentication check failed",error);
   }
+  window.location.href="/?login=1&return="+encodeURIComponent(returnUrl);
 }
 function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
 function EDSA_OPEN_LEARNING(id){
