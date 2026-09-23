@@ -314,21 +314,12 @@ function openLesson(i){
 function prevLesson(){if(state.lesson>0)openLesson(state.lesson-1)}
 function nextLesson(){
   const total=getLessons(state.courseId).length;
-  // Next should also count the current lesson as completed, so students can move
-  // through the course naturally without losing their progress.
   const d=state.done[state.courseId]||{completed:[]};
   d.completed=d.completed||[];
   if(!d.completed.includes(state.lesson)) d.completed.push(state.lesson);
   state.done[state.courseId]=d; save();
   if(state.lesson<total-1){ openLesson(state.lesson+1); return; }
-  // After the final lesson, return to the course list with the completed progress saved.
-  if(state.lesson===total-1){ renderCourses(); showCourseHome(); return; }
-  const completed=new Set(d.completed||[]);
-  const completed=new Set(d.completed||[]);
-  completed.add(state.lesson);
-  d.completed=[...completed].sort((a,b)=>a-b);
-  state.done[state.courseId]=d; save(); renderCourse(); renderCourses();
-  window.scrollTo({top:0,behavior:"smooth"});
+  renderCourse(); renderCourses();
 }
 function toggleComplete(){
   const d=state.done[state.courseId]||{completed:[]};
