@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
       return auth.json(res, 401, { ok: false, error: "Invalid email or password." });
     }
 
-    const token = auth.createSession({ email, name: user.name });
+    const token = auth.createSession({ email, name: user.name, role: "student" });
     auth.setSessionCookie(res, token);
     return auth.json(res, 200, { ok: true, user: { name: user.name, email: user.email, createdAt: user.createdAt } });
   } catch (err) {
