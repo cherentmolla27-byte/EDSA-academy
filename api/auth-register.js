@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
     };
     await writeUsers(users, sha, "Register EDSA student account");
 
-    const token = createSession({ email, name });
+    const token = createSession({ email, name, role: "student" });
     setSessionCookie(res, token);
     return json(res, 201, { ok: true, user: { name, email, createdAt: users[email].createdAt } });
   } catch (err) {
