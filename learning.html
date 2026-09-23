@@ -220,13 +220,26 @@ function key(){return "EDSA_LEARNING_"+state.email.toLowerCase()}
 function load(){try{state.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){state.done={}}}
 function save(){localStorage.setItem(key(),JSON.stringify(state.done))}
 async function boot(){
+ // Render the course catalog first. Course/lesson content must never disappear
+ // just because the optional session check is slow or unavailable.
+ renderCourses();
+ const q=new URLSearchParams(location.search).get("course");
+ if(COURSES[q]) selectCourse(q); else showCourseHome();
  try{
   const r=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"}),x=await r.json().catch(()=>({}));
-  if(!r.ok||!x.ok||!x.authenticated||!x.user){location.href="/?login=1&return="+encodeURIComponent("/learning.html");return}
-  state.email=x.user.email;state.name=x.user.name||"Student";load();
-  document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
-  renderCourses();const q=new URLSearchParams(location.search).get("course");if(COURSES[q])selectCourse(q);else showCourseHome();
- }catch(e){location.href="/?login=1&return="+encodeURIComponent("/learning.html")}
+  if(r.ok&&x.ok&&x.authenticated&&x.user){
+   state.email=x.user.email||"";
+   state.name=x.user.name||"Student";
+   load();
+   document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
+   renderCourses();
+   if(COURSES[q]) selectCourse(q);
+  } else {
+   document.getElementById("welcome").textContent="Choose a course to enter its lessons and continue learning.";
+  }
+ }catch(e){
+  document.getElementById("welcome").textContent="Choose a course to enter its lessons and continue learning.";
+ }
 }
 function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct}% complete • ${(d.completed||[]).length}/${c.lessons.length} lessons</b></div>`}
 function renderCourses(){
