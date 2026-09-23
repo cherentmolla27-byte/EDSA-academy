@@ -214,21 +214,21 @@ example:"A simple weekly workflow can be: Monday research and planning; Tuesday�
 }
 ];
 const VIDEO_LESSONS={smm:[
- {"id":"rhFtaU192MU","title":"Social Media Management Fundamentals — Introduction","start":246,"query":"","note":"Lesson 1: introduction and foundations of professional social media management."},
+ {"id":"AbrwOkhoeKU","title":"Social Media Management for Beginners","start":0,"query":"","note":"Lesson 1: foundations and beginner social media management strategy."},
  {"id":null,"title":"","start":0,"query":"","note":""},
  {"id":null,"title":"","start":0,"query":"","note":""},
  {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":"sTSTTRFhmis","title":"How To Create A Content Calendar For Social Media","start":0,"query":"","note":"Lesson 5: step-by-step content calendar walkthrough."},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":"-lOPemBgQco","title":"Social Media Engagement Strategy — 8 Engagement Hacks","start":0,"query":"","note":"Lesson 10: direct YouTube learning for engagement strategy."},
+ {"id":"sTSTTRFhmis","title":"How To Create A Content Calendar For Social Media (+ Free Tools)","start":0,"query":"","note":"Lesson 5: step-by-step content calendar walkthrough."},
  {"id":null,"title":"","start":0,"query":"","note":""},
  {"id":null,"title":"","start":0,"query":"","note":""},
  {"id":null,"title":"","start":0,"query":"","note":""},
  {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":"rhFtaU192MU","title":"Social Media Posting Workflow — Practical Walkthrough","start":4293,"query":"","note":"Lesson 15: practical publishing and workflow segment."}
+ {"id":"kCy2adkj4HM","title":"8 Social Media Engagement Hacks, Strategies, and Tips","start":0,"query":"","note":"Lesson 10: practical social media engagement strategies."},
+ {"id":null,"title":"","start":0,"query":"","note":""},
+ {"id":null,"title":"","start":0,"query":"","note":""},
+ {"id":null,"title":"","start":0,"query":"","note":""},
+ {"id":null,"title":"","start":0,"query":"","note":""},
+ {"id":"-kv3KbTtr4U","title":"Social Media Management Workflow","start":0,"query":"","note":"Lesson 15: professional social media management workflow."}
 ]};
 function getVideo(courseId,index){const list=VIDEO_LESSONS[courseId]||[];return list[index]||null}
 let state={email:"",name:"",courseId:"",lesson:0,done:{}};
@@ -258,53 +258,3 @@ async function boot(){
  }
 }
 function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct}% complete • ${(d.completed||[]).length}/${c.lessons.length} lessons</b></div>`}
-function renderCourses(){
- const home=document.getElementById("courseList"),inside=document.getElementById("courseListInside");
- const entries=Object.entries(COURSES);
- const html=entries.length?entries.map(([id,c])=>courseCard(id,c)).join(""):'<div class="empty">No courses are available right now. Please refresh the page.</div>';
- if(home)home.innerHTML=html;
- if(inside)inside.innerHTML=html;
-}
-function showCourseHome(){
- state.courseId="";
- state.lesson=0;
- history.replaceState(null,"","/learning.html");
- const home=document.getElementById("courseHome"),view=document.getElementById("courseView");
- if(home)home.style.display="block";
- if(view)view.style.display="none";
- renderCourses();
- window.scrollTo({top:0,behavior:"smooth"});
-}
-function selectCourse(id){
- if(!COURSES[id]){showCourseHome();return}
- state.courseId=id;
- state.lesson=0;
- history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id));
- const home=document.getElementById("courseHome"),view=document.getElementById("courseView");
- if(home)home.style.display="none";
- if(view)view.style.display="grid";
- renderCourses();
- renderCourse();
- window.scrollTo({top:0,behavior:"smooth"});
-}
-function renderCourse(){
- const c=COURSES[state.courseId],d=state.done[state.courseId]||{completed:[]},completed=d.completed||[],pct=Math.round(completed.length/c.lessons.length*100),area=document.getElementById("learningArea");
- area.innerHTML='<div class="lesson-head"><div><h2>'+c.title+'</h2><p>'+c.desc+'</p></div><button class="btn light" onclick="location.href=\'/edsa-app.html?course='+encodeURIComponent(state.courseId)+'\'">Go to Exam</button></div><div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+' of '+c.lessons.length+' lessons</div><div class="lessons">'+c.lessons.map((name,i)=>'<div class="lesson '+(state.lesson===i?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+name+'</strong><span>Lesson '+(i+1)+' • Full reading lesson</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div><div id="viewer"></div>';
- openLesson(state.lesson);
-}
-function lessonData(i){if(state.courseId==="smm")return SMM_LESSONS[i]||SMM_LESSONS[0];return {title:COURSES[state.courseId].lessons[i],intro:"This lesson will be expanded into the same full EDSA study format. It will include explanations, practical examples, key concepts and activities as we build the remaining courses.",sections:[["Lesson overview","This lesson is part of the EDSA professional learning pathway. Students will study the concept, connect it to real business situations and apply it through practical examples."],["What you should understand","Focus on the definitions, processes, examples and decisions presented in this lesson. The purpose is to build knowledge that can later be tested in the EDSA examination."],["Practical application","Try to connect the topic to a real Ethiopian business, project or organization. Ask what the business needs, what information is available and what action would create a useful result."],["Professional practice","A professional learner should not only memorize terms. Understand why a method is used, when it should be used and how to measure whether it worked."]],example:"As we continue Step 14, each remaining course will receive the same full lesson treatment, course by course."}}
-function openLesson(i){
- state.lesson=i;const c=COURSES[state.courseId],d=state.done[state.courseId]||{completed:[]},done=(d.completed||[]).includes(i),lesson=lessonData(i),video=getVideo(state.courseId,i),v=document.getElementById("viewer");if(!v)return;
- let html='<div class="viewer"><div style="font-size:9px;color:#93c5fd;font-weight:900;letter-spacing:.14em">LESSON '+(i+1)+' OF '+c.lessons.length+'</div><h3>'+lesson.title+'</h3><div class="lesson-copy"><p>'+lesson.intro+'</p>';
- lesson.sections.forEach(s=>{html+='<h4>'+s[0]+'</h4><p>'+s[1]+'</p>'});
- if(lesson.example)html+='<div class="example"><strong>EDSA Practical Example</strong>'+lesson.example+'</div>';
- html+='</div><div class="video"><b>🎥 '+(video?.title||'Video Lesson')+'</b><span>'+((video?.note)||'Watch the supporting lesson video, then continue with the EDSA reading material.')+'</span>'+(video?.id?'<div style="position:relative;width:100%;padding-top:56.25%;margin-top:12px;border-radius:10px;overflow:hidden;background:#000"><iframe src="https://www.youtube.com/embed/'+video.id+'?start='+(video.start||0)+'&rel=0" title="EDSA supporting YouTube lesson" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div><span style="margin-top:10px">External educational video. EDSA's written lesson remains the primary study content.</span>':'<a class="btn blue" style="display:inline-block;margin-top:14px;text-decoration:none" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+encodeURIComponent(video?.query||'course lesson')+'">Open YouTube Videos →</a><span style="margin-top:10px">Topic-specific YouTube search for this lesson.</span>')+</div><div class="actions"><button class="btn '+(done?"light":"blue")+'" onclick="toggleDone()">'+(done?"✓ Lesson Completed — Mark Uncomplete":"Mark Lesson Complete ✓")+'</button>'+(i>0?'<button class="btn light" onclick="openLesson('+(i-1)+')">← Previous Lesson</button>':"")+(i<c.lessons.length-1?'<button class="btn light" onclick="openLesson('+(i+1)+')">Next Lesson →</button>':"")+'</div></div>';
- v.innerHTML=html;document.querySelectorAll(".lesson").forEach((el,n)=>el.classList.toggle("active",n===i));
-}
-function toggleDone(){const d=state.done[state.courseId]||{completed:[]};d.completed=d.completed||[];const at=d.completed.indexOf(state.lesson);if(at>=0)d.completed.splice(at,1);else d.completed.push(state.lesson);d.completed.sort((a,b)=>a-b);state.done[state.courseId]=d;save();renderCourses();renderCourse()}
-boot();
-</script>
-<script src="/learning-fallback.js"></script>
-<script src="/smm-rich-lessons.js"></script>
-</body>
-</html>
