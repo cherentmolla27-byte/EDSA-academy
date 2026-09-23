@@ -227,9 +227,35 @@ async function boot(){
  }catch(e){location.href="/?login=1&return="+encodeURIComponent("/learning.html")}
 }
 function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct}% complete • ${(d.completed||[]).length}/${c.lessons.length} lessons</b></div>`}
-function renderCourses(){const html=Object.entries(COURSES).map(([id,c])=>courseCard(id,c)).join("");document.getElementById("courseList").innerHTML=html;document.getElementById("courseListInside").innerHTML=html}
-function showCourseHome(){state.courseId="";history.replaceState(null,"","/learning.html");document.getElementById("courseHome").style.display="block";document.getElementById("courseView").style.display="none";renderCourses()}
-function selectCourse(id){if(!COURSES[id])return;state.courseId=id;state.lesson=0;history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id));document.getElementById("courseHome").style.display="none";document.getElementById("courseView").style.display="grid";renderCourses();renderCourse();window.scrollTo({top:0,behavior:"smooth"})}
+function renderCourses(){
+ const home=document.getElementById("courseList"),inside=document.getElementById("courseListInside");
+ const entries=Object.entries(COURSES);
+ const html=entries.length?entries.map(([id,c])=>courseCard(id,c)).join(""):'<div class="empty">No courses are available right now. Please refresh the page.</div>';
+ if(home)home.innerHTML=html;
+ if(inside)inside.innerHTML=html;
+}
+function showCourseHome(){
+ state.courseId="";
+ state.lesson=0;
+ history.replaceState(null,"","/learning.html");
+ const home=document.getElementById("courseHome"),view=document.getElementById("courseView");
+ if(home)home.style.display="block";
+ if(view)view.style.display="none";
+ renderCourses();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function selectCourse(id){
+ if(!COURSES[id]){showCourseHome();return}
+ state.courseId=id;
+ state.lesson=0;
+ history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id));
+ const home=document.getElementById("courseHome"),view=document.getElementById("courseView");
+ if(home)home.style.display="none";
+ if(view)view.style.display="grid";
+ renderCourses();
+ renderCourse();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
 function renderCourse(){
  const c=COURSES[state.courseId],d=state.done[state.courseId]||{completed:[]},completed=d.completed||[],pct=Math.round(completed.length/c.lessons.length*100),area=document.getElementById("learningArea");
  area.innerHTML='<div class="lesson-head"><div><h2>'+c.title+'</h2><p>'+c.desc+'</p></div><button class="btn light" onclick="location.href=\'/edsa-app.html?course='+encodeURIComponent(state.courseId)+'\'">Go to Exam</button></div><div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+' of '+c.lessons.length+' lessons</div><div class="lessons">'+c.lessons.map((name,i)=>'<div class="lesson '+(state.lesson===i?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+name+'</strong><span>Lesson '+(i+1)+' • Full reading lesson</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div><div id="viewer"></div>';
