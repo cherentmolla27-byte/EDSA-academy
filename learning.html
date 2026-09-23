@@ -39,7 +39,7 @@ function save(){localStorage.setItem(key(),JSON.stringify(state.done))}
 async function boot(){
  try{
   const r=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"}),x=await r.json().catch(()=>({}));
-  if(!r.ok||!x.ok||!x.authenticated||!x.user||x.user.role!=="student"){location.href="/?login=1&return="+encodeURIComponent("/learning.html");return}
+  if(!r.ok||!x.ok||!x.authenticated||!x.user){location.href="/?login=1&return="+encodeURIComponent("/learning.html");return}
   state.email=x.user.email;state.name=x.user.name||"Student";load();
    document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
   renderCourses();
