@@ -288,5 +288,6 @@ function openLesson(i){
 function toggleDone(){const d=state.done[state.courseId]||{completed:[]};d.completed=d.completed||[];const at=d.completed.indexOf(state.lesson);if(at>=0)d.completed.splice(at,1);else d.completed.push(state.lesson);d.completed.sort((a,b)=>a-b);state.done[state.courseId]=d;save();renderCourses();renderCourse()}
 boot();
 </script>
+<script src="/learning-fallback.js"></script>
 </body>
 </html>
