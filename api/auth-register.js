@@ -28,7 +28,8 @@ module.exports = async function handler(req, res) {
 
     const token = createSession({ email, name, role: "student" });
     setSessionCookie(res, token);
-    return json(res, 201, { ok: true, user: { name, email, createdAt: users[email].createdAt } });
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    return json(res, 201, { ok: true, authenticated: true, user: { name, email, role: "student", createdAt: users[email].createdAt } });
   } catch (err) {
     console.error("[EDSA auth register]", err);
     return json(res, 500, { ok: false, error: "Account registration is temporarily unavailable." });
