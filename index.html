@@ -291,7 +291,9 @@ window.addEventListener("edsa:auth-ready",function(){if(window.EDSA_DB_SYNC)wind
 document.addEventListener("DOMContentLoaded",function(){
   try{
     document.querySelectorAll("button").forEach(function(b){b.type="button"});
-    fetch("/api/auth-me",{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(result){
+    const params=new URLSearchParams(window.location.search);
+    if(params.get("login")==="1") return;
+    fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(result){
       if(result&&result.ok&&result.user){
         EDSA_SAVE_ACCOUNT(result.user);
         EDSA_RENDER_DASH(result.user);
