@@ -163,7 +163,7 @@ async function activateKey(req, res) {
     if (!key) return auth.json(res, 404, { ok: false, error: "Invalid activation key." });
     if (key.status !== "active") return auth.json(res, 409, { ok: false, error: "This activation key has already been used." });
     if (key.amount !== 500) return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 500 ETB fee." });
-    if (key.scope !== "ALL" && key.scope !== courseId) return auth.json(res, 409, { ok: false, error: "This key is for a different course." });
+    if (!courseId || key.scope !== courseId) return auth.json(res, 409, { ok: false, error: "This 500 ETB key is for a different course." });
     key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
     await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 500 ETB key");
     return auth.json(res, 200, { ok: true, activated: true, amount: 500, courseId });
@@ -179,9 +179,9 @@ async function adminGenerateKey(req, res) {
   if (!session) return auth.json(res, 401, { ok: false, error: "Admin sign-in required." });
   try {
     const body = req.body || {};
-    const scope = String(body.scope || "ALL").trim();
+    const scope = String(body.scope || "").trim();
     const count = Math.min(Math.max(Number(body.count) || 1, 1), 20);
-    const allowed = ["ALL", "smm", "dme", "pbm", "gdm", "fme", "dbi"];
+    const allowed = ["smm", "dme", "pbm", "gdm", "fme", "dbi"];
     if (!allowed.includes(scope)) return auth.json(res, 400, { ok: false, error: "Invalid course scope." });
     const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
     const created = [];
@@ -207,7 +207,7 @@ async function courseAccess(req, res) {
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
     const email = auth.normalizeEmail(s.email);
     const { data: keys } = await readJsonFile("activation-keys.json", []);
-    const unlocked = keys.some(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && (k.usedCourse === courseId || k.scope === "ALL"));
+    const unlocked = keys.some(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && k.scope === courseId && k.usedCourse === courseId);
     if (!unlocked) return auth.json(res, 200, { ok: true, unlocked: false, courseId });
     if (String((req.query && req.query.include) || "") !== "lessons") return auth.json(res, 200, { ok: true, unlocked: true, courseId });
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
@@ -301,9 +301,14 @@ async function examAttempt(req, res) {
     const startedAt = body.startedAt ? new Date(body.startedAt).toISOString() : new Date().toISOString();
     const completedAt = body.completedAt ? new Date(body.completedAt).toISOString() : new Date().toISOString();
     if (!courseId || score == null || score < 0 || score > 100) return auth.json(res, 400, { ok: false, error: "Valid course and score are required." });
+    const email = auth.normalizeEmail(session.email);
+    const { data: keys } = await readJsonFile("activation-keys.json", []);
+    const courseKey = keys.find(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && k.scope === courseId && k.usedCourse === courseId);
+    if (!courseKey) return auth.json(res, 403, { ok: false, error: "This course exam requires an active 500 ETB course access. Please purchase or activate this course first." });
+    const previousAttempts = await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent((await db.select("students", "select=id&email=eq." + encodeURIComponent(email) + "&limit=1"))[0]?.id || "") + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1");
+    if (previousAttempts.length) return auth.json(res, 403, { ok: false, error: "This exam access has already been used. A new 500 ETB activation is required for another attempt.", requiresNewPayment: true });
     if (passed && score < 80) return auth.json(res, 400, { ok: false, error: "A passing result requires at least 80%." });
     if (!passed && score >= 80) return auth.json(res, 400, { ok: false, error: "Result status does not match the score." });
-    const email = auth.normalizeEmail(session.email);
     const name = auth.validateName(session.name) || cleanText(body.studentName, 120) || "EDSA Student";
     const studentRows = await db.upsert("students", { email, full_name: name, updated_at: new Date().toISOString() }, "email");
     const student = studentRows[0];
