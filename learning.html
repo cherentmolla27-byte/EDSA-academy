@@ -1087,6 +1087,99 @@ function selectCourse(id,lessonIndex=0){
     if(area) area.innerHTML='<div class="empty">This course could not be opened. Please refresh the page and try again.</div>';
   }
 }
+const DME_VIDEOS={
+  0:{id:"mZm8hksRaIA",title:"Digital Marketing Foundations — Full Introduction",url:"https://www.youtube.com/watch?v=mZm8hksRaIA",note:"Lesson 1 video: a broad introduction to digital marketing concepts and channels."},
+  4:{id:"h8g3h1Z0q7k",title:"SEO Basics for Beginners",url:"https://www.youtube.com/watch?v=h8g3h1Z0q7k",note:"Lesson 5 video: an introductory look at search engine optimization."},
+  9:{id:"RkiX6zcjJBk",title:"Email Marketing Tutorial",url:"https://www.youtube.com/watch?v=RkiX6zcjJBk",note:"Lesson 10 video: email marketing, campaigns, automation and testing."},
+  14:{id:"tCL1Xuo06qw",title:"Complete Email Marketing & Digital Marketing Tutorial",url:"https://www.youtube.com/watch?v=tCL1Xuo06qw",note:"Lesson 15 bonus video: a practical marketing tutorial with email, automation and analytics examples."}
+};
+const VIDEO_LESSONS={smm:{
+  0:{id:"mZm8hksRaIA",title:"Social Media Marketing Full Course 2025 | Beginner to Advance Guide",url:"https://www.youtube.com/watch?v=mZm8hksRaIA",note:"Lesson 1 video: a broad beginner-to-advanced introduction to social media marketing and the social media manager role."},
+  4:{id:"sTSTTRFhmis",title:"How To Create A Content Calendar For Social Media (+ Free Tools)",url:"https://www.youtube.com/watch?v=sTSTTRFhmis",note:"Lesson 5 video: practical step-by-step content calendar planning."},
+  9:{id:"kCy2adkj4HM",title:"8 Social Media Engagement Hacks, Strategies, and Tips",url:"https://www.youtube.com/watch?v=kCy2adkj4HM",note:"Lesson 10 video: practical methods for improving social media engagement and interaction."},
+  14:{id:"-kv3KbTtr4U",title:"Social Media Management Workflow",url:"https://www.youtube.com/watch?v=-kv3KbTtr4U",note:"Lesson 15 video: a real social media management workflow from content creation through scheduling and reporting."}
+}};
+function getVideo(courseId,index){
+  if(courseId==="dme") return DME_VIDEOS[index]||null;
+  if(courseId==="pbm") return PBM_VIDEOS[index]||null;
+  if(courseId==="gdm") return GDM_VIDEOS[index]||null;
+  if(courseId==="fme") return FME_VIDEOS[index]||null;
+  if(courseId==="dbi") return DBI_VIDEOS[index]||null;
+  return VIDEO_LESSONS[index]||null;
+}
+const PBM_VIDEOS={
+0:{id:"7UJBRFGLhJE",title:"Project Management Full Course | Project Management Tutorial For Beginners | Simplilearn",url:"https://www.youtube.com/watch?v=7UJBRFGLhJE",note:"Lesson 1 video: a complete beginner-friendly introduction to project management."},
+4:{id:"VUUa5iU3Gwk",title:"What is Project Scope Management - Concept, Processes, Tools, Techniques & Examples",url:"https://www.youtube.com/watch?v=VUUa5iU3Gwk",note:"Lesson 5 video: project scope, requirements, WBS and scope control."},
+9:{id:"XCXjH1KQoFU",title:"How to Delegate Effectively for Leadership Growth",url:"https://www.youtube.com/watch?v=XCXjH1KQoFU",note:"Lesson 10 video: practical delegation and leadership guidance."},
+14:{id:"aakuB-BtdlQ",title:"How and Why to Close a Project",url:"https://www.youtube.com/watch?v=aakuB-BtdlQ",note:"Lesson 15 video: project closure, approvals, documentation and lessons learned."}
+};
+let state={email:"",name:"",courseId:"",lesson:0,done:{}};
+function key(){return "EDSA_LEARNING_"+state.email.toLowerCase()}
+function load(){try{state.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){state.done={}}}
+function save(){localStorage.setItem(key(),JSON.stringify(state.done))}
+async function boot(){
+  // Keep the course catalog visible while authentication loads.
+  state.courseId="";
+  renderCourses();
+  document.getElementById("courseHome").style.display="";
+  document.getElementById("courseView").style.display="none";
+  const q=new URLSearchParams(location.search).get("course");
+  try{
+    const r=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"});
+    const x=await r.json().catch(()=>({}));
+    if(r.ok&&x.ok&&x.authenticated&&x.user){
+      state.email=x.user.email||"";
+      state.name=x.user.name||"Student";
+      load();
+      document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
+      renderCourses();
+      if(COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); selectCourse(q,Number.isFinite(qi)?qi:0); }
+      return;
+    }
+  }catch(e){}
+  document.getElementById("welcome").textContent="Choose a course to enter its lessons and continue learning.";
+}
+function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct}% complete • ${(d.completed||[]).length}/${c.lessons.length} lessons</b></div>`}
+function renderCourses(){
+  const home=document.getElementById("courseList");
+  const inside=document.getElementById("courseListInside");
+  const html=Object.entries(COURSES).map(([id,c])=>courseCard(id,c)).join("");
+  if(home) home.innerHTML=html;
+  if(inside) inside.innerHTML=html;
+}
+function showCourseHome(){
+  state.courseId="";
+  state.lesson=0;
+  document.getElementById("courseHome").style.display="";
+  document.getElementById("courseView").style.display="none";
+  renderCourses();
+  history.replaceState(null,"","/learning.html");
+}
+function selectCourse(id,lessonIndex=0){
+  if(!COURSES[id]) return;
+  try{
+    const lessons=getLessons(id);
+    if(!Array.isArray(lessons)||!lessons.length) return;
+    state.courseId=id;
+    const requested=Number(lessonIndex);
+    state.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),lessons.length-1):0;
+    if(state.email) load();
+    const home=document.getElementById("courseHome");
+    const view=document.getElementById("courseView");
+    if(home) home.style.display="none";
+    if(view) view.style.display="grid";
+    renderCourses();
+    renderCourse();
+    history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id)+"&lesson="+state.lesson);
+    scrollToLesson();
+  }catch(err){
+    console.error("EDSA course open error:",err);
+    const view=document.getElementById("courseView");
+    const area=document.getElementById("learningArea");
+    if(view) view.style.display="grid";
+    if(area) area.innerHTML='<div class="empty">This course could not be opened. Please refresh the page and try again.</div>';
+  }
+}
 const DME_LESSONS=[
 {
 title:"Digital Marketing Foundations",
