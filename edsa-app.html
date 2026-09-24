@@ -1295,6 +1295,9 @@ function generate50Questions(courseKey, courseTitle) {
             <button onclick="printCertificate()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-5 py-3 rounded-xl transition-colors shadow-lg inline-flex items-center justify-center gap-2 text-sm">
               <i class="fa-solid fa-print"></i> Print Certificate
             </button>
+            <button onclick="verifyMyCertificate()" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold px-5 py-3 rounded-xl transition-colors shadow-lg inline-flex items-center justify-center gap-2 text-sm">
+              <i class="fa-solid fa-shield-halved"></i> Verify Online
+            </button>
           </div>
         `;
       } else {
@@ -1321,6 +1324,14 @@ function generate50Questions(courseKey, courseTitle) {
         }).catch(err => console.error("[EDSA] Certificate registration error:", err));
       }
       showSection("stepResult");
+    }
+
+    function verifyMyCertificate() {
+      if (!state.certificateId) {
+        alert("Your certificate ID is still being prepared. Please try again in a moment.");
+        return;
+      }
+      window.open("/verify?id=" + encodeURIComponent(state.certificateId), "_blank", "noopener");
     }
 
     function resetAndPayAgain() {
