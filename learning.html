@@ -833,6 +833,7 @@ const VIDEO_LESSONS={smm:{
   14:{id:"-kv3KbTtr4U",title:"Social Media Management Workflow",url:"https://www.youtube.com/watch?v=-kv3KbTtr4U",note:"Lesson 15 video: a real social media management workflow from content creation through scheduling and reporting."}
 }};
 function getVideo(courseId,index){
+  if(courseId==="smm") return VIDEO_LESSONS.smm[index]||null;
   if(courseId==="dme") return DME_VIDEOS[index]||null;
   if(courseId==="pbm") return PBM_VIDEOS[index]||null;
   if(courseId==="gdm") return GDM_VIDEOS[index]||null;
