@@ -365,104 +365,104 @@
 
      const SMM_QUESTIONS = [
   {
-    "q": "A brand's reach rises 40% while engagement rate falls 25% after broad-reach video distribution. Which interpretation is most defensible?",
+    "q": "A campaign's CTR rises from 1.2% to 1.8%, but post-click conversion rate falls from 10% to 4%. Which interpretation is most defensible?",
     "options": [
-      "The campaign generated fewer impressions",
-      "The content necessarily became less relevant",
-      "Larger exposure may include a less-engaged audience, so reach and engagement should be analyzed together",
-      "The algorithm must have penalized the account"
-    ],
-    "correct": 2
-  },
-  {
-    "q": "A post has 80,000 impressions, 32,000 reach, and 960 engagements. What does 960 ÷ 32,000 represent?",
-    "options": [
-      "Impression frequency",
-      "Reach-based engagement rate",
-      "Conversion rate",
-      "Click-through rate"
+      "The campaign necessarily improved because CTR increased",
+      "Click-through efficiency improved while post-click efficiency deteriorated; traffic quality or landing-page performance should be investigated",
+      "Conversion rate is irrelevant once CTR improves",
+      "The higher CTR proves the landing page improved"
     ],
     "correct": 1
   },
   {
-    "q": "Two campaigns generate the same clicks. A has 2% CTR from 100,000 impressions; B has 5% CTR from 20,000 impressions. What can be concluded?",
+    "q": "Variant B produces 10% more conversions, but it received 80% of the traffic and the audience allocation was not comparable. What is the strongest concern?",
     "options": [
-      "B generated more clicks",
-      "They generated the same clicks, but B achieved them from fewer impressions",
-      "B necessarily produced more conversions",
-      "A generated more clicks"
+      "B is automatically better because its conversion count is higher",
+      "The unequal and potentially biased exposure makes a direct causal comparison unreliable without further analysis",
+      "Conversion counts can never be compared",
+      "Traffic volume has no relevance to experiment interpretation"
     ],
     "correct": 1
   },
   {
-    "q": "A manager changes creative, audience, budget, placement, and CTA simultaneously, then sees higher conversion. Main analytical problem?",
+    "q": "An analytics audit finds that the same purchase event fires twice for some users. What should happen before comparing performance with earlier campaigns?",
     "options": [
-      "Conversion rate cannot be compared",
-      "Changing multiple variables always reduces conversions",
-      "The sample is automatically invalid",
-      "There is no reliable way to isolate which change contributed"
+      "Keep the inflated number because the error is technical",
+      "Correct or deduplicate the event measurement, document the methodology, and recalculate affected results",
+      "Increase campaign spend to compensate",
+      "Delete all campaign history"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "A creator's engagement is unusually high because one controversial post attracted large numbers of people outside the target market. Which evaluation is most rigorous?",
+    "options": [
+      "Use the overall engagement rate without context",
+      "Separate the unusual event and assess audience relevance, sentiment, and consistency across a broader sample",
+      "Treat controversy as proof of strong brand fit",
+      "Reject the creator solely because one post was controversial"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "A campaign increases website sessions, but most additional sessions last seconds and produce no meaningful actions. What is the safest inference?",
+    "options": [
+      "The campaign definitely improved business performance",
+      "Traffic volume increased, but traffic quality and downstream behavior require investigation before claiming business impact",
+      "Short sessions prove the campaign completely failed",
+      "Website sessions are equivalent to qualified leads"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "A manager changes creative, audience, offer, landing page, and attribution window between two campaigns. Campaign B converts better. What can be isolated reliably?",
+    "options": [
+      "The causal effect of the creative",
+      "The causal effect of the audience",
+      "The causal effect of the offer",
+      "No individual change can be isolated reliably from the combined changes"
     ],
     "correct": 3
   },
   {
-    "q": "A post gets many comments because users argue about an unrelated controversy. Best conclusion?",
+    "q": "Two teams report different engagement rates because one uses reach as the denominator and the other uses impressions. What should happen before comparing them?",
     "options": [
-      "Comments should be counted as impressions",
-      "High comment volume proves positive engagement",
-      "Comment volume should be interpreted in context, not treated as equivalent to positive audience value",
-      "The post is a conversion"
-    ],
-    "correct": 2
-  },
-  {
-    "q": "A business wants qualified leads, not maximum video views. Which KPI set fits?",
-    "options": [
-      "Views, impressions, followers",
-      "Leads, qualified-lead rate, cost per qualified lead, conversion rate",
-      "Likes, shares, comments",
-      "Reach, impressions, frequency"
+      "Average the two percentages",
+      "Verify and standardize the metric definitions before interpreting the difference",
+      "Use whichever percentage is larger",
+      "Discard engagement measurement entirely"
     ],
     "correct": 1
   },
   {
-    "q": "CPC falls sharply while landing-page conversion rate also falls. What should be investigated first?",
+    "q": "A campaign has strong last-click conversion numbers, but converters interacted with several earlier channels. What should analysts examine before assigning all credit to social media?",
     "options": [
-      "The campaign is necessarily more profitable",
-      "Lower CPC proves creative improved",
-      "Conversion rate cannot be affected by traffic quality",
-      "Lower-cost clicks may come from a less-qualified audience or placement"
+      "Whether the attribution model systematically assigns all credit to the final touchpoint",
+      "Whether the posts used enough emojis",
+      "Whether the account has more followers than competitors",
+      "Whether impressions exceed reach"
     ],
-    "correct": 3
+    "correct": 0
   },
   {
-    "q": "The same vertical video is posted unchanged on every platform; one performs poorly and another strongly. Best response?",
+    "q": "An experiment produces a statistically significant 0.2% improvement, but implementation would cost more than the expected financial benefit. Which principle is most appropriate?",
     "options": [
-      "Increase frequency equally",
-      "Assume the weaker platform has no valuable audience",
-      "Delete it",
-      "Adapt hook, pacing, caption, format and CTA to each platform while preserving the core message"
-    ],
-    "correct": 3
-  },
-  {
-    "q": "A creator has 20,000 followers but recent posts get 100 views and little meaningful interaction. What should a brand investigate?",
-    "options": [
-      "Whether enough hashtags are used",
-      "Follower count alone",
-      "Audience authenticity, recent reach, engagement quality, audience fit and content performance",
-      "Only the oldest viral post"
-    ],
-    "correct": 2
-  },
-  {
-    "q": "Negative brand mentions suddenly increase after a product announcement. What should the manager do first?",
-    "options": [
-      "Delete negative comments",
-      "Verify the underlying issue and classify the conversation before choosing a response",
-      "Publish promotion to bury it",
-      "Assume every mention is from a competitor"
+      "Statistical significance alone proves implementation is correct",
+      "Consider statistical evidence together with effect size, implementation cost, and business relevance",
+      "Ignore the statistical result completely",
+      "Choose the variant with the longer confidence interval"
     ],
     "correct": 1
+  },
+  {
+    "q": "Impressions double while unique reach remains almost unchanged and frequency rises sharply. Which explanation best fits the data?",
+    "options": [
+      "The same users were exposed multiple times more often",
+      "The unique audience necessarily doubled",
+      "The campaign necessarily generated twice as many customers",
+      "Reach and impressions must always increase at the same rate"
+    ],
+    "correct": 0
   },
   {
     "q": "A calendar is almost entirely promotional, with little educational/community content. Strongest diagnosis?",
@@ -864,7 +864,7 @@
     ],
     "correct": 1
   }
-];
+];;
 
 function generate50Questions(courseKey, courseTitle) {
 
