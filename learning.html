@@ -875,6 +875,7 @@ async function boot(){
       state.email=x.user.email||"";
       state.name=x.user.name||"Student";
       load();
+      await Promise.all(Object.keys(COURSES).map(id=>checkCourseAccess(id)));
       document.getElementById("welcome").textContent="Welcome, "+state.name+". Activate a course once, then all 15 lessons stay free. You may take the exam whenever you are ready.";
       renderCourses();
       if(COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); selectCourse(q,Number.isFinite(qi)?qi:0); }
@@ -1715,6 +1716,9 @@ function nextLesson(){
   state.done[state.courseId]=d; save();
   if(state.lesson<total-1){ openLesson(state.lesson+1); return; }
   renderCourse(); renderCourses();
+  if(state.done[state.courseId].completed.length===total){
+    setTimeout(()=>{ if(confirm("🎓 You completed all 15 lessons. Go to the exam now?")) location.href="/edsa-app.html?course="+encodeURIComponent(state.courseId); },120);
+  }
 }
 function toggleComplete(){
   const d=state.done[state.courseId]||{completed:[]};
