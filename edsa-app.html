@@ -1687,6 +1687,29 @@ function generate50Questions(courseKey, courseTitle) {
         if (!response.ok || !result.ok) throw new Error(result.error || "Registry publication failed");
         state.certificateRegistered = true;
         console.log("[EDSA] Certificate published:", state.certificateId);
+
+        // Send the congratulations email only after the certificate is registered.
+        // The student's email is used as the destination only; it is never printed on the certificate.
+        const emailSentKey = "EDSA_CERT_EMAIL_SENT_" + state.certificateId;
+        if (record.email && !localStorage.getItem(emailSentKey)) {
+          try {
+            const emailResponse = await fetch("/api/send-certificate-email", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(record)
+            });
+            const emailResult = await emailResponse.json().catch(() => ({}));
+            if (emailResponse.ok && emailResult.ok) {
+              localStorage.setItem(emailSentKey, new Date().toISOString());
+              console.log("[EDSA] Certificate email sent:", state.certificateId);
+            } else {
+              console.warn("[EDSA] Certificate registered, but email was not sent:", emailResult.error || "Email service unavailable");
+            }
+          } catch (emailError) {
+            console.warn("[EDSA] Certificate registered, but email request failed:", emailError);
+          }
+        }
       } catch (error) {
         state.certificateRegistered = false;
         console.warn("[EDSA] Certificate saved locally but not yet published:", error);
