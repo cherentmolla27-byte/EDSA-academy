@@ -517,6 +517,108 @@ example:"An EDSA enrollment campaign could combine short educational videos, sea
 }
 ];
 
+
+const state={courseId:null,lesson:0,email:"",done:{}};
+
+const VIDEO_LESSONS={
+  smm:{
+    0:{id:"mZm8hksRaIA",title:"Social Media Marketing Full Course 2025 | Beginner to Advance Guide",note:"Lesson 1 recommended video"},
+    4:{id:"sTSTTRFhmis",title:"How To Create A Content Calendar For Social Media (+ Free Tools)",note:"Lesson 5 recommended video"},
+    9:{id:"kCy2adkj4HM",title:"8 Social Media Engagement Hacks, Strategies, and Tips",note:"Lesson 10 recommended video"},
+    14:{id:"-kv3KbTtr4U",title:"Social Media Management Workflow",note:"Lesson 15 recommended video"}
+  },
+  dme:{
+    0:{id:"mZm8hksRaIA",title:"Digital Marketing Full Course",note:"Lesson 1 recommended video"},
+    4:{id:"h8g3h1Z0q7k",title:"Search Engine Basics",note:"Lesson 5 recommended video"},
+    9:{id:"RkiX6zcjJBk",title:"Landing Pages & Conversion",note:"Lesson 10 recommended video"},
+    14:{id:"tCL1Xuo06qw",title:"Integrated Digital Marketing Campaigns",note:"Lesson 15 recommended video"}
+  },
+  pbm:{
+    0:{url:"https://www.youtube.com/results?search_query=project+management+full+course+for+beginners",title:"Project Management Full Course for Beginners",note:"Open the YouTube results for a current lesson video"},
+    4:{url:"https://www.youtube.com/results?search_query=project+scope+management",title:"Project Scope Management",note:"Open the YouTube results for a current lesson video"},
+    9:{id:"XCXjH1KQoFU",title:"How to Delegate Effectively for Leadership Growth",note:"Lesson 10 recommended video"},
+    14:{id:"aakuB-BtdlQ",title:"How and Why to Close a Project",note:"Lesson 15 recommended video"}
+  }
+};
+
+function getVideo(courseId,index){
+  return (VIDEO_LESSONS[courseId]&&VIDEO_LESSONS[courseId][index])||null;
+}
+
+function save(){
+  try{
+    localStorage.setItem("edsa_learning_state",JSON.stringify({email:state.email,done:state.done}));
+  }catch(e){console.warn("EDSA local save failed",e);}
+}
+
+function load(){
+  try{
+    const raw=localStorage.getItem("edsa_learning_state");
+    if(raw){
+      const saved=JSON.parse(raw);
+      if(saved&&typeof saved==="object"){
+        state.done=saved.done&&typeof saved.done==="object"?saved.done:{};
+        state.email=saved.email||state.email||"";
+      }
+    }
+  }catch(e){console.warn("EDSA local load failed",e);}
+}
+
+function renderCourses(){
+  const list=document.getElementById("courseList");
+  const inside=document.getElementById("courseListInside");
+  const html=Object.entries(COURSES).map(([id,c])=>{
+    const d=state.done[id]||{completed:[]};
+    const completed=Array.isArray(d.completed)?d.completed.length:0;
+    const active=state.courseId===id?" active":"";
+    return '<div class="course'+active+'" onclick="selectCourse(\''+id+'\')"><strong>'+escapeHtml(c.title)+'</strong><span>'+escapeHtml(c.desc)+'</span><b>'+c.lessons.length+' lessons • '+completed+'/'+c.lessons.length+' completed • Open →</b></div>';
+  }).join("");
+  if(list)list.innerHTML=html;
+  if(inside)inside.innerHTML=html;
+}
+
+function showCourseHome(){
+  state.courseId=null;
+  state.lesson=0;
+  const home=document.getElementById("courseHome");
+  const view=document.getElementById("courseView");
+  if(home)home.style.display="block";
+  if(view)view.style.display="none";
+  history.replaceState(null,"","/learning.html");
+  renderCourses();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function selectCourse(id,lessonIndex=0){
+  if(!COURSES[id])return;
+  const lessons=getLessons(id);
+  if(!Array.isArray(lessons)||!lessons.length)return;
+  state.courseId=id;
+  const requested=Number(lessonIndex);
+  state.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),lessons.length-1):0;
+  const home=document.getElementById("courseHome");
+  const view=document.getElementById("courseView");
+  if(home)home.style.display="none";
+  if(view)view.style.display="grid";
+  renderCourses();
+  renderCourse();
+  history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id)+"&lesson="+state.lesson);
+  scrollToLesson();
+}
+
+async function boot(){
+  load();
+  renderCourses();
+  const welcome=document.getElementById("welcome");
+  if(welcome)welcome.textContent=state.email?"Welcome back. Choose a course and continue learning.":"Choose a course to begin learning.";
+  const params=new URLSearchParams(location.search);
+  const id=params.get("course");
+  const lesson=params.get("lesson");
+  if(id&&COURSES[id]){
+    selectCourse(id,lesson===null?0:lesson);
+  }
+}
+
 function getLessons(id){
   if(id==="smm") return SMM_LESSONS;
   if(id==="dme") return DME_LESSONS;
