@@ -114,7 +114,7 @@
 
       <div class="bg-black/80 p-5 rounded-xl border border-slate-800 mb-6 text-sm text-slate-300 space-y-3">
         <p class="font-bold text-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-receipt text-sky-400"></i> Exam Fee: <span class="text-sky-400">500 ETB</span>
+          <i class="fa-solid fa-receipt text-sky-400"></i> Exam attempt: <span class="text-sky-400">500 ETB</span>
         </p>
         <div class="space-y-1 font-mono text-xs">
           <p>• Telebirr: <span class="text-sky-400 font-bold">0996173649</span></p>
@@ -126,7 +126,7 @@
 
         <!-- Telegram Action Button -->
         <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p class="text-xs text-slate-400">After paying 500 ETB, send your transfer screenshot to get your key:</p>
+          <p class="text-xs text-slate-400">For your first exam, pay 500 ETB and send your transfer screenshot to get your activation key. After activation, the 15 lessons stay unlocked for you. A new exam attempt after a fail requires another 500 ETB key:</p>
           <a id="telegramBtn" href="https://t.me/Cheru178" target="_blank" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg inline-flex items-center gap-2 transition-colors whitespace-nowrap">
             <i class="fa-brands fa-telegram text-base"></i> Send Receipt on Telegram
           </a>
@@ -143,7 +143,7 @@
           <input type="text" id="accessKey" required placeholder="e.g. EDSA-8A2F9B" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white uppercase focus:outline-none focus:border-sky-500">
         </div>
         <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-lg transition-colors shadow-lg">
-          Verify Key & Launch Exam
+          Verify Key & Launch Exam Attempt
         </button>
       </form>
     </section>
@@ -156,7 +156,7 @@
           <p class="text-xs text-slate-400">Total Questions: 50 | Passing Mark: 80% (40/50 correct)</p>
         </div>
         <span class="text-xs bg-sky-500/10 text-sky-400 font-bold px-3 py-1.5 rounded-full border border-sky-500/30">
-          Fee: 500 ETB
+          Exam attempt: 500 ETB
         </span>
       </div>
 
@@ -967,10 +967,10 @@ function generate50Questions(courseKey, courseTitle) {
               <i class="fa-solid ${course.icon}"></i>
             </div>
             <h3 class="font-bold text-white text-base mb-1 group-hover:text-sky-400 transition-colors">${course.title}</h3>
-            <p class="text-xs text-slate-400 mb-4">50 Questions • 80% Pass Grade • 500 ETB</p>
+            <p class="text-xs text-slate-400 mb-4">15 Lessons + 50 Questions • 80% Pass Grade • 500 ETB per exam attempt</p>
           </div>
           <button onclick="selectCourse('${course.id}')" class="w-full bg-sky-500/10 hover:bg-sky-500 text-sky-400 hover:text-white border border-sky-500/30 text-xs font-bold py-2.5 rounded-xl transition-all">
-            Take Exam (500 ETB)
+            Study Course / Take Exam
           </button>
         </div>
       `).join("");
@@ -1050,10 +1050,20 @@ function generate50Questions(courseKey, courseTitle) {
       }
       document.getElementById("selectedCourseTitle").innerText = `Selected: ${state.selectedCourse.title}`;
       document.getElementById("userStatus").innerText = `Signed in: ${state.studentName || state.studentEmail}`;
+      try {
+        const accessResponse = await fetch("/api/course-access?courseId="+encodeURIComponent(courseId), {credentials:"same-origin", cache:"no-store"});
+        const accessResult = await accessResponse.json().catch(() => ({}));
+        const note = document.querySelector("#stepPayment .text-slate-300.space-y-3 p.font-bold");
+        if (accessResponse.ok && accessResult.ok && accessResult.unlocked) {
+          if (note) note.innerHTML = '<i class="fa-solid fa-rotate-right text-sky-400"></i> Exam retake fee: <span class="text-sky-400">500 ETB</span>';
+          const title = document.getElementById("selectedCourseTitle");
+          if (title) title.innerText = `Retake: ${state.selectedCourse.title} — Your course lessons remain unlocked`;
+        }
+      } catch (_) {}
       showSection("stepPayment");
     }
 
-    async async function verifyAndStartExam(e) {
+    async function verifyAndStartExam(e) {
       e.preventDefault();
 
       // Exams require an authenticated student account.
