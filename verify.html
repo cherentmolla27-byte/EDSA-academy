@@ -22,6 +22,7 @@ body{background:#07111d}.gold{color:#d6a52a}
 <div id="statusBox" class="rounded-2xl border p-5 mb-7 text-center"></div>
 <div class="grid gap-4">
 <div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Full Name</div><div id="name" class="text-xl font-semibold mt-1"></div></div>
+<div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Email</div><div id="email" class="text-base font-semibold mt-1 break-all"></div></div>
 <div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Course</div><div id="course" class="text-xl font-semibold mt-1"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Certificate ID</div><div id="certificateId" class="font-mono font-semibold mt-1 text-yellow-400"></div></div><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Issue Date</div><div id="issueDate" class="font-semibold mt-1"></div></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Status</div><div id="status" class="font-semibold mt-1"></div></div><div class="bg-black/30 border border-slate-800 rounded-xl p-4"><div class="text-xs uppercase tracking-wider text-slate-500">Issued By</div><div id="issuedBy" class="font-semibold mt-1"></div></div></div>
@@ -68,6 +69,7 @@ async function loadCertificate(){
   statusBox.innerHTML="<div class='text-4xl mb-2'>!</div><div class='text-xl font-bold text-yellow-400'>Certificate Found on This Device</div><div class='text-sm text-slate-400 mt-2'>This record is stored locally and is not a public registry verification.</div>";
 }
  document.getElementById("name").textContent=record.name||"—";
+ document.getElementById("email").textContent=record.email||"—";
  document.getElementById("course").textContent=record.course||"—";
  document.getElementById("certificateId").textContent=record.id||id;
  document.getElementById("issueDate").textContent=formatDate(record.issueDate);
