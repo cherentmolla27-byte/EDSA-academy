@@ -1053,7 +1053,7 @@ function generate50Questions(courseKey, courseTitle) {
       showSection("stepPayment");
     }
 
-    async function verifyAndStartExam(e) {
+    async async function verifyAndStartExam(e) {
       e.preventDefault();
 
       // Exams require an authenticated student account.
@@ -1085,30 +1085,39 @@ function generate50Questions(courseKey, courseTitle) {
         return;
       }
 
+      let activation;
+      try {
+        const response = await fetch("/api/activate-key", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: inputKey,
+            courseId: state.selectedCourse ? state.selectedCourse.id : ""
+          })
+        });
+        activation = await response.json().catch(() => ({}));
+        if (!response.ok || !activation.ok) {
+          alert(activation.error || "This activation key is invalid or has already been used.");
+          return;
+        }
+      } catch (error) {
+        console.error("[EDSA] Activation validation failed:", error);
+        alert("We could not verify your payment key right now. Please try again.");
+        return;
+      }
+
       const keys = getStoredKeys();
       const keyObj = keys.find(k => k.code === inputKey);
-
-      if (!keyObj) {
-        alert("Invalid Activation Key. Please contact admin on Telegram to receive your key.");
-        return;
+      if (keyObj) {
+        keyObj.used = true;
+        keyObj.status = "used";
+        keyObj.usedBy = name;
+        keyObj.usedAt = new Date().toISOString();
+        keyObj.usedCourse = state.selectedCourse ? state.selectedCourse.id : "";
+        keyObj.usedEmail = state.studentEmail || "";
+        saveStoredKeys(keys);
       }
-
-      if (keyObj.used) {
-        alert(`This key has already been used by ${keyObj.usedBy || "another student"}.`);
-        return;
-      }
-
-      if (keyObj.scope !== "ALL" && keyObj.scope !== state.selectedCourse.id) {
-        alert(`This key is valid only for the '${COURSES.find(c => c.id === keyObj.scope)?.title}' exam.`);
-        return;
-      }
-
-      keyObj.used = true;
-      keyObj.usedBy = name;
-      keyObj.usedAt = new Date().toISOString();
-      keyObj.usedCourse = state.selectedCourse ? state.selectedCourse.id : "";
-      keyObj.usedEmail = state.studentEmail || "";
-      saveStoredKeys(keys);
       saveLocalPaymentRecord({
         id: "PAY-" + Date.now(),
         date: new Date().toISOString(),
@@ -2008,19 +2017,38 @@ function generate50Questions(courseKey, courseTitle) {
       renderAdminDashboard();
     }
 
-    function generateKeys() {
+    async function generateKeys() {
       const scope = document.getElementById("keyCourseScope").value;
-      const count = parseInt(document.getElementById("keyCount").value) || 1;
-      const keys = getStoredKeys();
-
-      for (let i = 0; i < count; i++) {
-        const randomHex = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const code = `EDSA-${randomHex}`;
-        keys.unshift({ code, scope, used: false, usedBy: null });
+      const count = Math.min(Math.max(parseInt(document.getElementById("keyCount").value) || 1, 1), 20);
+      try {
+        const response = await fetch("/api/admin-generate-key", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ scope, count })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) {
+          alert(result.error || "Could not generate activation key(s).");
+          return;
+        }
+        const keys = getStoredKeys();
+        (result.keys || []).reverse().forEach(k => keys.unshift({
+          code: k.code,
+          scope: k.scope,
+          amount: 500,
+          status: "active",
+          used: false,
+          usedBy: null,
+          createdAt: k.createdAt
+        }));
+        saveStoredKeys(keys);
+        renderKeysTable();
+        alert((result.keys || []).length + " secure 500 ETB activation key(s) generated.");
+      } catch (error) {
+        console.error("[EDSA] Key generation failed:", error);
+        alert("Key generation could not be completed. Please try again.");
       }
-
-      saveStoredKeys(keys);
-      renderKeysTable();
     }
 
      function copyKey(code) {
