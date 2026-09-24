@@ -401,15 +401,28 @@ function showCourseHome(){
 }
 function selectCourse(id,lessonIndex=0){
   if(!COURSES[id]) return;
-  state.courseId=id;
-  state.lesson=Number.isFinite(Number(lessonIndex))?Math.max(0,Number(lessonIndex)):0;
-  if(state.email) load();
-  document.getElementById("courseHome").style.display="none";
-  document.getElementById("courseView").style.display="grid";
-  renderCourses();
-  renderCourse();
-  history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id)+"&lesson="+state.lesson);
-  scrollToLesson();
+  try{
+    const lessons=getLessons(id);
+    if(!Array.isArray(lessons)||!lessons.length) return;
+    state.courseId=id;
+    const requested=Number(lessonIndex);
+    state.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),lessons.length-1):0;
+    if(state.email) load();
+    const home=document.getElementById("courseHome");
+    const view=document.getElementById("courseView");
+    if(home) home.style.display="none";
+    if(view) view.style.display="grid";
+    renderCourses();
+    renderCourse();
+    history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id)+"&lesson="+state.lesson);
+    scrollToLesson();
+  }catch(err){
+    console.error("EDSA course open error:",err);
+    const view=document.getElementById("courseView");
+    const area=document.getElementById("learningArea");
+    if(view) view.style.display="grid";
+    if(area) area.innerHTML='<div class="empty">This course could not be opened. Please refresh the page and try again.</div>';
+  }
 }
 const DME_LESSONS=[
 {
