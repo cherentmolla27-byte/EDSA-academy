@@ -299,9 +299,9 @@ function renderCourse(){
   document.getElementById("learningArea").innerHTML=
     '<div class="lesson-head"><div><div style="font-size:9px;color:#1677ff;font-weight:900;letter-spacing:.12em">LESSON '+(state.lesson+1)+' OF '+lessons.length+'</div><h2>'+escapeHtml(l.title)+'</h2><p>'+escapeHtml(l.intro)+'</p></div></div>'+
     '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
-    '<div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div>'+
     '<div class="viewer"><h3>'+escapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+escapeHtml(l.example)+'</div></div>'+videoHtml+
-    '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>';
+    '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>'+
+    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>';
 }
 function openLesson(i){
   const lessons=getLessons(state.courseId);
@@ -309,7 +309,8 @@ function openLesson(i){
   state.lesson=i;
   history.replaceState(null,"","/learning.html?course="+encodeURIComponent(state.courseId)+"&lesson="+state.lesson);
   renderCourse();
-  window.scrollTo({top:0,behavior:"smooth"});
+  const viewer=document.querySelector(".viewer");
+  if(viewer) viewer.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function prevLesson(){if(state.lesson>0)openLesson(state.lesson-1)}
 function nextLesson(){
