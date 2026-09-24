@@ -13,7 +13,6 @@ module.exports=async function(req,res){
   try{
     // IMPORTANT: lesson JSON is read only by the server using the Supabase
     // secret key. The browser never gets database credentials.
-    const email=auth.normalizeEmail(session.email);
     const access=await fetch(
       "https://edsa-academy.vercel.app/api/course-access?courseId="+encodeURIComponent(courseId),
       {headers:{cookie:String(req.headers.cookie||""),accept:"application/json"},cache:"no-store"}
