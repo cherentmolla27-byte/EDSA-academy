@@ -15,6 +15,11 @@ export default async function handler(req, res) {
       });
     }
 
+    const session = require("./_auth").readSession(req);
+    if (!session || session.role !== "student") {
+      return res.status(401).json({ ok: false, error: "Student sign-in required." });
+    }
+
     const body = req.body || {};
     const id = String(body.id || "").trim();
     const name = String(body.name || "").trim();
@@ -25,6 +30,13 @@ export default async function handler(req, res) {
 
     if (!/^EDSA-\d{4}-\d{6}$/.test(id) || !name || !course || !issueDate) {
       return res.status(400).json({ ok: false, error: "Invalid certificate data." });
+    }
+    if (email && email !== String(session.email || "").trim().toLowerCase()) {
+      return res.status(403).json({ ok: false, error: "Certificate email does not match the signed-in student." });
+    }
+    const numericScore = Number(score);
+    if (!Number.isFinite(numericScore) || numericScore < 80 || numericScore > 100) {
+      return res.status(400).json({ ok: false, error: "Only certificates with a passing score of 80% or higher can be registered." });
     }
 
     const [owner, repo] = repository.split("/");
