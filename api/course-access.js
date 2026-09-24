@@ -6,11 +6,18 @@ module.exports=async function(req,res){
  if(req.method!=="GET")return auth.json(res,405,{ok:false,error:"Method not allowed"});
  const s=auth.readSession(req);if(!s||s.role!=="student")return auth.json(res,401,{ok:false,error:"Student sign-in required."});
  try{
-  const courseId=String((req.query&&req.query.courseId)||"").trim();
+  const courseId=String((req.query&&req.query.courseId)||"").trim().toLowerCase();
   if(!courseId)return auth.json(res,400,{ok:false,error:"Course is required."});
-  const email=auth.normalizeEmail(s.email);
-  const keys=await read();
-  const access=keys.some(k=>k.status==="used"&&k.amount===500&&String(k.usedEmail||"").toLowerCase()===email&&(k.usedCourse===courseId||k.scope==="ALL"));
-  return auth.json(res,200,{ok:true,unlocked:access,courseId});
+  const email=auth.normalizeEmail(s.email),keys=await read();
+  const unlocked=keys.some(k=>k.status==="used"&&k.amount===500&&auth.normalizeEmail(k.usedEmail)===email&&(k.usedCourse===courseId||k.scope==="ALL"));
+  if(!unlocked)return auth.json(res,200,{ok:true,unlocked:false,courseId});
+  if(String((req.query&&req.query.include)||"")!=="lessons")return auth.json(res,200,{ok:true,unlocked:true,courseId});
+  const r=await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId="+encodeURIComponent(courseId),{
+    headers:{cookie:String(req.headers.cookie||""),accept:"application/json"},
+    cache:"no-store"
+  });
+  const body=await r.json().catch(()=>({ok:false,error:"Invalid protected course response."}));
+  res.setHeader("Cache-Control","no-store, private");
+  return auth.json(res,r.status,{...body,unlocked:true});
  }catch(e){console.error("[EDSA course access]",e);return auth.json(res,e.status||500,{ok:false,error:"Course access could not be checked."})}
 };
