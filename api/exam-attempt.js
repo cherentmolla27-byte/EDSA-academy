@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
   }
 
   const session = auth.readSession(req);
-  if (!session || session.role === "admin") {
+  if (!session || session.role !== "student") {
     return auth.json(res, 401, { ok: false, error: "Please sign in before submitting an exam." });
   }
 
@@ -42,6 +42,12 @@ module.exports = async function handler(req, res) {
 
     if (!courseId || score == null || score < 0 || score > 100) {
       return auth.json(res, 400, { ok: false, error: "Valid course and score are required." });
+    }
+    if (passed && score < 80) {
+      return auth.json(res, 400, { ok: false, error: "A passing result requires at least 80%." });
+    }
+    if (!passed && score >= 80) {
+      return auth.json(res, 400, { ok: false, error: "Result status does not match the score." });
     }
 
     const email = auth.normalizeEmail(session.email);
