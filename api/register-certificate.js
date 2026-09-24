@@ -21,6 +21,7 @@ export default async function handler(req, res) {
     const course = String(body.course || "").trim();
     const issueDate = String(body.issueDate || "").trim();
     const score = String(body.score ?? "").trim();
+    const email = String(body.email || "").trim().toLowerCase();
 
     if (!/^EDSA-\d{4}-\d{6}$/.test(id) || !name || !course || !issueDate) {
       return res.status(400).json({ ok: false, error: "Invalid certificate data." });
@@ -78,6 +79,7 @@ export default async function handler(req, res) {
       registry[id] = {
         id,
         name,
+        email,
         course,
         issueDate,
         score,
