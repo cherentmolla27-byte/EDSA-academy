@@ -363,557 +363,508 @@
     const MAX_FAILED_ATTEMPTS = 3;
     const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 
-     const SMM_QUESTIONS = [                                                                              
-  {    
-    q: "What is the main purpose of a social media content strategy?",
-    options: [
-      "To achieve specific communication and marketing goals",
-      "To post as many times as possible",
-      "To copy competitors exactly",
-      "To avoid measuring results"
-    ],
-    correct: 0
-  },
-
+     const SMM_QUESTIONS = [
   {
-    q: "What does audience research help a social media manager understand?",
-    options: [
-      "The audience's interests, needs, and behavior",
-      "Only the company's logo color",
-      "How to avoid customer feedback",
-      "Only the number of employees in a company"
+    "q": "A brand's reach rises 40% while engagement rate falls 25% after broad-reach video distribution. Which interpretation is most defensible?",
+    "options": [
+      "The content necessarily became less relevant",
+      "Larger exposure may include a less-engaged audience, so reach and engagement should be analyzed together",
+      "The algorithm must have penalized the account",
+      "The campaign generated fewer impressions"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is a content calendar mainly used for?",
-    options: [
-      "Planning and organizing social media content",
-      "Deleting old social media accounts",
-      "Increasing internet speed",
-      "Creating payment invoices"
-    ],
-    correct: 0
-  },
-
-  {
-    q: "Which metric measures the number of times content was displayed?",
-    options: [
-      "Impressions",
+    "q": "A post has 80,000 impressions, 32,000 reach, and 960 engagements. What does 960 ÷ 32,000 represent?",
+    "options": [
+      "Impression frequency",
+      "Reach-based engagement rate",
       "Conversion rate",
-      "Engagement rate",
       "Click-through rate"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What does engagement generally include?",
-    options: [
-      "Likes, comments, shares, saves, and other interactions",
-      "Only the number of followers",
-      "Only advertising costs",
-      "Only website loading speed"
+    "q": "Two campaigns generate the same clicks. A has 2% CTR from 100,000 impressions; B has 5% CTR from 20,000 impressions. What can be concluded?",
+    "options": [
+      "A generated more clicks",
+      "B generated more clicks",
+      "They generated the same clicks, but B achieved them from fewer impressions",
+      "B necessarily produced more conversions"
     ],
-    correct: 0
+    "correct": 2
   },
-
   {
-    q: "Why should a brand maintain a consistent voice on social media?",
-    options: [
-      "To create a recognizable and consistent brand identity",
-      "To make every post identical",
-      "To avoid communicating with customers",
-      "To reduce the number of followers"
+    "q": "A manager changes creative, audience, budget, placement, and CTA simultaneously, then sees higher conversion. Main analytical problem?",
+    "options": [
+      "The sample is automatically invalid",
+      "There is no reliable way to isolate which change contributed",
+      "Conversion rate cannot be compared",
+      "Changing multiple variables always reduces conversions"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is the purpose of a social media call to action (CTA)?",
-    options: [
-      "To encourage the audience to take a desired action",
-      "To hide information from followers",
-      "To reduce engagement",
-      "To replace the brand identity"
+    "q": "A post gets many comments because users argue about an unrelated controversy. Best conclusion?",
+    "options": [
+      "High comment volume proves positive engagement",
+      "Comment volume should be interpreted in context, not treated as equivalent to positive audience value",
+      "The post is a conversion",
+      "Comments should be counted as impressions"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Which approach is generally most useful when choosing hashtags?",
-    options: [
-      "Use relevant hashtags that match the content and audience",
-      "Use completely unrelated popular hashtags",
-      "Use the same hashtag for every possible topic",
-      "Avoid researching hashtags"
+    "q": "A business wants qualified leads, not maximum video views. Which KPI set fits?",
+    "options": [
+      "Views, impressions, followers",
+      "Leads, qualified-lead rate, cost per qualified lead, conversion rate",
+      "Likes, shares, comments",
+      "Reach, impressions, frequency"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is community management?",
-    options: [
-      "Building relationships with and responding to an online community",
-      "Only creating advertisements",
-      "Only designing logos",
-      "Deleting customer comments"
+    "q": "CPC falls sharply while landing-page conversion rate also falls. What should be investigated first?",
+    "options": [
+      "Lower-cost clicks may come from a less-qualified audience or placement",
+      "The campaign is necessarily more profitable",
+      "Lower CPC proves creative improved",
+      "Conversion rate cannot be affected by traffic quality"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What should a social media manager do when receiving a genuine customer question?",
-    options: [
-      "Respond clearly and professionally",
-      "Ignore every question",
-      "Delete the customer's account",
-      "Post an unrelated advertisement"
+    "q": "The same vertical video is posted unchanged on every platform; one performs poorly and another strongly. Best response?",
+    "options": [
+      "Delete it",
+      "Adapt hook, pacing, caption, format and CTA to each platform while preserving the core message",
+      "Increase frequency equally",
+      "Assume the weaker platform has no valuable audience"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why is it important to analyze social media performance?",
-    options: [
-      "To understand what is working and improve future strategies",
-      "To make every post longer",
-      "To avoid learning about the audience",
-      "To stop creating content"
+    "q": "A creator has 20,000 followers but recent posts get 100 views and little meaningful interaction. What should a brand investigate?",
+    "options": [
+      "Follower count alone",
+      "Audience authenticity, recent reach, engagement quality, audience fit and content performance",
+      "Only the oldest viral post",
+      "Whether enough hashtags are used"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is organic social media content?",
-    options: [
-      "Content published without paying for distribution as an advertisement",
-      "Only content created by celebrities",
-      "Content that can never receive comments",
-      "Content that must always be a video"
+    "q": "Negative brand mentions suddenly increase after a product announcement. What should the manager do first?",
+    "options": [
+      "Delete negative comments",
+      "Verify the underlying issue and classify the conversation before choosing a response",
+      "Publish promotion to bury it",
+      "Assume every mention is from a competitor"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is paid social advertising?",
-    options: [
-      "Paying a platform to distribute promotional content to selected audiences",
-      "Posting only to personal friends",
-      "Sending private messages manually",
-      "Creating content without publishing it"
+    "q": "A calendar is almost entirely promotional, with little educational/community content. Strongest diagnosis?",
+    "options": [
+      "High frequency makes strategy unnecessary",
+      "The content mix may be overly promotion-heavy and insufficiently balanced against audience needs and funnel stages",
+      "Promotional content is always inappropriate",
+      "Educational content should replace all promotion"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is audience segmentation?",
-    options: [
-      "Dividing an audience into groups based on relevant characteristics",
-      "Deleting inactive followers",
-      "Using one message for everyone",
-      "Posting without knowing the audience"
+    "q": "A campaign reports 12% engagement using followers as denominator, while a comparison uses reach. Main issue?",
+    "options": [
+      "Engagement rate is always follower-based",
+      "The rates may not be directly comparable because denominator definitions differ",
+      "Followers should never be used",
+      "Reach cannot be used"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why might a business use different content formats?",
-    options: [
-      "Different formats can suit different audiences, platforms, and goals",
-      "Every audience prefers exactly the same format",
-      "Formats have no effect on communication",
-      "Only text can be used on social media"
+    "q": "Followers increase rapidly after a giveaway, but repeat engagement and website actions do not. Most cautious interpretation?",
+    "options": [
+      "The giveaway created loyal customers",
+      "Follower growth occurred, but relevance and downstream behavior should be tested",
+      "The giveaway failed because followers increased",
+      "Follower growth is irrelevant"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is a social media KPI?",
-    options: [
-      "A measurable indicator used to evaluate performance",
-      "A type of image file",
-      "A social media password",
-      "A graphic design template"
+    "q": "Which is a vanity metric rather than a decision-ready KPI?",
+    "options": [
+      "Cost per qualified lead",
+      "Completed purchases attributed to campaign",
+      "Follower count without connection to objectives",
+      "Landing-page conversion rate"
     ],
-    correct: 0
+    "correct": 2
   },
-
   {
-    q: "What does reach measure?",
-    options: [
-      "The number of unique users who saw content",
-      "The number of times one user refreshed a page",
-      "The number of employees in a company",
-      "The amount spent on internet access"
+    "q": "One comparison month includes a major influencer collaboration and the other does not. What matters before attributing change to ordinary strategy?",
+    "options": [
+      "The collaboration is a potential confounding factor",
+      "Monthly comparisons are never valid",
+      "Influencers cannot affect metrics",
+      "Only follower count matters"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What is a social media campaign?",
-    options: [
-      "A coordinated set of activities designed around a specific objective",
-      "A random collection of unrelated posts",
-      "A private conversation between employees",
-      "A website hosting service"
+    "q": "A post has unusually high reach but below-average saves and shares among the target audience. Best conclusion?",
+    "options": [
+      "It definitely has strong long-term value",
+      "It achieved exposure, but deeper audience action may be weaker than reach suggests",
+      "Promote it automatically",
+      "High reach proves audience fit"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is influencer marketing?",
-    options: [
-      "Working with influential creators to communicate with their audience",
-      "Deleting all creator accounts",
-      "Only advertising through newspapers",
-      "Using no audience research"
+    "q": "To test whether a shorter CTA increases landing-page conversions, which design is strongest?",
+    "options": [
+      "Change CTA while keeping relevant audience, offer, landing page and period as consistent as practical",
+      "Change CTA, creative, audience and offer together",
+      "Use completely different audiences",
+      "Choose the version with more impressions"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "Before working with an influencer, what should a brand consider?",
-    options: [
-      "Audience relevance, credibility, content fit, and campaign goals",
-      "Only the influencer's profile picture",
-      "Only the number of emojis they use",
-      "Whether they post at exactly the same time every day"
+    "q": "A brand gets 1,000 link clicks but only 20 registrations. Which metric diagnoses the post-click problem?",
+    "options": [
+      "Follower growth",
+      "Landing-page conversion rate",
+      "Post reach",
+      "Impression frequency"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is social listening?",
-    options: [
-      "Monitoring online conversations and mentions about relevant topics or brands",
-      "Listening to music while creating posts",
-      "Calling every follower by telephone",
-      "Deleting negative keywords"
+    "q": "Content is scheduled at the historical peak activity time, but engagement declines after weeks. Best inference?",
+    "options": [
+      "Historical timing guarantees performance",
+      "Timing is one variable; fatigue, audience changes, competition and other factors should also be tested",
+      "Audience permanently left",
+      "Scheduling tools reduce organic reach"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why should social media managers monitor brand mentions?",
-    options: [
-      "To understand public conversations and respond when appropriate",
-      "To prevent customers from talking",
-      "To eliminate all feedback",
-      "To increase the number of unrelated posts"
+    "q": "Strong organic engagement but poor sales from social traffic. Most diagnostic next step?",
+    "options": [
+      "Stop measuring engagement",
+      "Examine click path, landing-page behavior, offer relevance and conversion tracking",
+      "Assume audience is dishonest",
+      "Increase hashtags"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is A/B testing in social media marketing?",
-    options: [
-      "Comparing two versions to determine which performs better",
-      "Posting the same content forever",
-      "Creating two unrelated companies",
-      "Deleting half of an audience"
+    "q": "A legitimate complaint contains a personal phone number. Best public-response principle?",
+    "options": [
+      "Quote it for transparency",
+      "Avoid unnecessarily exposing personal information and move sensitive details to an appropriate private channel",
+      "Ignore the complaint",
+      "Publish full details to verify identity"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What should be changed in a useful A/B test?",
-    options: [
-      "A specific variable that can be compared between versions",
-      "Everything at the same time",
-      "Nothing at all",
-      "The entire business strategy every hour"
+    "q": "A brand wants to use a customer's photo as promotional UGC. What should be addressed?",
+    "options": [
+      "Hashtag count",
+      "Permission/usage rights and applicable disclosure requirements",
+      "Whether customer has 1,000 followers",
+      "Whether photo was posted on weekend"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is the purpose of a social media content pillar?",
-    options: [
-      "To define recurring themes or categories for content",
-      "To determine an employee's salary",
-      "To replace the company logo",
-      "To prevent content planning"
+    "q": "A content pillar consistently underperforms. Strongest first response?",
+    "options": [
+      "Delete it immediately",
+      "Review objective, audience fit, execution, distribution and sufficient time-series data",
+      "Increase frequency without analysis",
+      "Assume topic cannot work"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why should content be adapted to each social media platform?",
-    options: [
-      "Platforms have different audiences, formats, and user behaviors",
-      "Every platform has exactly the same requirements",
-      "Content cannot be changed between platforms",
-      "Users behave identically everywhere"
+    "q": "Impressions double while unique reach barely changes. What does this most directly suggest?",
+    "options": [
+      "Average frequency likely increased",
+      "Audience doubled",
+      "Conversion doubled",
+      "Unique users doubled"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What is a target audience?",
-    options: [
-      "The specific group a campaign or message is intended to reach",
-      "Every person on the internet",
-      "Only company employees",
-      "Only competitors"
+    "q": "High frequency plus declining CTR over time. What hypothesis is worth testing?",
+    "options": [
+      "Creative fatigue or repeated exposure may be reducing response",
+      "High frequency always improves CTR",
+      "Audience must have doubled",
+      "CTR cannot decline"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What is a buyer persona?",
-    options: [
-      "A research-based representation of an ideal customer type",
-      "A company's social media password",
-      "A type of advertisement",
-      "A graphic design program"
+    "q": "A report says 'engagement increased 18%, therefore campaign was successful.' What is missing?",
+    "options": [
+      "Longer caption",
+      "Connection between engagement, objective, audience quality and downstream outcomes",
+      "More emojis",
+      "Second network"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why are visuals important in social media content?",
-    options: [
-      "They can help communicate ideas quickly and attract attention",
-      "They guarantee every post will go viral",
-      "They eliminate the need for strategy",
-      "They make captions unnecessary in every situation"
+    "q": "Most comments are questions asking for product information. How should they be interpreted?",
+    "options": [
+      "Only as negative sentiment",
+      "As interaction that may reveal information needs and content gaps",
+      "As confirmed purchases",
+      "As evidence to delete post"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What makes a social media caption effective?",
-    options: [
-      "It is clear, relevant, audience-focused, and supports the post's objective",
-      "It contains as many words as possible",
-      "It has no connection to the visual",
-      "It avoids communicating any useful information"
+    "q": "A competitor's post receives high engagement. Best strategic response?",
+    "options": [
+      "Copy it word-for-word",
+      "Analyze underlying audience need and format, then develop original brand-suited content",
+      "Ignore competitors",
+      "Report competitor"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is the purpose of storytelling in social media marketing?",
-    options: [
-      "To communicate ideas and create a meaningful connection with the audience",
-      "To make every post exactly the same",
-      "To avoid explaining the brand",
-      "To replace all forms of measurement"
+    "q": "Target audience is defined as 'everyone who uses social media.' Primary weakness?",
+    "options": [
+      "Too broad to guide meaningful content, targeting and measurement",
+      "Too small",
+      "Social media cannot have targets",
+      "Broad audiences always convert better"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What is a social media content audit?",
-    options: [
-      "A systematic review of existing social media content and performance",
-      "A financial tax inspection",
-      "A password reset",
-      "A method of increasing internet bandwidth"
+    "q": "A buyer persona adds goals, pain points, objections and media behavior to demographics. Why is it more useful?",
+    "options": [
+      "It connects traits with motivations and decision context",
+      "It guarantees prediction of every buyer",
+      "It removes need for research",
+      "It replaces analytics"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What can a content audit help identify?",
-    options: [
-      "Successful content, weak areas, gaps, and opportunities",
-      "Only employee attendance",
-      "Only internet costs",
-      "Only competitor passwords"
+    "q": "A brand changes visual identity but keeps tone, audience and value proposition. Key social consideration?",
+    "options": [
+      "Keep visual changes recognizable and consistent across touchpoints while preserving relevant brand meaning",
+      "Change captions to logo color",
+      "Remove all previous content",
+      "Stop measuring"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "Why is timing important when publishing social media content?",
-    options: [
-      "Audience activity can affect the opportunity for people to see and interact with content",
-      "Every audience is active at exactly the same time",
-      "Timing never affects distribution",
-      "Posts can only be published once a week"
+    "q": "A crisis post is circulating widely but facts are unverified. Best response?",
+    "options": [
+      "Use the most popular version immediately",
+      "Acknowledge only what is supported by verified information while investigating",
+      "Delete every mention",
+      "Apologize for unestablished facts"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is a social media crisis?",
-    options: [
-      "A situation where negative attention or a serious issue can significantly affect a brand's online reputation",
-      "A normal scheduled post",
-      "A successful product launch",
-      "A routine content calendar update"
+    "q": "A sudden traffic spike comes from an unfamiliar source. Before celebrating?",
+    "options": [
+      "Verify source, traffic quality, attribution and resulting behavior",
+      "Assume organic discovery",
+      "Count every visit as qualified lead",
+      "Increase budget immediately"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What is an appropriate first principle during a social media crisis?",
-    options: [
-      "Respond carefully, verify information, and communicate transparently",
-      "Immediately publish unverified information",
-      "Delete every customer comment",
-      "Ignore the situation completely"
+    "q": "Campaign A: 500 leads at $4 each, 10 qualified opportunities. B: 200 leads at $7, 40 qualified opportunities. Best comparison metric?",
+    "options": [
+      "Cost per impression",
+      "Qualified-lead rate and cost per qualified lead",
+      "Follower growth",
+      "Total impressions"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why should social media managers avoid buying fake followers?",
-    options: [
-      "Fake followers can reduce audience quality and distort performance data",
-      "Fake followers always improve engagement",
-      "Fake followers guarantee sales",
-      "Fake followers improve customer trust"
+    "q": "Reach is high because a large unrelated account shared the post. Transparent reporting?",
+    "options": [
+      "Present reach without context",
+      "Annotate the unusual distribution event so stakeholders distinguish the external spike",
+      "Exclude result automatically",
+      "Treat it as proof future posts will perform similarly"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What does engagement rate help indicate?",
-    options: [
-      "How actively an audience interacts with content relative to an appropriate audience or reach measure",
-      "The company's total revenue",
-      "The number of employees",
-      "The age of a social media account"
+    "q": "To assess whether a content series caused increased purchases, stronger evidence than before/after?",
+    "options": [
+      "Controlled or well-designed comparison with consistent attribution and relevant comparison periods",
+      "Screenshot of best post",
+      "Larger follower count",
+      "Creator opinion"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "What is conversion in social media marketing?",
-    options: [
-      "When a user completes a desired action, such as a purchase or registration",
-      "When someone simply views a post",
-      "When a company changes its logo",
-      "When an account gains a random follower"
+    "q": "A team reports 50,000 video views without defining a view. Why is this a problem?",
+    "options": [
+      "Views are never useful",
+      "Metric definitions can differ, so the number may mislead without a clear definition",
+      "Views equal unique viewers",
+      "A view is a conversion"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why should social media goals be measurable?",
-    options: [
-      "Measurement allows performance to be evaluated against objectives",
-      "Measurement makes content unnecessary",
-      "It prevents audience research",
-      "It guarantees viral growth"
+    "q": "Comments are high-volume but increasingly negative. What dashboard addition distinguishes quantity from quality?",
+    "options": [
+      "Sentiment or qualitative categorization alongside volume",
+      "More follower widgets",
+      "Only impressions",
+      "Only posting frequency"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "Which goal is more measurable?",
-    options: [
-      "Increase Instagram engagement rate by 15% over the next three months",
-      "Become popular someday",
-      "Post better content",
-      "Get more attention"
+    "q": "A manager wants to reuse a successful post. Best balance of efficiency and learning?",
+    "options": [
+      "Republish unchanged forever",
+      "Identify likely performance drivers and create adapted variants for testing",
+      "Assume hashtags caused success",
+      "Stop experimenting"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is cross-platform content distribution?",
-    options: [
-      "Sharing a campaign across multiple platforms while adapting content appropriately",
-      "Using only one platform forever",
-      "Posting unrelated content everywhere",
-      "Deleting content from every platform"
+    "q": "A campaign objective is brand awareness. Which outcome is most directly aligned?",
+    "options": [
+      "Qualified purchases only",
+      "Incremental reach and relevant exposure among the intended audience",
+      "Internal meetings",
+      "Employee followers"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why is responding to comments important for community building?",
-    options: [
-      "It can encourage conversation and show that the brand values its audience",
-      "It always guarantees a sale",
-      "It removes the need for content",
-      "It prevents customers from asking questions"
+    "q": "A conversion campaign has users interacting with several channels before converting, but reporting assigns all credit to one touchpoint without explanation. Main concern?",
+    "options": [
+      "No concern",
+      "Attribution may oversimplify the customer journey and misallocate credit",
+      "Landing pages cannot convert",
+      "Purchases cannot be measured"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is user-generated content (UGC)?",
-    options: [
-      "Content created by customers or other users rather than the brand itself",
-      "Content created only by employees",
-      "Content generated only by advertising platforms",
-      "Content that cannot be shared"
+    "q": "Posts using a particular format perform well, but all also use a stronger offer. Correct lesson?",
+    "options": [
+      "Format alone caused result",
+      "Offer is a confounder, so further testing is needed to isolate format effect",
+      "Offer never matters",
+      "Remove format"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is one benefit of relevant user-generated content?",
-    options: [
-      "It can provide authentic social proof and community participation",
-      "It guarantees every customer will buy",
-      "It eliminates the need for permission in every situation",
-      "It makes analytics unnecessary"
+    "q": "A page receives repeated spam comments. Appropriate response?",
+    "options": [
+      "Engage every spam account",
+      "Use moderation tools and documented rules while preserving legitimate criticism and questions",
+      "Delete all comments",
+      "Publish spammers' personal information"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "Why should a social media manager track competitors?",
-    options: [
-      "To understand the competitive environment and identify useful opportunities",
-      "To copy every competitor post",
-      "To access competitors' private accounts",
-      "To avoid understanding the target audience"
+    "q": "A report contains 25 metrics with no interpretation or recommendations. Main weakness?",
+    "options": [
+      "Too few metrics",
+      "It provides data without enough prioritization, insight or action",
+      "Reports should never contain metrics",
+      "Recommendations should only use intuition"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is a social media content gap?",
-    options: [
-      "A relevant topic or content opportunity that is not being adequately addressed",
-      "A missing password",
-      "A broken smartphone",
-      "A deleted social media account"
+    "q": "Goal is 'increase engagement.' Which version is more operationally useful?",
+    "options": [
+      "Increase engagement as much as possible",
+      "Increase defined engagement rate from a documented baseline by a specified percentage within a specified period for a specified audience",
+      "Get better engagement",
+      "Make people interact more"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What should a social media report normally include?",
-    options: [
-      "Relevant metrics, results, insights, and recommended actions",
-      "Only screenshots of posts",
-      "Only the number of employees",
-      "Only the company's logo"
+    "q": "Organic reach declines after months of nearly identical content. What should be tested before blaming permanent platform reduction?",
+    "options": [
+      "Content fatigue, relevance, audience behavior, format mix and competitive factors",
+      "Permanent platform ban",
+      "Identical content always improves reach",
+      "Reach is unrelated to audience response"
     ],
-    correct: 0
+    "correct": 0
   },
-
   {
-    q: "Why should recommendations in a social media report be based on data?",
-    options: [
-      "Data helps connect recommendations to observed performance and audience behavior",
-      "Data makes strategy unnecessary",
-      "Data guarantees a viral post",
-      "Data prevents experimentation"
+    "q": "A manager is asked to delete a truthful negative review because it may reduce sales. Appropriate principle?",
+    "options": [
+      "Delete criticism that hurts conversion",
+      "Use transparent moderation criteria and distinguish legitimate criticism from content violating documented rules",
+      "Hide it without documentation",
+      "Attack the reviewer"
     ],
-    correct: 0
+    "correct": 1
   },
-
   {
-    q: "What is the purpose of a social media strategy review?",
-    options: [
-      "To determine what should be maintained, improved, tested, or changed",
-      "To permanently stop measuring results",
-      "To remove the target audience",
-      "To make every post identical"
+    "q": "Educational posts are strongest, but team wants only promotions because promotions are closer to revenue. What should be evaluated?",
+    "options": [
+      "Whether educational content contributes to awareness, trust, consideration or assisted conversions in the broader journey",
+      "Only immediate likes",
+      "Whether educational posts have enough hashtags",
+      "Whether promotions use more emojis"
     ],
-    correct: 0
+    "correct": 0
+  },
+  {
+    "q": "An account with 2,000 followers is compared with one with 200,000 using raw engagement totals. Why misleading?",
+    "options": [
+      "Raw totals do not account for audience size or reach; normalized metrics may enable fairer comparison",
+      "Large accounts always have lower engagement",
+      "Small accounts cannot be compared",
+      "Engagement totals are never useful"
+    ],
+    "correct": 0
+  },
+  {
+    "q": "A/B test Variant B has statistical significance but tiny absolute business improvement. What should the manager do?",
+    "options": [
+      "Adopt automatically because significance proves value",
+      "Consider both statistical evidence and practical/business significance before adoption",
+      "Ignore the test",
+      "Choose B solely because its percentage is higher"
+    ],
+    "correct": 1
   }
-  ];
+];
 
 function generate50Questions(courseKey, courseTitle) {
 
