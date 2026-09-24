@@ -1495,10 +1495,6 @@ function generate50Questions(courseKey, courseTitle) {
       const nameW = Math.min(720, Math.max(300, ctx.measureText(studentName).width + 40));
       ctx.beginPath(); ctx.moveTo(560 - nameW / 2, 470); ctx.lineTo(560 + nameW / 2, 470); ctx.stroke();
 
-      ctx.fillStyle = muted;
-      ctx.font = "16px Arial, sans-serif";
-      ctx.fillText("Email: " + String(state.studentEmail || "Not provided"), 560, 492);
-
       ctx.fillStyle = ink;
       ctx.font = "17px Arial, sans-serif";
       ctx.fillText("has successfully completed and passed the examination for the course", 560, 520);
