@@ -847,7 +847,17 @@ const PBM_VIDEOS={
 9:{id:"XCXjH1KQoFU",title:"How to Delegate Effectively for Leadership Growth",url:"https://www.youtube.com/watch?v=XCXjH1KQoFU",note:"Lesson 10 video: practical delegation and leadership guidance."},
 14:{id:"aakuB-BtdlQ",title:"How and Why to Close a Project",url:"https://www.youtube.com/watch?v=aakuB-BtdlQ",note:"Lesson 15 video: project closure, approvals, documentation and lessons learned."}
 };
-let state={email:"",name:"",courseId:"",lesson:0,done:{}};
+let state={email:"",name:"",courseId:"",lesson:0,done:{},unlocked:{}};
+async function checkCourseAccess(id){
+  if(!state.email) return false;
+  if(state.unlocked[id]===true) return true;
+  try{
+    const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id),{credentials:"same-origin",cache:"no-store"});
+    const x=await r.json().catch(()=>({}));
+    state.unlocked[id]=!!(r.ok&&x.ok&&x.unlocked);
+    return state.unlocked[id];
+  }catch(_){state.unlocked[id]=false;return false;}
+}
 function key(){return "EDSA_LEARNING_"+state.email.toLowerCase()}
 function load(){try{state.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){state.done={}}}
 function save(){localStorage.setItem(key(),JSON.stringify(state.done))}
@@ -865,15 +875,15 @@ async function boot(){
       state.email=x.user.email||"";
       state.name=x.user.name||"Student";
       load();
-      document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
+      document.getElementById("welcome").textContent="Welcome, "+state.name+". Activate a course once, then all 15 lessons stay free. You may take the exam whenever you are ready.";
       renderCourses();
       if(COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); selectCourse(q,Number.isFinite(qi)?qi:0); }
       return;
     }
   }catch(e){}
-  document.getElementById("welcome").textContent="Choose a course to enter its lessons and continue learning.";
+  document.getElementById("welcome").textContent="Sign in, activate a course with 500 ETB, then study all 15 lessons for free and take the exam when ready.";
 }
-function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct}% complete • ${(d.completed||[]).length}/${c.lessons.length} lessons</b></div>`}
+function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100),open=state.unlocked[id]===true;return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">${open?"Open →":"🔒 Unlock with 500 ETB"}</span><strong>${c.title}</strong><span>${c.desc}</span><b>${open?pct+"% complete • "+(d.completed||[]).length+"/"+c.lessons.length+" lessons • Course access stays free after payment":"15 full lessons + videos • One exam attempt included with activation"}</b></div>`}
 function renderCourses(){
   const home=document.getElementById("courseList");
   const inside=document.getElementById("courseListInside");
@@ -889,9 +899,16 @@ function showCourseHome(){
   renderCourses();
   history.replaceState(null,"","/learning.html");
 }
-function selectCourse(id,lessonIndex=0){
+async function selectCourse(id,lessonIndex=0){
   if(!COURSES[id]) return;
   try{
+    const unlocked=await checkCourseAccess(id);
+    if(!unlocked){
+      const name=COURSES[id].title;
+      alert(name+" is locked. Pay 500 ETB and receive an activation key. Once activated, all 15 lessons stay unlocked for you.");
+      window.location.href="/edsa-app.html?course="+encodeURIComponent(id);
+      return;
+    }
     const lessons=getLessons(id);
     if(!Array.isArray(lessons)||!lessons.length) return;
     state.courseId=id;
@@ -1648,6 +1665,10 @@ function getLessons(id){
   }));
 }
 function renderCourse(){
+  if(!state.unlocked[state.courseId]){
+    document.getElementById("learningArea").innerHTML="<div class=\"empty\"><strong>Course locked</strong><br><br>Pay 500 ETB and activate your first exam attempt. After activation, all 15 lessons and videos stay unlocked for you.</div>";
+    return;
+  }
   const c=COURSES[state.courseId], lessons=getLessons(state.courseId);
   const d=state.done[state.courseId]||{completed:[]};
   const completed=d.completed||[];
@@ -1666,7 +1687,8 @@ function renderCourse(){
     '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
     '<div id="lessonStart" class="viewer"><h3>'+escapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+escapeHtml(l.example)+'</div></div>'+videoHtml+
     '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>'+
-    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>';
+    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>'+(completed.length===lessons.length?'<div class="panel" style="margin-top:18px;border-color:#86efac;background:#f0fdf4"><strong style="color:#166534">🎓 All 15 lessons completed!</strong><p style="font-size:11px;color:#166534;margin:6px 0 12px">You can take the exam now, or return to any lesson for review. Your course access remains free after activation.</p><a class="btn blue" style="display:inline-block;text-decoration:none" href="/edsa-app.html?course='+encodeURIComponent(state.courseId)+'">📝 Take Exam Now</a></div>':'')+
+    '</div></div>';
 }
 function scrollToLesson(){
   requestAnimationFrame(()=>{
