@@ -149,7 +149,7 @@ const FME_VIDEOS={"0":{"id":"Fi1wkUczuyk","title":"Financial Statements: All the
 const LESSON_CACHE={};
 async function loadLessons(id){
   if(LESSON_CACHE[id]) return LESSON_CACHE[id];
-  const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id)+"&include=lessons",{credentials:"same-origin",cache:"no-store"});
+  const r=await fetch("/api/course-lessons?courseId="+encodeURIComponent(id),{credentials:"same-origin",cache:"no-store"});
   const x=await r.json().catch(()=>({}));
   if(!r.ok||!x.ok||!Array.isArray(x.lessons)) throw new Error(x.error||"Course lessons unavailable");
   LESSON_CACHE[id]=x.lessons;
