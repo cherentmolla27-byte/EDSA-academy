@@ -305,8 +305,11 @@ async function examAttempt(req, res) {
     const { data: keys } = await readJsonFile("activation-keys.json", []);
     const courseKey = keys.find(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && k.scope === courseId && k.usedCourse === courseId);
     if (!courseKey) return auth.json(res, 403, { ok: false, error: "This course exam requires an active 500 ETB course access. Please purchase or activate this course first." });
-    const previousAttempts = await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent((await db.select("students", "select=id&email=eq." + encodeURIComponent(email) + "&limit=1"))[0]?.id || "") + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1");
-    if (previousAttempts.length) return auth.json(res, 403, { ok: false, error: "This exam access has already been used. A new 500 ETB activation is required for another attempt.", requiresNewPayment: true });
+    const studentLookup = await db.select("students", "select=id&email=eq." + encodeURIComponent(email) + "&limit=1");
+    const studentId = studentLookup[0]?.id;
+    const previousAttempts = studentId ? await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent(studentId) + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1") : [];
+    const lastAttempt = previousAttempts[0];
+    if (lastAttempt && (!courseKey.usedAt || new Date(courseKey.usedAt).getTime() <= new Date(lastAttempt.created_at).getTime())) return auth.json(res, 403, { ok: false, error: "This exam access has already been used. A new 500 ETB activation is required for another attempt.", requiresNewPayment: true });
     if (passed && score < 80) return auth.json(res, 400, { ok: false, error: "A passing result requires at least 80%." });
     if (!passed && score >= 80) return auth.json(res, 400, { ok: false, error: "Result status does not match the score." });
     const name = auth.validateName(session.name) || cleanText(body.studentName, 120) || "EDSA Student";
