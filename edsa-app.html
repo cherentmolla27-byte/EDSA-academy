@@ -1495,14 +1495,18 @@ function generate50Questions(courseKey, courseTitle) {
       const nameW = Math.min(720, Math.max(300, ctx.measureText(studentName).width + 40));
       ctx.beginPath(); ctx.moveTo(560 - nameW / 2, 470); ctx.lineTo(560 + nameW / 2, 470); ctx.stroke();
 
+      ctx.fillStyle = muted;
+      ctx.font = "16px Arial, sans-serif";
+      ctx.fillText("Email: " + String(state.studentEmail || "Not provided"), 560, 492);
+
       ctx.fillStyle = ink;
       ctx.font = "17px Arial, sans-serif";
-      ctx.fillText("has successfully completed and passed the examination for the course", 560, 510);
+      ctx.fillText("has successfully completed and passed the examination for the course", 560, 520);
       ctx.font = "bold 26px Arial, sans-serif";
-      ctx.fillText(state.selectedCourse ? state.selectedCourse.title : "EDSA Professional Course", 560, 545);
+      ctx.fillText(state.selectedCourse ? state.selectedCourse.title : "EDSA Professional Course", 560, 555);
       ctx.font = "17px Arial, sans-serif";
-      ctx.fillText("offered by Ethiopian Digital Skills Academy (EDSA)", 560, 580);
-      ctx.fillText("and is hereby awarded this certificate for outstanding performance.", 560, 608);
+      ctx.fillText("offered by Ethiopian Digital Skills Academy (EDSA)", 560, 590);
+      ctx.fillText("and is hereby awarded this certificate for outstanding performance.", 560, 618);
 
       // QR verification block.
       const qrDiv = document.getElementById("qrcode");
@@ -1664,6 +1668,7 @@ function generate50Questions(courseKey, courseTitle) {
       const record = {
         id: state.certificateId,
         name: state.studentName,
+        email: state.studentEmail || "",
         course: state.selectedCourse.title,
         issueDate: state.certificateIssueDate,
         score: state.score,
@@ -1873,6 +1878,7 @@ function generate50Questions(courseKey, courseTitle) {
         registry[id] = {
           id: r.id || id,
           name: r.name || "",
+          email: r.email || "",
           course: r.course || "",
           issueDate: r.issueDate || new Date().toISOString(),
           score: r.score || "",
