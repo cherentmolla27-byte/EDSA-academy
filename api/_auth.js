@@ -170,9 +170,6 @@ function clearLegacySessionCookie(res) {
   res.setHeader("Set-Cookie", "EDSA_SESSION=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0");
 }
 
-function(res) {
-  res.setHeader("Set-Cookie", "EDSA_SESSION=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0");
-}
 
 module.exports = {
   json, readUsers, writeUsers, normalizeEmail, validateName, validatePassword,
