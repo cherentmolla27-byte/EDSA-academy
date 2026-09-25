@@ -108,27 +108,37 @@ function readSession(req) {
   const secret = sessionSecret();
   if (!secret) return null;
 
-  // Prefer the HttpOnly cookie. If the browser/proxy does not forward that
-  // cookie on an API POST, accept the same signed session token from the
-  // Authorization header as a fallback.
-  const cookie = String(req.headers.cookie || "").split(";").map(x => x.trim()).find(x => x.startsWith("EDSA_SESSION="));
+  // A stale/invalid cookie must NOT hide a valid Authorization bearer token.
+  // Browsers can keep an old EDSA_SESSION cookie while the app has a newer
+  // signed token in sessionStorage. Try both independently and accept the
+  // first valid session.
+  const cookie = String(req.headers.cookie || "")
+    .split(";")
+    .map(x => x.trim())
+    .find(x => x.startsWith("EDSA_SESSION="));
   const authorization = String(req.headers.authorization || "");
   const bearer = authorization.match(/^Bearer\s+(.+)$/i);
-  const token = cookie
-    ? decodeURIComponent(cookie.slice("EDSA_SESSION=".length))
-    : (bearer ? bearer[1].trim() : "");
-  if (!token) return null;
-  const parts = token.split(".");
-  if (parts.length !== 2) return null;
-  const expected = crypto.createHmac("sha256", secret).update(parts[0]).digest("base64url");
-  if (expected.length !== parts[1].length || !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(parts[1]))) return null;
-  try {
-    const payload = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf8"));
-    if (!payload.exp || payload.exp < Date.now()) return null;
-    return payload;
-  } catch (_) {
-    return null;
+  const candidates = [];
+
+  if (cookie) {
+    try { candidates.push(decodeURIComponent(cookie.slice("EDSA_SESSION=".length))); } catch (_) {}
   }
+  if (bearer && bearer[1]) candidates.push(bearer[1].trim());
+
+  for (const token of candidates) {
+    const parts = String(token || "").split(".");
+    if (parts.length !== 2) continue;
+    try {
+      const expected = crypto.createHmac("sha256", secret).update(parts[0]).digest("base64url");
+      if (expected.length !== parts[1].length || !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(parts[1]))) continue;
+      const payload = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf8"));
+      if (!payload.exp || payload.exp < Date.now()) continue;
+      return payload;
+    } catch (_) {
+      // Try the next authentication source.
+    }
+  }
+  return null;
 }
 
 function setSessionCookie(res, token) {
