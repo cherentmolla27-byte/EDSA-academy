@@ -376,33 +376,45 @@ document.addEventListener("DOMContentLoaded",function(){
  const translations={
   "About":"ስለ EDSA","Programs":"ፕሮግራሞች","How It Works":"እንዴት ይሰራል","Verify":"ማረጋገጫ","Sign In":"ግባ",
   "Master the":"የዲጂታል","Digital Frontier.":"ዓለምን ይቆጣጠሩ።","Get Started":"ጀምር","Student Sign In":"የተማሪ መግቢያ","Verify Certificate":"ሰርተፊኬት አረጋግጥ",
+  "Build practical digital skills, prove your knowledge through professional examinations, and earn certificates that can be verified online.":"ተግባራዊ የዲጂታል ክህሎቶችን ይገንቡ፣ እውቀትዎን በሙያዊ ፈተናዎች ያረጋግጡ፣ በመስመር ላይ ሊረጋገጡ የሚችሉ ሰርተፊኬቶችንም ያግኙ።",
+  "Student account required":"የተማሪ መለያ ያስፈልጋል","80% passing standard":"80% የማለፊያ መስፈርት","QR verification":"የQR ማረጋገጫ",
   "Professional Subjects":"የባለሙያ ዘርፎች","Questions / Exam":"ጥያቄዎች / ፈተና","Passing Mark":"የማለፊያ ውጤት","Online Verification":"የመስመር ላይ ማረጋገጫ",
-  "Choose Your Professional Course":"የባለሙያ ኮርስዎን ይምረጡ","About EDSA":"ስለ EDSA","How EDSA Works":"EDSA እንዴት ይሰራል",
-  "Clear Standard":"ግልጽ መስፈርት","Verified Certificate":"የተረጋገጠ ሰርተፊኬት","Privacy & Trust":"ግላዊነት እና እምነት",
-  "01 — Choose":"01 — ምረጥ","02 — Assess":"02 — ፈትን","03 — Pass":"03 — አልፍ",
-  "Welcome Back":"እንኳን ደህና መጡ","Create Your Student Profile":"የተማሪ መገለጫ ይፍጠሩ",
-  "Email":"ኢሜይል","Password":"የይለፍ ቃል","Confirm Password":"የይለፍ ቃል አረጋግጥ",
-  "Sign In Securely":"በደህና ግባ","Create Secure Account":"የተጠበቀ መለያ ፍጠር",
-  "Create Student Profile":"የተማሪ መገለጫ ፍጠር","Back to Home":"ወደ መነሻ ተመለስ"
+  "Choose Your Professional Course":"የባለሙያ ኮርስዎን ይምረጡ","Create your student account or sign in before starting an EDSA examination. Your exam attempts, results and certificates are linked to your student profile.":"EDSA ፈተናን ከመጀመርዎ በፊት የተማሪ መለያ ይፍጠሩ ወይም ይግቡ። የፈተና ሙከራዎችዎ፣ ውጤቶችዎ እና ሰርተፊኬቶችዎ ከተማሪ መገለጫዎ ጋር ይገናኛሉ።",
+  "Student Account Required:":"የተማሪ መለያ ያስፈልጋል፦","Sign In or create your EDSA student account before starting an examination. Your activity, results and certificates will be linked to your account.":"ፈተና ከመጀመርዎ በፊት ወደ EDSA የተማሪ መለያዎ ይግቡ ወይም ይፍጠሩ። እንቅስቃሴዎ፣ ውጤቶችዎ እና ሰርተፊኬቶችዎ ከመለያዎ ጋር ይገናኛሉ።",
+  "Sign In to Start →":"ለመጀመር ይግቡ →","Your student account is required before starting this examination.":"ይህን ፈተና ከመጀመርዎ በፊት የተማሪ መለያ ያስፈልጋል።",
+  "About EDSA":"ስለ EDSA","EDSA is an examination and certification platform focused on practical digital and business skills.":"EDSA በተግባራዊ የዲጂታል እና የንግድ ክህሎቶች ላይ ያተኮረ የፈተናና የሰርተፊኬት መድረክ ነው።",
+  "Clear Standard":"ግልጽ መስፈርት","Each examination contains 50 questions and requires a score of 80% or higher to pass.":"እያንዳንዱ ፈተና 50 ጥያቄዎች ያሉት ሲሆን ለማለፍ 80% ወይም ከዚያ በላይ ውጤት ያስፈልጋል።",
+  "Verified Certificate":"የተረጋገጠ ሰርተፊኬት","Successful candidates receive a unique certificate ID and QR code connected to online verification.":"የተሳካ ተፈታኞች ልዩ የሰርተፊኬት መለያ እና ከመስመር ላይ ማረጋገጫ ጋር የተገናኘ QR ኮድ ያገኛሉ።",
+  "Privacy & Trust":"ግላዊነት እና እምነት","Student information and certificate records are handled through the EDSA platform and its published policies.":"የተማሪ መረጃ እና የሰርተፊኬት መዝገቦች በEDSA መድረክ እና በታተሙ ፖሊሲዎቹ መሰረት ይያዛሉ።",
+  "How EDSA Works":"EDSA እንዴት ይሰራል","From creating your student account to learning, activation, examination and verified certification.":"የተማሪ መለያ ከመፍጠር ጀምሮ መማር፣ አክቲቬሽን፣ ፈተና እና የተረጋገጠ ሰርተፊኬት እስከማግኘት ድረስ።",
+  "01 — Create Your Account":"01 — መለያዎን ይፍጠሩ","Create a student profile with your name, email and secure password. Your account keeps your learning, exam results and certificates connected.":"በስምዎ፣ ኢሜይልዎ እና ደህንነቱ በተጠበቀ የይለፍ ቃል የተማሪ መገለጫ ይፍጠሩ። መለያዎ ትምህርትዎን፣ የፈተና ውጤቶችዎን እና ሰርተፊኬቶችዎን ያገናኛል።",
+  "02 — Choose & Learn":"02 — ይምረጡ እና ይማሩ","Choose from six professional subjects and use the EDSA Learning Center to move through the lessons and learning materials.":"ከስድስት የሙያ ዘርፎች ይምረጡ እና EDSA Learning Centerን በመጠቀም ትምህርቶችንና የመማሪያ ቁሳቁሶችን ይከታተሉ።",
+  "03 — Activate Your Course":"03 — ኮርስዎን ያንቀሳቅሱ","When you are ready for the final examination, activate your course with its activation key. A universal key can be used for any EDSA course.":"ለመጨረሻ ፈተና ሲዘጋጁ የአክቲቬሽን ቁልፍ በመጠቀም ኮርስዎን ያንቀሳቅሱ። ዩኒቨርሳል ቁልፍ ለማንኛውም EDSA ኮርስ ሊያገለግል ይችላል።",
+  "04 — Take the Exam":"04 — ፈተናውን ይውሰዱ","Complete the 50-question examination. The passing standard is 80% or higher.":"50 ጥያቄ ያለውን ፈተና ይጨርሱ። የማለፊያ መስፈርቱ 80% ወይም ከዚያ በላይ ነው።",
+  "05 — Get Certified":"05 — ሰርተፊኬት ያግኙ","Students who pass receive an EDSA certificate with a unique certificate ID and QR verification connected to the online verification system.":"የሚያልፉ ተማሪዎች ልዩ የሰርተፊኬት መለያ እና QR ማረጋገጫ ያለው EDSA ሰርተፊኬት ያገኛሉ።",
+  "06 — Verify & Share":"06 — ያረጋግጡ እና ያጋሩ","Anyone can use certificate verification system to check certificate record/authenticity.":"ማንኛውም ሰው የሰርተፊኬት ማረጋገጫ ስርዓቱን በመጠቀም የሰርተፊኬት መዝገብና ትክክለኛነት ማረጋገጥ ይችላል።",
+  "Welcome Back":"እንኳን ደህና መጡ","Create Your Student Profile":"የተማሪ መገለጫዎን ይፍጠሩ","Email":"ኢሜይል","Password":"የይለፍ ቃል","Confirm Password":"የይለፍ ቃል ያረጋግጡ",
+  "Sign In Securely":"በደህና ይግቡ","Create Secure Account":"የተጠበቀ መለያ ይፍጠሩ","Create Student Profile":"የተማሪ መገለጫ ይፍጠሩ","Back to Home":"ወደ መነሻ ተመለስ",
+  "Full Name":"ሙሉ ስም","Member Since":"አባል ከሆነበት ቀን","Your Courses":"ኮርሶችዎ","Student Profile":"የተማሪ መገለጫ","Browse Courses":"ኮርሶችን ይመልከቱ",
+  "Open Learning Center":"የመማሪያ ማዕከሉን ይክፈቱ","Verify a Certificate":"ሰርተፊኬት ያረጋግጡ","Recent Activity":"የቅርብ ጊዜ እንቅስቃሴ",
+  "Certification Progress":"የሰርተፊኬት እድገት","No course activity yet.":"እስካሁን የኮርስ እንቅስቃሴ የለም።","Not started":"አልተጀመረም","In progress":"በሂደት ላይ","Passed ✓":"አልፏል ✓","Retake available":"እንደገና መፈተን ይቻላል","Start Course":"ኮርስ ጀምር","Continue":"ቀጥል","Retake / Improve":"እንደገና / ለማሻሻል","Certificate ✓":"ሰርተፊኬት ✓",
+  "Date not available":"ቀኑ አይገኝም","Recent activity will appear here after you start an exam.":"ፈተና ከጀመሩ በኋላ የቅርብ ጊዜ እንቅስቃሴዎ እዚህ ይታያል።"
  };
  const reverse=Object.fromEntries(Object.entries(translations).map(([a,b])=>[b,a]));
  let lang=localStorage.getItem("edsa-language")||"en";
  const btn=document.createElement("button");btn.id="edsaLanguageToggle";btn.type="button";
  btn.textContent=lang==="am"?"English":"አማርኛ";
- const nav=document.querySelector(".edsa-pnav");
- if(nav){const sign=nav.querySelector(".edsa-psign");if(sign)nav.insertBefore(btn,sign);}
+ const nav=document.querySelector(".edsa-pnav"); if(nav){const sign=nav.querySelector(".edsa-psign");if(sign)nav.insertBefore(btn,sign);}
  function replace(root,map){
-   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
-   const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
    nodes.forEach(n=>{const t=n.nodeValue.trim();if(map[t])n.nodeValue=n.nodeValue.replace(t,map[t]);});
    root.querySelectorAll("input,textarea").forEach(el=>{if(map[el.placeholder])el.placeholder=map[el.placeholder];});
  }
- function apply(){
-   replace(document,lang==="am"?translations:reverse);
-   btn.textContent=lang==="am"?"English":"አማርኛ";
-   document.documentElement.lang=lang==="am"?"am":"en";
- }
+ let applying=false;
+ function apply(){if(applying)return;applying=true;replace(document,lang==="am"?translations:reverse);btn.textContent=lang==="am"?"English":"አማርኛ";document.documentElement.lang=lang==="am"?"am":"en";setTimeout(()=>applying=false,0);}
  btn.addEventListener("click",function(){lang=lang==="am"?"en":"am";localStorage.setItem("edsa-language",lang);apply();});
  if(lang==="am")apply();
+ const observer=new MutationObserver(function(){if(lang==="am"&&!applying)apply();});
+ observer.observe(document.body,{childList:true,subtree:true});
 })();
 </script></body></html>
