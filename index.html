@@ -368,4 +368,41 @@ document.addEventListener("DOMContentLoaded",function(){
   }catch(e){console.error("EDSA boot error",e)}
 });
 </script>
-</body></html>
+<style>
+#edsaLanguageToggle{border:1px solid rgba(147,197,253,.45);background:#0b2145;color:#dbeafe;border-radius:10px;padding:8px 10px;font-size:10px;font-weight:900;cursor:pointer;white-space:nowrap}
+</style>
+<script>
+(function(){
+ const translations={
+  "About":"ስለ EDSA","Programs":"ፕሮግራሞች","How It Works":"እንዴት ይሰራል","Verify":"ማረጋገጫ","Sign In":"ግባ",
+  "Master the":"የዲጂታል","Digital Frontier.":"ዓለምን ይቆጣጠሩ።","Get Started":"ጀምር","Student Sign In":"የተማሪ መግቢያ","Verify Certificate":"ሰርተፊኬት አረጋግጥ",
+  "Professional Subjects":"የባለሙያ ዘርፎች","Questions / Exam":"ጥያቄዎች / ፈተና","Passing Mark":"የማለፊያ ውጤት","Online Verification":"የመስመር ላይ ማረጋገጫ",
+  "Choose Your Professional Course":"የባለሙያ ኮርስዎን ይምረጡ","About EDSA":"ስለ EDSA","How EDSA Works":"EDSA እንዴት ይሰራል",
+  "Clear Standard":"ግልጽ መስፈርት","Verified Certificate":"የተረጋገጠ ሰርተፊኬት","Privacy & Trust":"ግላዊነት እና እምነት",
+  "01 — Choose":"01 — ምረጥ","02 — Assess":"02 — ፈትን","03 — Pass":"03 — አልፍ",
+  "Welcome Back":"እንኳን ደህና መጡ","Create Your Student Profile":"የተማሪ መገለጫ ይፍጠሩ",
+  "Email":"ኢሜይል","Password":"የይለፍ ቃል","Confirm Password":"የይለፍ ቃል አረጋግጥ",
+  "Sign In Securely":"በደህና ግባ","Create Secure Account":"የተጠበቀ መለያ ፍጠር",
+  "Create Student Profile":"የተማሪ መገለጫ ፍጠር","Back to Home":"ወደ መነሻ ተመለስ"
+ };
+ const reverse=Object.fromEntries(Object.entries(translations).map(([a,b])=>[b,a]));
+ let lang=localStorage.getItem("edsa-language")||"en";
+ const btn=document.createElement("button");btn.id="edsaLanguageToggle";btn.type="button";
+ btn.textContent=lang==="am"?"English":"አማርኛ";
+ const nav=document.querySelector(".edsa-pnav");
+ if(nav){const sign=nav.querySelector(".edsa-psign");if(sign)nav.insertBefore(btn,sign);}
+ function replace(root,map){
+   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+   const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+   nodes.forEach(n=>{const t=n.nodeValue.trim();if(map[t])n.nodeValue=n.nodeValue.replace(t,map[t]);});
+   root.querySelectorAll("input,textarea").forEach(el=>{if(map[el.placeholder])el.placeholder=map[el.placeholder];});
+ }
+ function apply(){
+   replace(document,lang==="am"?translations:reverse);
+   btn.textContent=lang==="am"?"English":"አማርኛ";
+   document.documentElement.lang=lang==="am"?"am":"en";
+ }
+ btn.addEventListener("click",function(){lang=lang==="am"?"en":"am";localStorage.setItem("edsa-language",lang);apply();});
+ if(lang==="am")apply();
+})();
+</script></body></html>
