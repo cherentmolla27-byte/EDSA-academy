@@ -14,8 +14,12 @@
     "code": "EDSA-98DCBF23",
     "scope": "smm",
     "amount": 500,
-    "status": "active",
-    "createdAt": "2026-09-25T17:20:54.980Z"
+    "status": "used",
+    "createdAt": "2026-09-25T17:20:54.980Z",
+    "usedAt": "2026-09-25T18:16:45.465Z",
+    "usedBy": "Temsgen",
+    "usedEmail": "temsgenmollaalem@gmail.com",
+    "usedCourse": "smm"
   },
   {
     "code": "EDSA-D081AC50",
