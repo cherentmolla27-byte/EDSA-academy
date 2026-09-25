@@ -63,7 +63,7 @@ const PBM_VIDEOS={
 14:{id:"aakuB-BtdlQ",title:"How and Why to Close a Project",url:"https://www.youtube.com/watch?v=aakuB-BtdlQ",note:"Lesson 15 video: project closure, approvals, documentation and lessons learned."}
 };
 let state={email:"",name:"",courseId:"",lesson:0,done:{},unlocked:{}};
-async function EDSA_AUTH_HEADERS(){const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||"";return token?{"Authorization":"Bearer "+token}:{}}
+function EDSA_AUTH_HEADERS(){const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||"";return token?{"Authorization":"Bearer "+token}:{}}
 async function checkCourseAccess(id){
   if(!state.email) return false;
   if(state.unlocked[id]===true) return true;
