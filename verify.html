@@ -79,5 +79,29 @@ async function loadCertificate(){
 }
 loadCertificate();
 </script>
-</body>
+<style>
+#edsaVerifyLanguage{position:fixed;top:16px;right:16px;z-index:20;border:1px solid rgba(234,179,8,.45);background:#0f172a;color:#fde68a;border-radius:10px;padding:8px 11px;font-size:11px;font-weight:800;cursor:pointer}
+</style>
+<script>
+(function(){
+ const t={
+  "Certificate Verification":"የሰርተፊኬት ማረጋገጫ","Checking certificate…":"ሰርተፊኬቱን በመፈተሽ ላይ…","Full Name":"ሙሉ ስም","Email":"ኢሜይል","Course":"ኮርስ","Certificate ID":"የሰርተፊኬት መለያ","Issue Date":"የተሰጠበት ቀን","Status":"ሁኔታ","Issued By":"የሰጠው","Exam Score":"የፈተና ውጤት",
+  "Back to EDSA Academy":"ወደ EDSA Academy ተመለስ","Official EDSA certificate verification service":"የEDSA ይፋዊ የሰርተፊኬት ማረጋገጫ አገልግሎት",
+  "Certificate Not Found":"ሰርተፊኬት አልተገኘም","No public EDSA certificate record was found for this ID.":"ለዚህ መለያ የህዝብ EDSA የሰርተፊኬት መዝገብ አልተገኘም።",
+  "Certificate Verified":"ሰርተፊኬቱ ተረጋግጧል","This certificate ID matches the official EDSA public certificate registry.":"ይህ የሰርተፊኬት መለያ ከEDSA ይፋዊ የሰርተፊኬት መዝገብ ጋር ይዛመዳል።",
+  "Certificate Found on This Device":"ሰርተፊኬቱ በዚህ መሳሪያ ተገኝቷል","This record is stored locally and is not a public registry verification.":"ይህ መዝገብ በዚህ መሳሪያ ተቀምጧል፤ የይፋዊ መዝገብ ማረጋገጫ አይደለም።"
+ };
+ const rev=Object.fromEntries(Object.entries(t).map(([a,b])=>[b,a]));
+ let lang=localStorage.getItem("edsa-language")||"en";
+ const b=document.createElement("button");b.id="edsaVerifyLanguage";b.type="button";document.body.appendChild(b);
+ function apply(){
+  const map=lang==="am"?t:rev;
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const ns=[];while(w.nextNode())ns.push(w.currentNode);
+  ns.forEach(n=>{const x=n.nodeValue.trim();if(map[x])n.nodeValue=n.nodeValue.replace(x,map[x]);});
+  b.textContent=lang==="am"?"English":"አማርኛ";document.documentElement.lang=lang==="am"?"am":"en";
+ }
+ b.onclick=function(){lang=lang==="am"?"en":"am";localStorage.setItem("edsa-language",lang);apply()};
+ if(lang==="am")apply();
+})();
+</script></body>
 </html>
