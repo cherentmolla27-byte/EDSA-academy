@@ -14,7 +14,7 @@ function asInt(value) {
   return Number.isFinite(n) ? Math.round(n) : null;
 }
 function requireRole(req, role) {
-  const session = auth.readSession(req);
+  const session = auth.readSession(req, "student");
   if (!session || (role && session.role !== role)) return null;
   return session;
 }
@@ -84,7 +84,7 @@ async function authLogin(req, res) {
       return auth.json(res, 401, { ok: false, error: "Invalid email or password." });
     }
     const token = auth.createSession({ email, name: user.name, role: "student" });
-    auth.setSessionCookie(res, token);
+    auth.setSessionCookie(res, token, "student");
     res.setHeader("Cache-Control", "no-store, max-age=0");
     return auth.json(res, 200, { ok: true, authenticated: true, user: { name: user.name, email: user.email, role: "student", createdAt: user.createdAt }, sessionToken: token });
   } catch (err) {
@@ -108,7 +108,7 @@ async function authRegister(req, res) {
     users[email] = { name, email, passwordHash: await auth.hashPassword(password), createdAt: new Date().toISOString() };
     await auth.writeUsers(users, sha, "Register EDSA student account");
     const token = auth.createSession({ email, name, role: "student" });
-    auth.setSessionCookie(res, token);
+    auth.setSessionCookie(res, token, "student");
     res.setHeader("Cache-Control", "no-store, max-age=0");
     return auth.json(res, 201, { ok: true, authenticated: true, user: { name, email, role: "student", createdAt: users[email].createdAt }, sessionToken: token });
   } catch (err) {
@@ -119,13 +119,13 @@ async function authRegister(req, res) {
 
 async function authMe(req, res) {
   if (!method(req, res, ["GET"])) return;
-  const session = auth.readSession(req);
+  const session = auth.readSession(req, "student");
   if (!session) return auth.json(res, 401, { ok: false, authenticated: false });
-  return auth.json(res, 200, { ok: true, authenticated: true, user: { name: session.name, email: session.email, role: session.role || "student" } });
+  return auth.json(res, 200, { ok: true, authenticated: true, user: { name: session.name, email: session.email, role: "student" } });
 }
 async function authLogout(req, res) {
   if (!method(req, res, ["POST"])) return;
-  auth.clearSessionCookie(res);
+  auth.clearSessionCookie(res, "student");
   return auth.json(res, 200, { ok: true });
 }
 async function adminLogin(req, res) {
@@ -136,7 +136,7 @@ async function adminLogin(req, res) {
   if (!pin || pin !== configuredPin) return auth.json(res, 401, { ok: false, error: "Incorrect admin PIN." });
   try {
     const token = auth.createSession({ email: "admin", name: "EDSA Administrator", role: "admin" });
-    auth.setSessionCookie(res, token);
+    auth.setSessionCookie(res, token, "student");
     return auth.json(res, 200, { ok: true, role: "admin" });
   } catch (err) {
     console.error("[EDSA admin login]", err);
@@ -145,7 +145,7 @@ async function adminLogin(req, res) {
 }
 async function adminMe(req, res) {
   if (!method(req, res, ["GET"])) return;
-  const session = auth.readSession(req);
+  const session = auth.readSession(req, "admin");
   if (!session || session.role !== "admin") return auth.json(res, 401, { ok: false, authenticated: false });
   return auth.json(res, 200, { ok: true, authenticated: true, role: "admin" });
 }
