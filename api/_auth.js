@@ -107,9 +107,17 @@ function createSession(payload) {
 function readSession(req) {
   const secret = sessionSecret();
   if (!secret) return null;
+
+  // Prefer the HttpOnly cookie. If the browser/proxy does not forward that
+  // cookie on an API POST, accept the same signed session token from the
+  // Authorization header as a fallback.
   const cookie = String(req.headers.cookie || "").split(";").map(x => x.trim()).find(x => x.startsWith("EDSA_SESSION="));
-  if (!cookie) return null;
-  const token = decodeURIComponent(cookie.slice("EDSA_SESSION=".length));
+  const authorization = String(req.headers.authorization || "");
+  const bearer = authorization.match(/^Bearer\s+(.+)$/i);
+  const token = cookie
+    ? decodeURIComponent(cookie.slice("EDSA_SESSION=".length))
+    : (bearer ? bearer[1].trim() : "");
+  if (!token) return null;
   const parts = token.split(".");
   if (parts.length !== 2) return null;
   const expected = crypto.createHmac("sha256", secret).update(parts[0]).digest("base64url");
