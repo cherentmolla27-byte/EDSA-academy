@@ -158,15 +158,23 @@ async function activateKey(req, res) {
     const code = String((req.body || {}).code || "").trim().toUpperCase();
     const courseId = String((req.body || {}).courseId || "").trim();
     if (!/^EDSA-[A-F0-9]{8}$/.test(code)) return auth.json(res, 400, { ok: false, error: "Invalid activation key." });
-    const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
-    const key = keys.find(k => k.code === code);
-    if (!key) return auth.json(res, 404, { ok: false, error: "Invalid activation key." });
-    if (key.status !== "active") return auth.json(res, 409, { ok: false, error: "This activation key has already been used." });
-    if (key.amount !== 500) return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 500 ETB fee." });
-    if (!courseId || key.scope !== courseId) return auth.json(res, 409, { ok: false, error: "This 500 ETB key is for a different course." });
-    key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
-    await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 500 ETB key");
-    return auth.json(res, 200, { ok: true, activated: true, amount: 500, courseId });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
+      const key = keys.find(k => k.code === code);
+      if (!key) return auth.json(res, 404, { ok: false, error: "Invalid activation key." });
+      if (key.status !== "active") return auth.json(res, 409, { ok: false, error: "This activation key has already been used." });
+      if (key.amount !== 500) return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 500 ETB fee." });
+      if (!courseId || key.scope !== courseId) return auth.json(res, 409, { ok: false, error: "This 500 ETB key is for a different course." });
+      key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
+      try {
+        await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 500 ETB key");
+        return auth.json(res, 200, { ok: true, activated: true, amount: 500, courseId });
+      } catch (writeError) {
+        if (writeError.status === 409) continue;
+        throw writeError;
+      }
+    }
+    return auth.json(res, 409, { ok: false, error: "The activation registry changed repeatedly. Please try again." });
   } catch (e) {
     console.error("[EDSA activate key]", e);
     return auth.json(res, e.status || 500, { ok: false, error: "Activation could not be completed. Please try again." });
@@ -183,15 +191,23 @@ async function adminGenerateKey(req, res) {
     const count = Math.min(Math.max(Number(body.count) || 1, 1), 20);
     const allowed = ["smm", "dme", "pbm", "gdm", "fme", "dbi"];
     if (!allowed.includes(scope)) return auth.json(res, 400, { ok: false, error: "Invalid course scope." });
-    const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
-    const created = [];
-    for (let i = 0; i < count; i++) {
-      const code = "EDSA-" + crypto.randomBytes(4).toString("hex").toUpperCase();
-      const key = { code, scope, amount: 500, status: "active", createdAt: new Date().toISOString() };
-      keys.unshift(key); created.push(key);
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
+      const created = [];
+      for (let i = 0; i < count; i++) {
+        const code = "EDSA-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+        const key = { code, scope, amount: 500, status: "active", createdAt: new Date().toISOString() };
+        keys.unshift(key); created.push(key);
+      }
+      try {
+        await writeJsonFile("activation-keys.json", keys, sha, "Generate EDSA 500 ETB activation key(s)");
+        return auth.json(res, 200, { ok: true, keys: created });
+      } catch (writeError) {
+        if (writeError.status === 409) continue;
+        throw writeError;
+      }
     }
-    await writeJsonFile("activation-keys.json", keys, sha, "Generate EDSA 500 ETB activation key(s)");
-    return auth.json(res, 200, { ok: true, keys: created });
+    return auth.json(res, 409, { ok: false, error: "The activation registry changed repeatedly. Please try again." });
   } catch (e) {
     console.error("[EDSA generate key]", e);
     return auth.json(res, e.status || 500, { ok: false, error: "Activation key could not be generated." });
