@@ -169,7 +169,7 @@ async function EDSA_REGISTER(){
     const result=await response.json().catch(()=>({}));
     if(!response.ok||!result.ok){alert(result.error||"Account registration failed.");return}
 
-    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
     const check=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store",headers:result.sessionToken?{"Authorization":"Bearer "+result.sessionToken}:{} });
     const session=await check.json().catch(()=>({}));
     if(!check.ok||!session.ok||!session.authenticated||!session.user){
@@ -182,7 +182,7 @@ async function EDSA_REGISTER(){
       return;
     }
 
-    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
     EDSA_SAVE_ACCOUNT(session.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
     if(returnUrl && returnUrl.startsWith("/")){
@@ -198,7 +198,7 @@ async function EDSA_REGISTER(){
 async function EDSA_API_FETCH(url,options){
   options=options||{};
   const headers=Object.assign({},options.headers||{});
-  try{const token=sessionStorage.getItem("EDSA_SESSION_TOKEN");if(token) headers.Authorization="Bearer "+token;}catch(_){ }
+  try{const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN");if(token) headers.Authorization="Bearer "+token;}catch(_){ }
   return fetch(url,Object.assign({},options,{credentials:"include",headers:headers}));
 }
 async function EDSA_SIGN_IN(){
@@ -220,7 +220,7 @@ async function EDSA_SIGN_IN(){
     }
 
     // Persist the signed session token as a fallback for protected API requests.
-    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
     // Confirm the browser can authenticate with the same token/cookie before navigating.
     const check=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store",headers:result.sessionToken?{"Authorization":"Bearer "+result.sessionToken}:{} });
     const session=await check.json().catch(()=>({}));
@@ -234,7 +234,7 @@ async function EDSA_SIGN_IN(){
       return;
     }
 
-    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
     EDSA_SAVE_ACCOUNT(session.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
     if(returnUrl && returnUrl.startsWith("/")){
