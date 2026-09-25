@@ -161,7 +161,7 @@ async function EDSA_REGISTER(){
   try{
     const response=await fetch("/api/auth-register",{
       method:"POST",
-      credentials:"same-origin",
+      credentials:"include",
       cache:"no-store",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({name,email,password})
@@ -169,7 +169,8 @@ async function EDSA_REGISTER(){
     const result=await response.json().catch(()=>({}));
     if(!response.ok||!result.ok){alert(result.error||"Account registration failed.");return}
 
-    const check=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"});
+    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    const check=await fetch("/api/auth-me",{credentials:"include",cache:"no-store",headers:result.sessionToken?{"Authorization":"Bearer "+result.sessionToken}:{} });
     const session=await check.json().catch(()=>({}));
     if(!check.ok||!session.ok||!session.authenticated||!session.user){
       console.error("[EDSA] Registration succeeded but session verification failed",{
@@ -201,7 +202,7 @@ async function EDSA_SIGN_IN(){
   try{
     const response=await fetch("/api/auth-login",{
       method:"POST",
-      credentials:"same-origin",
+      credentials:"include",
       cache:"no-store",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({email,password})
@@ -212,9 +213,10 @@ async function EDSA_SIGN_IN(){
       return;
     }
 
-    // Confirm the browser actually kept the new EDSA session cookie
-    // before navigating to a protected page.
-    const check=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"});
+    // Persist the signed session token as a fallback for protected API requests.
+    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    // Confirm the browser can authenticate with the same token/cookie before navigating.
+    const check=await fetch("/api/auth-me",{credentials:"include",cache:"no-store",headers:result.sessionToken?{"Authorization":"Bearer "+result.sessionToken}:{} });
     const session=await check.json().catch(()=>({}));
     if(!check.ok||!session.ok||!session.authenticated||!session.user){
       console.error("[EDSA] Login succeeded but session verification failed",{
