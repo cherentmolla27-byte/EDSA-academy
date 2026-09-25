@@ -3,8 +3,12 @@
     "code": "EDSA-90DC9E68",
     "scope": "dme",
     "amount": 500,
-    "status": "active",
-    "createdAt": "2026-09-25T18:42:37.524Z"
+    "status": "used",
+    "createdAt": "2026-09-25T18:42:37.524Z",
+    "usedAt": "2026-09-25T18:43:00.473Z",
+    "usedBy": "Temsgen",
+    "usedEmail": "temsgenmollaalem@gmail.com",
+    "usedCourse": "dme"
   },
   {
     "code": "EDSA-7A2DA650",
