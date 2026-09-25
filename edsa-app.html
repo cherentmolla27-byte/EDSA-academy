@@ -1019,14 +1019,14 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     function EDSA_AUTH_HEADERS() {
-      const token = sessionStorage.getItem("EDSA_SESSION_TOKEN") || "";
+      const token = sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN") || "";
       return token ? {"Authorization": "Bearer " + token} : {};
     }
 
     function EDSA_API_FETCH(url, options) {
       options = options || {};
       const headers = Object.assign({}, options.headers || {});
-      try { const token = sessionStorage.getItem("EDSA_SESSION_TOKEN"); if (token) headers.Authorization = "Bearer " + token; } catch (_) {}
+      try { const token = sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN"); if (token) headers.Authorization = "Bearer " + token; } catch (_) {}
       return fetch(url, Object.assign({}, options, { credentials: "include", headers }));
     }
 
