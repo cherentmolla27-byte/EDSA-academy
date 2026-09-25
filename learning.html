@@ -17,6 +17,12 @@
 <div id="courseView" class="grid" style="display:none"><aside class="panel"><button class="btn light" style="margin-bottom:14px" onclick="showCourseHome()">← All Courses</button><div id="courseListInside" class="courses"></div></aside><section class="panel"><div id="learningArea"></div></section></div>
 </main>
 <script>
+function EDSA_API_FETCH(url, options) {
+  options = options || {};
+  const headers = Object.assign({}, options.headers || {});
+  try { const token = sessionStorage.getItem("EDSA_SESSION_TOKEN"); if (token) headers.Authorization = "Bearer " + token; } catch (_) {}
+  return fetch(url, Object.assign({}, options, { credentials: "include", headers }));
+}
 const COURSES={
 smm:{title:"Social Media Management",desc:"Social strategy, content, communities and platform management.",lessons:["Digital Social Media Foundations","Audience Research & Buyer Personas","Platform Selection & Strategy","Content Pillars & Planning","Content Calendars","Copywriting for Social Media","Visual Content & Branding","Short-Form Video Strategy","Community Management","Social Media Engagement","Hashtags, Keywords & Discovery","Analytics & Performance Metrics","Social Media Crisis Management","Campaign Planning & Optimization","Professional Social Media Workflow"]},
 dme:{title:"Digital Marketing Essentials",desc:"Digital campaigns, channels, analytics and marketing strategy.",lessons:["Digital Marketing Foundations","Customer Journey & Funnels","Market Research","Digital Marketing Strategy","Search Engine Basics","Content Marketing","Email Marketing","Social Advertising","Paid Search & Display","Landing Pages & Conversion","Analytics & KPIs","Remarketing & Retention","Campaign Budgeting","A/B Testing & Optimization","Integrated Digital Campaigns"]},
@@ -79,7 +85,7 @@ async function boot(){
   document.getElementById("courseView").style.display="none";
   const q=new URLSearchParams(location.search).get("course");
   try{
-    const r=await fetch("/api/auth-me",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
+    const r=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
     const x=await r.json().catch(()=>({}));
     if(r.ok&&x.ok&&x.authenticated&&x.user){
       state.email=x.user.email||"";
