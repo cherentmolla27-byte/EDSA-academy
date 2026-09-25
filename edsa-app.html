@@ -1018,6 +1018,11 @@ function generate50Questions(courseKey, courseTitle) {
       }
     }
 
+    function EDSA_AUTH_HEADERS() {
+      const token = sessionStorage.getItem("EDSA_SESSION_TOKEN") || "";
+      return token ? {"Authorization": "Bearer " + token} : {};
+    }
+
     function EDSA_API_FETCH(url, options) {
       options = options || {};
       const headers = Object.assign({}, options.headers || {});
