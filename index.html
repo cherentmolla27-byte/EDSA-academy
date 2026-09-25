@@ -182,7 +182,6 @@ async function EDSA_REGISTER(){
     }
 
     if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
-    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
     EDSA_SAVE_ACCOUNT(session.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
     if(returnUrl && returnUrl.startsWith("/")){
@@ -227,6 +226,7 @@ async function EDSA_SIGN_IN(){
       return;
     }
 
+    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
     EDSA_SAVE_ACCOUNT(session.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
     if(returnUrl && returnUrl.startsWith("/")){
