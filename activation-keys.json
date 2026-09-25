@@ -1,5 +1,12 @@
 [
   {
+    "code": "EDSA-98DCBF23",
+    "scope": "smm",
+    "amount": 500,
+    "status": "active",
+    "createdAt": "2026-09-25T17:20:54.980Z"
+  },
+  {
     "code": "EDSA-D081AC50",
     "scope": "smm",
     "amount": 500,
