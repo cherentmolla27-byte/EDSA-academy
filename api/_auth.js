@@ -104,26 +104,35 @@ function createSession(payload) {
   return body + "." + sig;
 }
 
-function readSession(req) {
+function readSession(req, expectedRole) {
   const secret = sessionSecret();
   if (!secret) return null;
 
-  // A stale/invalid cookie must NOT hide a valid Authorization bearer token.
-  // Browsers can keep an old EDSA_SESSION cookie while the app has a newer
-  // signed token in sessionStorage. Try both independently and accept the
-  // first valid session.
-  const cookie = String(req.headers.cookie || "")
+  const headers = req.headers || {};
+  const cookiePairs = String(headers.cookie || "")
     .split(";")
     .map(x => x.trim())
-    .find(x => x.startsWith("EDSA_SESSION="));
-  const authorization = String(req.headers.authorization || "");
+    .filter(Boolean);
+
+  const cookieName = expectedRole === "admin"
+    ? "EDSA_ADMIN_SESSION"
+    : "EDSA_STUDENT_SESSION";
+
+  const cookie = cookiePairs.find(x => x.startsWith(cookieName + "="));
+  const authorization = String(headers.authorization || "");
   const bearer = authorization.match(/^Bearer\s+(.+)$/i);
   const candidates = [];
 
   if (cookie) {
-    try { candidates.push(decodeURIComponent(cookie.slice("EDSA_SESSION=".length))); } catch (_) {}
+    try { candidates.push(decodeURIComponent(cookie.slice((cookieName + "=").length))); } catch (_) {}
   }
-  if (bearer && bearer[1]) candidates.push(bearer[1].trim());
+
+  // Bearer tokens are only a student authentication mechanism.
+  // Admin authentication is cookie-only and therefore cannot inherit a
+  // student's token or a stale generic session.
+  if (expectedRole !== "admin" && bearer && bearer[1]) {
+    candidates.push(bearer[1].trim());
+  }
 
   for (const token of candidates) {
     const parts = String(token || "").split(".");
@@ -133,6 +142,7 @@ function readSession(req) {
       if (expected.length !== parts[1].length || !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(parts[1]))) continue;
       const payload = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf8"));
       if (!payload.exp || payload.exp < Date.now()) continue;
+      if (expectedRole && payload.role !== expectedRole) continue;
       return payload;
     } catch (_) {
       // Try the next authentication source.
@@ -141,15 +151,30 @@ function readSession(req) {
   return null;
 }
 
-function setSessionCookie(res, token) {
-  res.setHeader("Set-Cookie", "EDSA_SESSION=" + encodeURIComponent(token) + "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800");
+function setSessionCookie(res, token, role) {
+  const name = role === "admin" ? "EDSA_ADMIN_SESSION" : "EDSA_STUDENT_SESSION";
+  const cookies = [
+    name + "=" + encodeURIComponent(token) + "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800",
+    // Remove the legacy shared cookie so it cannot participate in auth.
+    "EDSA_SESSION=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"
+  ];
+  res.setHeader("Set-Cookie", cookies);
 }
 
-function clearSessionCookie(res) {
+function clearSessionCookie(res, role) {
+  const name = role === "admin" ? "EDSA_ADMIN_SESSION" : "EDSA_STUDENT_SESSION";
+  res.setHeader("Set-Cookie", name + "=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0");
+}
+
+function clearLegacySessionCookie(res) {
+  res.setHeader("Set-Cookie", "EDSA_SESSION=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0");
+}
+
+function(res) {
   res.setHeader("Set-Cookie", "EDSA_SESSION=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0");
 }
 
 module.exports = {
   json, readUsers, writeUsers, normalizeEmail, validateName, validatePassword,
-  hashPassword, verifyPassword, createSession, readSession, setSessionCookie, clearSessionCookie
+  hashPassword, verifyPassword, createSession, readSession, setSessionCookie, clearSessionCookie, clearLegacySessionCookie
 };
