@@ -201,7 +201,7 @@ async function EDSA_API_FETCH(url,options){
   try{const token=sessionStorage.getItem("EDSA_SESSION_TOKEN");if(token) headers.Authorization="Bearer "+token;}catch(_){ }
   return fetch(url,Object.assign({},options,{credentials:"include",headers:headers}));
 }
-function EDSA_SIGN_IN(){
+async function EDSA_SIGN_IN(){
   const e=document.getElementById("loginEmail"),p=document.getElementById("loginPassword");
   const email=e?e.value.trim():"",password=p?p.value:"";
   if(!email||!password){alert("Please enter your email and password.");return}
@@ -334,7 +334,7 @@ function EDSA_START(){
 async function EDSA_OPEN_COURSE(id,profile){
   const returnUrl="/edsa-app.html?course="+encodeURIComponent(String(id));
   try{
-    const response=await EDSA_API_FETCH("/api/auth-me",{credentials:"same-origin",cache:"no-store"});
+    const response=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store"});
     const result=await response.json().catch(()=>({}));
     if(response.ok&&result.ok&&result.authenticated&&result.user&&result.user.role==="student"){
       EDSA_SAVE_ACCOUNT(result.user);
@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded",function(){
     document.querySelectorAll("button").forEach(function(b){b.type="button"});
     const params=new URLSearchParams(window.location.search);
     if(params.get("login")==="1") return;
-    EDSA_API_FETCH("/api/auth-me",{credentials:"same-origin",cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(result){
+    EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(result){
       if(result&&result.ok&&result.user){
         EDSA_SAVE_ACCOUNT(result.user);
         EDSA_RENDER_DASH(result.user);
