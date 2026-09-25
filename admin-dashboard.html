@@ -26,6 +26,26 @@
 <main id="dashboard" class="hidden space-y-5">
 <div id="stats" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
 
+<section class="bg-slate-900 border border-yellow-500/30 rounded-2xl p-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div><h2 class="font-bold">Activation Keys</h2><p class="text-slate-500 text-xs mt-1">Generate a 500 ETB key for one course or a universal key that can activate any course.</p></div>
+<div class="flex flex-wrap gap-2">
+<select id="keyScope" class="bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs">
+<option value="all">Universal — any course</option>
+<option value="smm">Social Media Management</option>
+<option value="dme">Digital Marketing Essentials</option>
+<option value="pbm">Project & Business Management</option>
+<option value="gdm">Graphic Design for Marketers</option>
+<option value="fme">Financial Management</option>
+<option value="dbi">Data Analysis & BI</option>
+</select>
+<input id="keyCount" type="number" min="1" max="20" value="1" class="w-20 bg-black border border-slate-700 rounded-lg px-3 py-2 text-xs">
+<button id="generateKeyBtn" class="px-4 py-2 rounded-lg bg-yellow-500 text-slate-950 font-black text-xs">Generate Key</button>
+</div>
+</div>
+<div id="keyResult" class="mt-3 hidden"></div>
+</section>
+
 <section class="grid lg:grid-cols-2 gap-5">
 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
 <div class="flex justify-between gap-2"><h2 class="font-bold mb-3">Students</h2><input id="studentSearch" placeholder="Search" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-32"></div>
@@ -164,6 +184,18 @@ $("pin").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
 $("logoutBtn").addEventListener("click",logout);
 $("refreshBtn").addEventListener("click",()=>loadDashboard());
 $("academyBtn").addEventListener("click",()=>location.href="/edsa-app.html");
+$("generateKeyBtn").addEventListener("click",async()=>{
+ const btn=$("generateKeyBtn"), box=$("keyResult");
+ const scope=$("keyScope").value, count=Math.min(Math.max(Number($("keyCount").value)||1,1),20);
+ btn.disabled=true;btn.textContent="Generating...";box.classList.remove("hidden");
+ try{
+  const {r,j}=await jsonFetch("/api/admin-generate-key",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({scope,count})});
+  if(!r.ok||!j.ok){box.innerHTML='<div class="text-rose-400 text-xs">'+esc(j.error||"Could not generate key.")+'</div>';return;}
+  box.innerHTML='<div class="border border-emerald-500/30 bg-emerald-500/5 rounded-lg p-3"><div class="text-emerald-400 text-xs font-bold mb-2">Generated '+esc(j.keys.length)+' key(s)</div><div class="grid gap-2">'+j.keys.map(k=>'<div class="flex flex-wrap items-center gap-2"><code class="font-mono text-yellow-400 text-sm bg-black rounded px-2 py-1">'+esc(k.code)+'</code><span class="text-slate-500 text-xs">'+(k.scope==='all'?'Universal — any course':esc(k.scope))+'</span><button class="copy-key text-sky-400 text-xs" data-key="'+esc(k.code)+'">Copy</button></div>').join('')+'</div></div>';
+  box.querySelectorAll('.copy-key').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.key);b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1200);}catch(_){}}));
+ }catch(_){box.innerHTML='<div class="text-rose-400 text-xs">Connection error. Please try again.</div>';}
+ finally{btn.disabled=false;btn.textContent="Generate Key";}
+});
 $("studentSearch").addEventListener("input",renderStudents);
 $("examSearch").addEventListener("input",renderAttempts);
 $("certSearch").addEventListener("input",renderCertificates);
