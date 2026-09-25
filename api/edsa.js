@@ -86,7 +86,7 @@ async function authLogin(req, res) {
     const token = auth.createSession({ email, name: user.name, role: "student" });
     auth.setSessionCookie(res, token);
     res.setHeader("Cache-Control", "no-store, max-age=0");
-    return auth.json(res, 200, { ok: true, authenticated: true, user: { name: user.name, email: user.email, role: "student", createdAt: user.createdAt } });
+    return auth.json(res, 200, { ok: true, authenticated: true, user: { name: user.name, email: user.email, role: "student", createdAt: user.createdAt }, sessionToken: token });
   } catch (err) {
     console.error("[EDSA auth login]", err);
     return auth.json(res, 500, { ok: false, error: "Sign-in is temporarily unavailable." });
@@ -110,7 +110,7 @@ async function authRegister(req, res) {
     const token = auth.createSession({ email, name, role: "student" });
     auth.setSessionCookie(res, token);
     res.setHeader("Cache-Control", "no-store, max-age=0");
-    return auth.json(res, 201, { ok: true, authenticated: true, user: { name, email, role: "student", createdAt: users[email].createdAt } });
+    return auth.json(res, 201, { ok: true, authenticated: true, user: { name, email, role: "student", createdAt: users[email].createdAt }, sessionToken: token });
   } catch (err) {
     console.error("[EDSA auth register]", err);
     return auth.json(res, 500, { ok: false, error: "Account registration is temporarily unavailable." });
