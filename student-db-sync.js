@@ -2,6 +2,24 @@
 (function () {
   "use strict";
 
+  // Some production browsers/proxies are dropping the session cookie on POST API calls.
+  // Keep the HttpOnly cookie as the primary mechanism, but attach the short-lived
+  // signed session token from sessionStorage as an Authorization fallback.
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = function (input, init) {
+    try {
+      const rawUrl = typeof input === "string" ? input : (input && input.url);
+      const url = new URL(rawUrl || "", window.location.href);
+      const token = sessionStorage.getItem("EDSA_SESSION_TOKEN") || "";
+      if (token && url.origin === window.location.origin && url.pathname.startsWith("/api/")) {
+        const headers = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
+        headers.set("Authorization", "Bearer " + token);
+        return nativeFetch(input, Object.assign({}, init || {}, { headers }));
+      }
+    } catch (_) {}
+    return nativeFetch(input, init);
+  };
+
   const JOURNEY_KEY = "EDSA_STUDENT_JOURNEY";
   const CERT_KEY = "EDSA_CERTIFICATES";
   let syncing = false;
