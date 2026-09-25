@@ -181,6 +181,8 @@ async function EDSA_REGISTER(){
       return;
     }
 
+    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    if(result.sessionToken) sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
     EDSA_SAVE_ACCOUNT(session.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
     if(returnUrl && returnUrl.startsWith("/")){
@@ -310,6 +312,7 @@ async function EDSA_LOGOUT(){
   try{await fetch("/api/auth-logout",{method:"POST"});}catch(_){}
   localStorage.removeItem("EDSA_ACTIVE_EMAIL");
   localStorage.removeItem("EDSA_STUDENT_PROFILE");
+  sessionStorage.removeItem("EDSA_SESSION_TOKEN");
   EDSA_SHOW_HOME();
 }
 function EDSA_SHOW_COURSES(){
