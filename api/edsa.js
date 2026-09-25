@@ -211,7 +211,7 @@ async function courseAccess(req, res) {
     if (!unlocked) return auth.json(res, 200, { ok: true, unlocked: false, courseId });
     if (String((req.query && req.query.include) || "") !== "lessons") return auth.json(res, 200, { ok: true, unlocked: true, courseId });
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
-      headers: { cookie: String(req.headers.cookie || ""), accept: "application/json" }, cache: "no-store"
+      headers: { cookie: String(req.headers.cookie || ""), authorization: String(req.headers.authorization || ""), accept: "application/json" }, cache: "no-store"
     });
     const body = await r.json().catch(() => ({ ok: false, error: "Invalid protected course response." }));
     res.setHeader("Cache-Control", "no-store, private");
