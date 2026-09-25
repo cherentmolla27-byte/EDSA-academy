@@ -57,11 +57,12 @@ const PBM_VIDEOS={
 14:{id:"aakuB-BtdlQ",title:"How and Why to Close a Project",url:"https://www.youtube.com/watch?v=aakuB-BtdlQ",note:"Lesson 15 video: project closure, approvals, documentation and lessons learned."}
 };
 let state={email:"",name:"",courseId:"",lesson:0,done:{},unlocked:{}};
+async function EDSA_AUTH_HEADERS(){const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||"";return token?{"Authorization":"Bearer "+token}:{}}
 async function checkCourseAccess(id){
   if(!state.email) return false;
   if(state.unlocked[id]===true) return true;
   try{
-    const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id),{credentials:"same-origin",cache:"no-store"});
+    const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id),{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
     const x=await r.json().catch(()=>({}));
     state.unlocked[id]=!!(r.ok&&x.ok&&x.unlocked);
     return state.unlocked[id];
@@ -78,7 +79,7 @@ async function boot(){
   document.getElementById("courseView").style.display="none";
   const q=new URLSearchParams(location.search).get("course");
   try{
-    const r=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"});
+    const r=await fetch("/api/auth-me",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
     const x=await r.json().catch(()=>({}));
     if(r.ok&&x.ok&&x.authenticated&&x.user){
       state.email=x.user.email||"";
@@ -149,7 +150,7 @@ const FME_VIDEOS={"0":{"id":"Fi1wkUczuyk","title":"Financial Statements: All the
 const LESSON_CACHE={};
 async function loadLessons(id){
   if(LESSON_CACHE[id]) return LESSON_CACHE[id];
-  const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id)+"&include=lessons",{credentials:"same-origin",cache:"no-store"});
+  const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id)+"&include=lessons",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
   const x=await r.json().catch(()=>({}));
   if(!r.ok||!x.ok||!Array.isArray(x.lessons)) throw new Error(x.error||"Course lessons unavailable");
   LESSON_CACHE[id]=x.lessons;
