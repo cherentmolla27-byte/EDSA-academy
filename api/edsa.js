@@ -14,7 +14,7 @@ function asInt(value) {
   return Number.isFinite(n) ? Math.round(n) : null;
 }
 function requireRole(req, role) {
-  const session = auth.readSession(req, "student");
+  const session = auth.readSession(req, role === "admin" ? "admin" : "student");
   if (!session || (role && session.role !== role)) return null;
   return session;
 }
@@ -136,7 +136,7 @@ async function adminLogin(req, res) {
   if (!pin || pin !== configuredPin) return auth.json(res, 401, { ok: false, error: "Incorrect admin PIN." });
   try {
     const token = auth.createSession({ email: "admin", name: "EDSA Administrator", role: "admin" });
-    auth.setSessionCookie(res, token, "student");
+    auth.setSessionCookie(res, token, "admin");
     return auth.json(res, 200, { ok: true, role: "admin" });
   } catch (err) {
     console.error("[EDSA admin login]", err);
