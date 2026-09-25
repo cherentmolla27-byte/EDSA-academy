@@ -1018,10 +1018,17 @@ function generate50Questions(courseKey, courseTitle) {
       }
     }
 
+    function EDSA_API_FETCH(url, options) {
+      options = options || {};
+      const headers = Object.assign({}, options.headers || {});
+      try { const token = sessionStorage.getItem("EDSA_SESSION_TOKEN"); if (token) headers.Authorization = "Bearer " + token; } catch (_) {}
+      return fetch(url, Object.assign({}, options, { credentials: "include", headers }));
+    }
+
     async function selectCourse(courseId) {
       // HARD GATE: no student account = no exam/payment flow.
       try {
-        const response = await fetch("/api/auth-me", {
+        const response = await EDSA_API_FETCH("/api/auth-me", {
           credentials: "include",
           headers: EDSA_AUTH_HEADERS(),
           cache: "no-store"
@@ -1070,7 +1077,7 @@ function generate50Questions(courseKey, courseTitle) {
       // Exams require an authenticated student account.
       // This guarantees every submitted attempt can be linked to a real student.
       try {
-        const authResponse = await fetch("/api/auth-me", { credentials: "include", headers: EDSA_AUTH_HEADERS(), cache: "no-store" });
+        const authResponse = await EDSA_API_FETCH("/api/auth-me", { credentials: "include", headers: EDSA_AUTH_HEADERS(), cache: "no-store" });
         const authResult = await authResponse.json().catch(() => ({}));
         if (!authResponse.ok || !authResult.ok || !authResult.authenticated || !authResult.user) {
           alert("Please sign in or create an EDSA student account before starting an exam.");
@@ -1098,7 +1105,7 @@ function generate50Questions(courseKey, courseTitle) {
 
       let activation;
       try {
-        const response = await fetch("/api/activate-key", {
+        const response = await EDSA_API_FETCH("/api/activate-key", {
           method: "POST",
           credentials: "include",
           headers: { ...EDSA_AUTH_HEADERS(), "Content-Type": "application/json" },
@@ -1261,7 +1268,7 @@ function generate50Questions(courseKey, courseTitle) {
       // Step 12: save the completed exam directly from the real submission path.
       if (!window.__EDSA_EXAM_ATTEMPT_RECORDED) {
         window.__EDSA_EXAM_ATTEMPT_RECORDED = true;
-        fetch("/api/exam-attempt", {
+        EDSA_API_FETCH("/api/exam-attempt", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -1698,7 +1705,7 @@ function generate50Questions(courseKey, courseTitle) {
       // Immediately sync the certificate to Supabase too.
       if (window.EDSA_DB_SYNC) window.EDSA_DB_SYNC.push();
       try {
-        const response = await fetch("/api/register-certificate", {
+        const response = await EDSA_API_FETCH("/api/register-certificate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(record)
@@ -1713,7 +1720,7 @@ function generate50Questions(courseKey, courseTitle) {
         const emailSentKey = "EDSA_CERT_EMAIL_SENT_" + state.certificateId;
         if (record.email && !localStorage.getItem(emailSentKey)) {
           try {
-            const emailResponse = await fetch("/api/send-certificate-email", {
+            const emailResponse = await EDSA_API_FETCH("/api/send-certificate-email", {
               method: "POST",
               credentials: "include",
               headers: { "Content-Type": "application/json" },
@@ -1772,7 +1779,7 @@ function generate50Questions(courseKey, courseTitle) {
       checkLockoutState();
 
       try {
-        const response = await fetch("/api/admin-me", { cache: "no-store" });
+        const response = await EDSA_API_FETCH("/api/admin-me", { cache: "no-store" });
         const result = await response.json().catch(() => ({}));
 
         if (response.ok && result.ok && result.user && result.user.role === "admin") {
@@ -1816,7 +1823,7 @@ function generate50Questions(courseKey, courseTitle) {
       loginBtn.textContent = "Checking...";
 
       try {
-        const response = await fetch("/api/admin-login", {
+        const response = await EDSA_API_FETCH("/api/admin-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ pin })
@@ -2032,7 +2039,7 @@ function generate50Questions(courseKey, courseTitle) {
       const scope = document.getElementById("keyCourseScope").value;
       const count = Math.min(Math.max(parseInt(document.getElementById("keyCount").value) || 1, 1), 20);
       try {
-        const response = await fetch("/api/admin-generate-key", {
+        const response = await EDSA_API_FETCH("/api/admin-generate-key", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -2126,7 +2133,7 @@ function generate50Questions(courseKey, courseTitle) {
         if (params.get("test") !== "certificate") return;
 
         setTimeout(async () => {
-          const authResponse = await fetch("/api/auth-me", { credentials: "include", cache: "no-store" });
+          const authResponse = await EDSA_API_FETCH("/api/auth-me", { credentials: "include", cache: "no-store" });
           const authResult = await authResponse.json().catch(() => ({}));
           if (!authResponse.ok || !authResult.ok || !authResult.authenticated || !authResult.user || authResult.user.role !== "student") {
             alert("Please sign in before using the certificate test.");
