@@ -164,7 +164,7 @@ async function activateKey(req, res) {
       if (!key) return auth.json(res, 404, { ok: false, error: "Invalid activation key." });
       if (key.status !== "active") return auth.json(res, 409, { ok: false, error: "This activation key has already been used." });
       if (key.amount !== 500) return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 500 ETB fee." });
-      if (!courseId || key.scope !== courseId) return auth.json(res, 409, { ok: false, error: "This 500 ETB key is for a different course." });
+      if (!courseId || (key.scope !== courseId && key.scope !== "all")) return auth.json(res, 409, { ok: false, error: "This 500 ETB key is for a different course." });
       key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
       try {
         await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 500 ETB key");
@@ -189,7 +189,7 @@ async function adminGenerateKey(req, res) {
     const body = req.body || {};
     const scope = String(body.scope || "").trim();
     const count = Math.min(Math.max(Number(body.count) || 1, 1), 20);
-    const allowed = ["smm", "dme", "pbm", "gdm", "fme", "dbi"];
+    const allowed = ["smm", "dme", "pbm", "gdm", "fme", "dbi", "all"];
     if (!allowed.includes(scope)) return auth.json(res, 400, { ok: false, error: "Invalid course scope." });
     for (let attempt = 0; attempt < 3; attempt++) {
       const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
@@ -223,7 +223,7 @@ async function courseAccess(req, res) {
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
     const email = auth.normalizeEmail(s.email);
     const { data: keys } = await readJsonFile("activation-keys.json", []);
-    const unlocked = keys.some(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && k.scope === courseId && k.usedCourse === courseId);
+    const unlocked = keys.some(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && k.usedCourse === courseId && (k.scope === courseId || k.scope === "all"));
     if (!unlocked) return auth.json(res, 200, { ok: true, unlocked: false, courseId });
     if (String((req.query && req.query.include) || "") !== "lessons") return auth.json(res, 200, { ok: true, unlocked: true, courseId });
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
@@ -319,7 +319,7 @@ async function examAttempt(req, res) {
     if (!courseId || score == null || score < 0 || score > 100) return auth.json(res, 400, { ok: false, error: "Valid course and score are required." });
     const email = auth.normalizeEmail(session.email);
     const { data: keys } = await readJsonFile("activation-keys.json", []);
-    const courseKey = keys.find(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && k.scope === courseId && k.usedCourse === courseId);
+    const courseKey = keys.find(k => k.status === "used" && k.amount === 500 && auth.normalizeEmail(k.usedEmail) === email && k.usedCourse === courseId && (k.scope === courseId || k.scope === "all"));
     if (!courseKey) return auth.json(res, 403, { ok: false, error: "This course exam requires an active 500 ETB course access. Please purchase or activate this course first." });
     const studentLookup = await db.select("students", "select=id&email=eq." + encodeURIComponent(email) + "&limit=1");
     const studentId = studentLookup[0]?.id;
