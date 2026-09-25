@@ -3,8 +3,12 @@
     "code": "EDSA-84464F37",
     "scope": "smm",
     "amount": 500,
-    "status": "active",
-    "createdAt": "2026-09-25T17:34:03.144Z"
+    "status": "used",
+    "createdAt": "2026-09-25T17:34:03.144Z",
+    "usedAt": "2026-09-25T17:58:33.241Z",
+    "usedBy": "Chere",
+    "usedEmail": "cherentchere966@gmail.com",
+    "usedCourse": "smm"
   },
   {
     "code": "EDSA-98DCBF23",
