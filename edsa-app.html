@@ -1022,7 +1022,7 @@ function generate50Questions(courseKey, courseTitle) {
       // HARD GATE: no student account = no exam/payment flow.
       try {
         const response = await fetch("/api/auth-me", {
-          credentials: "same-origin",
+          credentials: "include",
           cache: "no-store"
         });
         const result = await response.json().catch(() => ({}));
@@ -1051,7 +1051,7 @@ function generate50Questions(courseKey, courseTitle) {
       document.getElementById("selectedCourseTitle").innerText = `Selected: ${state.selectedCourse.title}`;
       document.getElementById("userStatus").innerText = `Signed in: ${state.studentName || state.studentEmail}`;
       try {
-        const accessResponse = await fetch("/api/course-access?courseId="+encodeURIComponent(courseId), {credentials:"same-origin", cache:"no-store"});
+        const accessResponse = await fetch("/api/course-access?courseId="+encodeURIComponent(courseId), {credentials:"include", cache:"no-store"});
         const accessResult = await accessResponse.json().catch(() => ({}));
         const note = document.querySelector("#stepPayment .text-slate-300.space-y-3 p.font-bold");
         if (accessResponse.ok && accessResult.ok && accessResult.unlocked) {
@@ -1069,7 +1069,7 @@ function generate50Questions(courseKey, courseTitle) {
       // Exams require an authenticated student account.
       // This guarantees every submitted attempt can be linked to a real student.
       try {
-        const authResponse = await fetch("/api/auth-me", { credentials: "same-origin", cache: "no-store" });
+        const authResponse = await fetch("/api/auth-me", { credentials: "include", cache: "no-store" });
         const authResult = await authResponse.json().catch(() => ({}));
         if (!authResponse.ok || !authResult.ok || !authResult.authenticated || !authResult.user) {
           alert("Please sign in or create an EDSA student account before starting an exam.");
@@ -1099,7 +1099,7 @@ function generate50Questions(courseKey, courseTitle) {
       try {
         const response = await fetch("/api/activate-key", {
           method: "POST",
-          credentials: "same-origin",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             code: inputKey,
@@ -1262,7 +1262,7 @@ function generate50Questions(courseKey, courseTitle) {
         window.__EDSA_EXAM_ATTEMPT_RECORDED = true;
         fetch("/api/exam-attempt", {
           method: "POST",
-          credentials: "same-origin",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             courseTitle: state.selectedCourse && state.selectedCourse.title || "EDSA Course",
@@ -1714,7 +1714,7 @@ function generate50Questions(courseKey, courseTitle) {
           try {
             const emailResponse = await fetch("/api/send-certificate-email", {
               method: "POST",
-              credentials: "same-origin",
+              credentials: "include",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(record)
             });
@@ -2033,7 +2033,7 @@ function generate50Questions(courseKey, courseTitle) {
       try {
         const response = await fetch("/api/admin-generate-key", {
           method: "POST",
-          credentials: "same-origin",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ scope, count })
         });
@@ -2125,7 +2125,7 @@ function generate50Questions(courseKey, courseTitle) {
         if (params.get("test") !== "certificate") return;
 
         setTimeout(async () => {
-          const authResponse = await fetch("/api/auth-me", { credentials: "same-origin", cache: "no-store" });
+          const authResponse = await fetch("/api/auth-me", { credentials: "include", cache: "no-store" });
           const authResult = await authResponse.json().catch(() => ({}));
           if (!authResponse.ok || !authResult.ok || !authResult.authenticated || !authResult.user || authResult.user.role !== "student") {
             alert("Please sign in before using the certificate test.");
