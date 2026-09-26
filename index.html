@@ -89,7 +89,7 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 </head>
-<body>
+<body><a class="edsa-skip-link" href="#main-content">Skip to main content</a>
 <a class="edsa-skip-link" href="#main-content">Skip to main content</a>
 
 <div class="edsa-public edsa-ref-home" id="edsaPublicHome">
@@ -183,17 +183,17 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
   </section>
 
   <section class="edsa-ref-section edsa-ref-lower" id="students">
-    <div class="edsa-ref-testimonials"><div class="edsa-ref-section-title"><div><h2>የተማሪዎች አስተያየት</h2><p>What Our Students Say</p></div></div><div class="edsa-ref-test-grid">
-      <article><div class="avatar">S</div><b>Selam Tesfaye</b><small>Social Media Manager</small><p>በEDSA የተማርኩትን በተግባር በመጠቀም ስራዬን ማሻሻል ቻልኩ።</p><strong>★★★★★</strong></article>
-      <article><div class="avatar">A</div><b>Abel Worku</b><small>Digital Marketer</small><p>ፈተናው የማውቀውን በግልጽ መልኩ እንዳረጋግጥ ረድቶኛል።</p><strong>★★★★★</strong></article>
-      <article><div class="avatar">H</div><b>Hana Mohammed</b><small>Freelancer</small><p>ሰርተፊኬቴን በQR መረጋገጥ መቻሉ ለእኔ ጠቃሚ ነበር።</p><strong>★★★★★</strong></article>
+    <div class="edsa-ref-testimonials"><div class="edsa-ref-section-title"><div><h2>ለተማሪዎች የተዘጋጀ</h2><p>Built for Learners</p></div></div><div class="edsa-ref-test-grid">
+      <article><div class="avatar">01</div><b>Learn First</b><small>Learning Center</small><p>Review lessons and learning materials before moving to the final examination.</p><strong>LEARN</strong></article>
+      <article><div class="avatar">02</div><b>Clear Standard</b><small>50 Questions • 80% Pass</small><p>Every examination follows a clear 50-question format with an 80% passing standard.</p><strong>EXAM</strong></article>
+      <article><div class="avatar">03</div><b>Verify Online</b><small>Certificate ID + QR</small><p>Successful candidates receive a certificate that can be checked through the online verification system.</p><strong>VERIFY</strong></article>
     </div></div>
     <div class="edsa-ref-faq" id="faq"><h2>በተደጋጋሚ የሚጠየቁ ጥያቄዎች</h2><p>Frequently Asked Questions</p>
-      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">ፈተናው ስንት ጥያቄ አለው? <b>+</b></button><div class="edsa-faq-answer">እያንዳንዱ ፈተና 50 ጥያቄዎች አሉት።<br><b>English:</b> Each EDSA exam contains 50 questions.</div></div>
-      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">ለማለፍ ስንት ነጥብ ያስፈልጋል? <b>+</b></button><div class="edsa-faq-answer">80% ወይም ከዚያ በላይ ያስፈልጋል።<br><b>English:</b> You need a score of 80% or higher to pass.</div></div>
-      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">የሰርተፊኬት ማረጋገጫ አለ? <b>+</b></button><div class="edsa-faq-answer">አዎ፣ በQR እና በCertificate ID መስመር ላይ ማረጋገጥ ይችላሉ።<br><b>English:</b> Yes. Certificates can be verified online using the QR code or Certificate ID.</div></div>
-      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">እንደገና መፈተን እችላለሁ? <b>+</b></button><div class="edsa-faq-answer">የሚገኝ የactivation key ካለ እንደገና መፈተን ይችላሉ።<br><b>English:</b> You can retake an exam when you have an available activation key.</div></div>
-      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">እንዴት እጀምራለሁ? <b>+</b></button><div class="edsa-faq-answer">የተማሪ መለያ ይፍጠሩ እና Get Started ይጫኑ።<br><b>English:</b> Create your student account, then click Get Started to begin.</div></div>
+      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" aria-controls="faq-answer-1" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">ፈተናው ስንት ጥያቄ አለው? <b>+</b></button><div id="faq-answer-1" class="edsa-faq-answer">እያንዳንዱ ፈተና 50 ጥያቄዎች አሉት።<br><b>English:</b> Each EDSA exam contains 50 questions.</div></div>
+      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" aria-controls="faq-answer-2" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">ለማለፍ ስንት ነጥብ ያስፈልጋል? <b>+</b></button><div id="faq-answer-2" class="edsa-faq-answer">80% ወይም ከዚያ በላይ ያስፈልጋል።<br><b>English:</b> You need a score of 80% or higher to pass.</div></div>
+      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" aria-controls="faq-answer-3" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">የሰርተፊኬት ማረጋገጫ አለ? <b>+</b></button><div id="faq-answer-3" class="edsa-faq-answer">አዎ፣ በQR እና በCertificate ID መስመር ላይ ማረጋገጥ ይችላሉ።<br><b>English:</b> Yes. Certificates can be verified online using the QR code or Certificate ID.</div></div>
+      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" aria-controls="faq-answer-4" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">እንደገና መፈተን እችላለሁ? <b>+</b></button><div id="faq-answer-4" class="edsa-faq-answer">የሚገኝ የactivation key ካለ እንደገና መፈተን ይችላሉ።<br><b>English:</b> You can retake an exam when you have an available activation key.</div></div>
+      <div class="edsa-faq-item"><button type="button" class="edsa-faq-question" aria-controls="faq-answer-5" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))" aria-expanded="false">እንዴት እጀምራለሁ? <b>+</b></button><div id="faq-answer-5" class="edsa-faq-answer">የተማሪ መለያ ይፍጠሩ እና Get Started ይጫኑ።<br><b>English:</b> Create your student account, then click Get Started to begin.</div></div>
     </div>
   </section>
 
@@ -572,5 +572,71 @@ document.addEventListener("DOMContentLoaded",function(){
   });
 });
 </script>
+
+<style id="edsa-professional-polish">
+.edsa-skip-link{position:fixed;left:12px;top:-60px;z-index:9999;background:#fff;color:#041936;padding:10px 14px;border-radius:8px;font-weight:900;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);text-decoration:none}
+.edsa-skip-link:focus{top:12px}
+.edsa-ref-nav{padding-left:clamp(16px,4vw,48px);padding-right:clamp(16px,4vw,48px)}
+.edsa-ref-brand strong{letter-spacing:-.03em}
+.edsa-ref-links a,.edsa-ref-sign,.edsa-ref-lang,.edsa-ref-primary,.edsa-ref-outline,.edsa-ref-section-title button,.edsa-ref-courses article button{transition:transform .18s ease,background-color .18s ease,border-color .18s ease,box-shadow .18s ease,color .18s ease}
+.edsa-ref-links a:hover{color:#60a5fa}
+.edsa-ref-sign:hover,.edsa-ref-primary:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(22,119,255,.28)}
+.edsa-ref-outline:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
+.edsa-ref-courses article{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.edsa-ref-courses article:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(20,67,120,.14);border-color:#bfd8f7}
+.edsa-ref-courses article:focus-within{outline:3px solid rgba(22,119,255,.22);outline-offset:2px}
+.edsa-ref-courses article button:hover{color:#0b5dcc}
+.edsa-ref-stats>div{transition:background-color .18s ease}
+.edsa-ref-stats>div:hover{background:#f8fbff}
+.edsa-ref-section{scroll-margin-top:82px}
+.edsa-ref-heading,.edsa-ref-section-title{letter-spacing:-.01em}
+.edsa-ref-copy h1{max-width:570px}
+.edsa-ref-copy h2{font-weight:850}
+.edsa-ref-hero{height:390px}
+.edsa-ref-hero-bg{width:64%!important}
+.edsa-ref-hero-content{padding-top:46px}
+.edsa-ref-stats{max-width:980px}
+.edsa-ref-faq .edsa-faq-question:focus-visible,.edsa-ref-courses article:focus-visible,.edsa-ref-primary:focus-visible,.edsa-ref-outline:focus-visible,.edsa-ref-sign:focus-visible,.edsa-ref-lang:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
+.edsa-ref-faq .edsa-faq-question{min-height:48px}
+.edsa-ref-faq .edsa-faq-answer{font-size:11px}
+.edsa-ref-footer a:hover{color:#fff}
+@media(max-width:900px){
+  .edsa-ref-hero{height:500px}
+  .edsa-ref-hero-content{padding-top:34px}
+  .edsa-ref-hero-bg{width:100%!important;height:285px!important;top:auto!important;bottom:0!important}
+  .edsa-ref-copy{max-width:620px}
+  .edsa-ref-copy h1{font-size:34px}
+}
+@media(max-width:560px){
+  .edsa-ref-nav{height:auto;min-height:62px;flex-wrap:wrap;padding-top:9px;padding-bottom:9px}
+  .edsa-ref-brand{min-width:0}
+  .edsa-ref-brand strong{font-size:24px}
+  .edsa-ref-brand small{font-size:7px}
+  .edsa-ref-links{display:none}
+  .edsa-ref-nav-actions{margin-left:auto}
+  .edsa-ref-lang{padding:7px 10px}
+  .edsa-ref-sign{padding:9px 11px}
+  .edsa-ref-hero{height:515px}
+  .edsa-ref-hero-content{padding:30px 5% 0}
+  .edsa-ref-copy h1{font-size:30px}
+  .edsa-ref-copy h2{font-size:22px}
+  .edsa-ref-copy p{font-size:11px;line-height:1.6}
+  .edsa-ref-actions{margin-top:15px}
+  .edsa-ref-primary,.edsa-ref-outline{padding:10px 12px}
+  .edsa-ref-hero-bg{height:255px!important}
+  .edsa-ref-stats{margin:-18px 12px 0;grid-template-columns:repeat(4,minmax(170px,1fr));border-radius:12px}
+  .edsa-ref-section{padding:30px 5%}
+  .edsa-ref-heading h2,.edsa-ref-section-title h2,.edsa-ref-why h2,.edsa-ref-verify h2{font-size:21px}
+  .edsa-ref-section-title{align-items:flex-start;gap:10px}
+  .edsa-ref-section-title button{white-space:nowrap}
+  .edsa-ref-courses{grid-template-columns:repeat(2,1fr)!important}
+  .edsa-ref-courses article{min-height:145px}
+  .edsa-ref-cert-row{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .edsa-ref-links a,.edsa-ref-sign,.edsa-ref-lang,.edsa-ref-primary,.edsa-ref-outline,.edsa-ref-section-title button,.edsa-ref-courses article,.edsa-ref-courses article button{transition:none!important}
+  html{scroll-behavior:auto!important}
+}
+</style>
 </body>
 </html>
