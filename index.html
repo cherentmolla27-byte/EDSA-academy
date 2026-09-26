@@ -307,21 +307,18 @@ async function EDSA_REGISTER(){
     const result=await response.json().catch(()=>({}));
     if(!response.ok||!result.ok){alert(result.error||"Account registration failed.");return}
 
-    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
-    const check=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store",headers:result.sessionToken?{"Authorization":"Bearer "+result.sessionToken}:{} });
-    const session=await check.json().catch(()=>({}));
-    if(!check.ok||!session.ok||!session.authenticated||!session.user){
-      console.error("[EDSA] Registration succeeded but session verification failed",{
-        registerStatus:response.status,
-        authStatus:check.status,
-        session
-      });
-      alert("Your account was created, but the sign-in session was not saved. Please sign in again.");
+    // auth-register already returns the signed session and user.
+    // Do not make a second /api/auth-me request here: on slower mobile
+    // connections that extra round trip made registration feel stuck.
+    if(result.sessionToken){
+      sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+      localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    }
+    if(!result.user){
+      alert("Your account was created, but the sign-in session was not returned. Please sign in again.");
       return;
     }
-
-    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
-    EDSA_SAVE_ACCOUNT(session.user);
+    EDSA_SAVE_ACCOUNT(result.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
     if(returnUrl && returnUrl.startsWith("/")){
       window.location.href=returnUrl;
@@ -341,8 +338,11 @@ async function EDSA_API_FETCH(url,options){
 }
 async function EDSA_SIGN_IN(){
   const e=document.getElementById("loginEmail"),p=document.getElementById("loginPassword");
+  const submit=document.querySelector("#edsaLoginScreen button[onclick*=\"EDSA_SIGN_IN\"]");
+  const originalText=submit?submit.textContent:"";
   const email=e?e.value.trim():"",password=p?p.value:"";
   if(!email||!password){alert("Please enter your email and password.");return}
+  if(submit){submit.disabled=true;submit.textContent="Signing in…";submit.setAttribute("aria-busy","true");}
   try{
     const response=await EDSA_API_FETCH("/api/auth-login",{
       method:"POST",
@@ -357,23 +357,17 @@ async function EDSA_SIGN_IN(){
       return;
     }
 
-    // Persist the signed session token as a fallback for protected API requests.
-    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
-    // Confirm the browser can authenticate with the same token/cookie before navigating.
-    const check=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store",headers:result.sessionToken?{"Authorization":"Bearer "+result.sessionToken}:{} });
-    const session=await check.json().catch(()=>({}));
-    if(!check.ok||!session.ok||!session.authenticated||!session.user){
-      console.error("[EDSA] Login succeeded but session verification failed",{
-        loginStatus:response.status,
-        authStatus:check.status,
-        session
-      });
-      alert("Your password was accepted, but the sign-in session was not saved. Please try signing in again.");
+    // auth-login already returns a verified user and signed session token.
+    // Avoid a second /api/auth-me round trip so sign-in is fast on mobile networks.
+    if(result.sessionToken){
+      sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+      localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken);
+    }
+    if(!result.user){
+      alert("Your password was accepted, but no student session was returned. Please try signing in again.");
       return;
     }
-
-    if(result.sessionToken){ sessionStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); localStorage.setItem("EDSA_SESSION_TOKEN", result.sessionToken); }
-    EDSA_SAVE_ACCOUNT(session.user);
+    EDSA_SAVE_ACCOUNT(result.user);
     const returnUrl=new URLSearchParams(window.location.search).get("return");
     if(returnUrl && returnUrl.startsWith("/")){
       window.location.href=returnUrl;
@@ -383,6 +377,8 @@ async function EDSA_SIGN_IN(){
   }catch(error){
     console.error("EDSA sign-in error",error);
     alert("Could not connect to EDSA authentication.");
+  }finally{
+    if(submit){submit.disabled=false;submit.textContent=originalText;submit.removeAttribute("aria-busy");}
   }
 }
 function EDSA_getJourney(){
@@ -638,5 +634,7 @@ document.addEventListener("DOMContentLoaded",function(){
   html{scroll-behavior:auto!important}
 }
 </style>
-</body>
+<style id="edsa-auth-speed-polish">
+#edsaLoginScreen button[onclick*="EDSA_SIGN_IN"]:disabled,#edsaRegisterScreen button[onclick*="EDSA_REGISTER"]:disabled{opacity:.72;cursor:wait}
+</style></body>
 </html>
