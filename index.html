@@ -340,18 +340,21 @@ async function EDSA_SIGN_IN(){
   const e=document.getElementById("loginEmail"),p=document.getElementById("loginPassword");
   const submit=document.querySelector("#edsaLoginScreen button[onclick*=\"EDSA_SIGN_IN\"]");
   const originalText=submit?submit.textContent:"";
-  const loginStartedAt=Date.now();
   const email=e?e.value.trim():"",password=p?p.value:"";
   if(!email||!password){alert("Please enter your email and password.");return}
   if(submit){submit.disabled=true;submit.textContent="Signing in…";submit.setAttribute("aria-busy","true");}
   try{
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    const timeout = controller ? setTimeout(function(){ controller.abort(); }, 20000) : null;
     const response=await EDSA_API_FETCH("/api/auth-login",{
       method:"POST",
       credentials:"include",
       cache:"no-store",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({email,password})
+      body:JSON.stringify({email,password}),
+      signal: controller ? controller.signal : undefined
     });
+    if(timeout) clearTimeout(timeout);
     const result=await response.json().catch(()=>({}));
     if(!response.ok||!result.ok){
       alert(result.error||"Invalid email or password.");
