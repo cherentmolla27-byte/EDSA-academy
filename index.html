@@ -21,54 +21,137 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 @media(min-width:700px){.edsa-pnavlinks{display:flex}.edsa-hero-inner{grid-template-columns:1.05fr .95fr}.edsa-hero-art{height:520px}.edsa-public-stats{grid-template-columns:repeat(4,1fr)}.edsa-public-courses.show{grid-template-columns:repeat(3,1fr)}.edsa-public-info{grid-template-columns:repeat(3,1fr)}.edsa-dash-grid{grid-template-columns:1.3fr .7fr}}
 @media(max-width:500px){.edsa-brand-copy{max-width:180px}.edsa-hero-inner{min-height:0}.edsa-hero-copy{padding:48px 0 25px}.edsa-hero-art{height:300px}.art-card.main{width:82%;padding:22px}.art-title{font-size:25px}.float-card{right:0}.float-card.two{left:0}.edsa-dash-head{align-items:flex-start;flex-direction:column}}
  .edsa-dash-profile{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.edsa-profile-box{background:#fff;border:1px solid #dbeafe;border-radius:18px;padding:18px}.edsa-profile-box .label{font-size:9px;color:#94a3b8;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.edsa-profile-box .value{font-size:14px;font-weight:850;color:#0b2145;margin-top:5px;word-break:break-word}.edsa-course-actions{display:flex;align-items:center;gap:7px;flex-shrink:0}.edsa-cert-btn{border:1px solid #fde68a;background:#fffbeb;color:#a16207;border-radius:9px;padding:8px 9px;font-size:10px;font-weight:900;cursor:pointer}.edsa-activity{display:grid;grid-template-columns:1fr;gap:9px;margin-top:14px}.edsa-activity-item{background:#f8fbff;border:1px solid #e2e8f0;border-radius:12px;padding:11px}.edsa-activity-item strong{display:block;font-size:11px;color:#0b2145}.edsa-activity-item span{display:block;font-size:9px;color:#64748b;margin-top:3px;line-height:1.5}@media(max-width:600px){.edsa-dash-profile{grid-template-columns:1fr}.edsa-course-actions{flex-direction:column;align-items:stretch}.edsa-cert-btn{white-space:nowrap}} </style>
-<script src="/student-db-sync.js"></script>\n</head>
+<script src="/student-db-sync.js"></script>\n
+<style id="edsa-reference-home-style">
+.edsa-ref-home{background:#fff;color:#102b56;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+.edsa-ref-nav{height:64px;background:#041936;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 3%;gap:18px;position:sticky;top:0;z-index:50;box-shadow:0 3px 15px rgba(0,0,0,.18)}
+.edsa-ref-brand{display:flex;align-items:center;gap:9px;min-width:210px;cursor:pointer}.edsa-ref-brand strong{font-size:29px;line-height:1}.edsa-ref-brand small{display:inline-block;margin-left:7px;font-size:8px;line-height:1.25;color:#fff;font-weight:800;vertical-align:middle}.edsa-ref-logo{width:29px;height:29px;border-radius:5px;background:#1677ff;display:grid;place-items:center;font-weight:900;font-size:19px}.edsa-ref-links{display:flex;align-items:center;gap:27px}.edsa-ref-links a{color:#fff;text-decoration:none;font-size:11px;font-weight:800;white-space:nowrap}.edsa-ref-nav-actions{display:flex;gap:9px;align-items:center}.edsa-ref-lang{background:transparent;color:#fff;border:1px solid #667891;border-radius:20px;padding:8px 13px;font-size:10px;font-weight:800}.edsa-ref-sign{border:0;background:#1677ff;color:#fff;border-radius:8px;padding:10px 15px;font-weight:900;font-size:11px}
+.edsa-ref-hero{height:348px;position:relative;background:linear-gradient(100deg,#061b40 0%,#073d82 55%,#156ef0 100%);overflow:hidden;color:#fff}.edsa-ref-hero-bg{position:absolute;right:0;top:0;width:58%;height:100%;background-image:url('/edsa-reference-hero.svg');background-size:cover;background-position:center right;opacity:.98}.edsa-ref-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#061b40 0%,rgba(6,27,64,.92) 29%,rgba(6,27,64,.18) 57%,rgba(6,27,64,.02) 100%);pointer-events:none}.edsa-ref-hero-content{position:relative;z-index:2;max-width:1080px;height:100%;margin:auto;padding:40px 4%}.edsa-ref-copy{max-width:520px}.edsa-ref-copy h1{margin:0 0 5px;font-size:37px;line-height:1.1;font-weight:950;letter-spacing:-.02em}.edsa-ref-copy h2{margin:0 0 12px;font-size:26px;line-height:1.1;color:#fff}.edsa-ref-copy p{font-size:12px;line-height:1.7;color:#e4efff;max-width:485px;margin:0}.edsa-ref-actions{display:flex;gap:11px;margin-top:19px;flex-wrap:wrap}.edsa-ref-primary,.edsa-ref-outline{border-radius:8px;padding:11px 15px;font-size:10px;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;gap:9px}.edsa-ref-primary{background:#1677ff;border:1px solid #1677ff;color:#fff}.edsa-ref-primary span,.edsa-ref-outline span{font-size:18px;line-height:0}.edsa-ref-outline{background:rgba(2,13,32,.18);border:1px solid #d7e4f5;color:#fff}
+.edsa-ref-stats{position:relative;z-index:4;max-width:930px;margin:-28px auto 0;background:#fff;border-radius:11px;box-shadow:0 9px 28px rgba(11,50,98,.18);display:grid;grid-template-columns:repeat(4,1fr);padding:12px 8px}.edsa-ref-stats>div{min-height:52px;display:grid;grid-template-columns:37px 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:5px 13px;border-right:1px solid #e5edf6}.edsa-ref-stats>div:last-child{border-right:0}.edsa-ref-stat-icon{grid-row:1/3;color:#1472ef;font-size:29px;font-weight:900;text-align:center}.edsa-ref-stats strong{font-size:12px;color:#1472ef}.edsa-ref-stats small{font-size:8px;color:#475569}
+.edsa-ref-section{max-width:940px;margin:auto;padding:36px 4%}.edsa-ref-heading{text-align:center;margin-bottom:23px}.edsa-ref-heading h2,.edsa-ref-section-title h2,.edsa-ref-why h2,.edsa-ref-verify h2{margin:0;color:#0b2a58;font-size:25px;font-weight:950}.edsa-ref-heading p,.edsa-ref-section-title p,.edsa-ref-why>p,.edsa-ref-verify>p{margin:2px 0 0;font-size:14px;font-weight:800;color:#183761}.edsa-ref-steps{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;align-items:start;gap:0}.edsa-ref-step{text-align:center;position:relative}.edsa-ref-step:before{content:"";position:absolute;top:29px;left:50%;width:100%;height:1px;background:#d6e4f5;z-index:0}.edsa-ref-step i{position:relative;z-index:1;width:55px;height:55px;margin:auto;border-radius:50%;background:#1677ff;color:#fff;display:grid;place-items:center;font-style:normal;font-size:20px;box-shadow:0 7px 16px rgba(22,119,255,.2)}.edsa-ref-step b{display:block;margin-top:8px;font-size:10px;color:#0b2a58}.edsa-ref-step strong{display:block;font-size:11px;margin-top:1px;color:#0b2a58}.edsa-ref-step span{display:block;font-size:11px;font-weight:900;color:#102b56}.edsa-ref-step p{font-size:9px;color:#64748b;line-height:1.45;margin:7px auto 0;max-width:135px}.edsa-ref-steps>em{font-style:normal;color:#1677ff;font-size:30px;text-align:center;margin-top:14px}
+.edsa-ref-section-title{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px}.edsa-ref-section-title button{background:#fff;color:#1677ff;border:1px solid #1677ff;border-radius:6px;padding:7px 10px;font-size:9px;font-weight:900}.edsa-ref-courses{display:grid!important;grid-template-columns:repeat(6,1fr);gap:11px}.edsa-ref-courses article{min-height:128px;background:#fff;border:1px solid #e1eaf5;border-radius:8px;box-shadow:0 5px 18px rgba(20,67,120,.08);padding:11px 7px;text-align:center;display:flex;flex-direction:column;align-items:center}.edsa-ref-course-icon{height:55px;font-size:42px;line-height:1;color:#0b2a58;display:grid;place-items:center}.edsa-ref-courses h3{font-size:9px;line-height:1.35;margin:6px 0 0;color:#0b2a58}.edsa-ref-courses button{margin-top:auto;border:0;background:transparent;color:#1677ff;font-size:8px;font-weight:900;cursor:pointer;padding:5px}
+.edsa-ref-cert-row{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:22px;align-items:center;border-top:1px solid #e9eef5}.edsa-ref-why ul{list-style:none;padding:0;margin:15px 0 0}.edsa-ref-why li{font-size:10px;color:#334155;margin:9px 0;padding-left:19px;position:relative}.edsa-ref-why li:before{content:"✓";position:absolute;left:0;top:-2px;width:14px;height:14px;background:#1677ff;color:#fff;border-radius:50%;font-size:9px;display:grid;place-items:center}.edsa-ref-certificate{display:flex;justify-content:center}.edsa-cert-paper{width:205px;height:145px;border:6px double #d3af55;background:linear-gradient(#fffdf4,#fff);box-shadow:0 6px 15px rgba(30,50,80,.15);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:10px;color:#15233b;position:relative}.edsa-cert-paper small{font-size:8px;color:#1677ff;font-weight:900}.edsa-cert-paper b{font-family:Georgia,serif;font-size:21px;margin-top:4px}.edsa-cert-paper span{font-size:7px}.edsa-cert-paper em{font-size:6px;margin-top:10px}.edsa-cert-paper strong{font-family:cursive;font-size:13px;margin-top:2px}.edsa-cert-paper i{font-size:6px}.edsa-cert-paper label{font-size:7px;font-weight:900}.edsa-cert-seal{position:absolute;bottom:14px;left:19px;width:27px;height:27px;border-radius:50%;border:2px solid #c79d2b;color:#c79d2b;display:grid;place-items:center;font-size:12px}.edsa-cert-paper footer{position:absolute;right:17px;bottom:13px;border-top:1px solid #555;font-size:6px;padding-top:2px}.edsa-ref-verify span{font-size:9px;color:#64748b;line-height:1.5;display:block;margin:10px 0}.edsa-ref-verify-form input{width:100%;padding:10px;border:1px solid #d6dfeb;border-radius:7px;box-sizing:border-box;font-size:10px}.edsa-ref-verify-form button{width:100%;margin-top:8px;border:0;background:#1677ff;color:#fff;border-radius:7px;padding:10px;font-size:9px;font-weight:900}
+.edsa-ref-lower{display:grid;grid-template-columns:1.25fr .85fr;gap:26px;border-top:1px solid #e9eef5}.edsa-ref-test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.edsa-ref-test-grid article{border:1px solid #e2eaf4;border-radius:8px;padding:12px;box-shadow:0 5px 16px rgba(20,67,120,.06);background:#fff}.edsa-ref-test-grid .avatar{width:30px;height:30px;border-radius:50%;background:#e8f2ff;color:#1677ff;display:grid;place-items:center;font-weight:900;float:left;margin-right:7px}.edsa-ref-test-grid b{font-size:9px;display:block;padding-top:2px}.edsa-ref-test-grid small{font-size:7px;color:#64748b}.edsa-ref-test-grid p{clear:both;font-size:8px;color:#64748b;line-height:1.55;margin:10px 0}.edsa-ref-test-grid strong{font-size:10px;color:#f4b400;letter-spacing:1px}.edsa-ref-faq h2{margin:0;color:#0b2a58;font-size:17px}.edsa-ref-faq>p{margin:2px 0 10px;font-size:11px;color:#183761;font-weight:800}.edsa-ref-faq details{border:1px solid #e1e9f3;border-radius:6px;margin:6px 0;padding:9px 10px;font-size:9px;color:#183761;background:#fff}.edsa-ref-faq summary{cursor:pointer;list-style:none;font-weight:800;display:flex;justify-content:space-between}.edsa-ref-faq summary::-webkit-details-marker{display:none}.edsa-ref-faq details span{display:block;color:#64748b;padding-top:8px;line-height:1.5}
+.edsa-ref-footer{background:#041b40;color:#c8d7eb;padding:30px 5% 15px;display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr 1.25fr;gap:26px;font-size:9px}.edsa-ref-footer h4{color:#fff;font-size:10px;margin:0 0 10px}.edsa-ref-footer a,.edsa-ref-footer span{display:block;color:#c8d7eb;text-decoration:none;margin:6px 0}.edsa-ref-footer p{line-height:1.5;margin:10px 0}.edsa-ref-sub{display:flex;gap:5px}.edsa-ref-sub input{min-width:0;width:100%;border:0;border-radius:4px;padding:9px;font-size:8px}.edsa-ref-sub button{border:0;border-radius:4px;background:#1677ff;color:#fff;font-size:8px;font-weight:900;padding:0 11px}.edsa-ref-copy{grid-column:1/-1;border-top:1px solid #19355a;padding-top:13px;display:flex;justify-content:space-between}.edsa-ref-copy span{display:inline;color:#c8d7eb}
+@media(max-width:900px){.edsa-ref-links{display:none}.edsa-ref-nav{padding:0 4%}.edsa-ref-hero{height:400px}.edsa-ref-hero-bg{width:70%;opacity:.75}.edsa-ref-copy{max-width:65%}.edsa-ref-stats{margin:0 3% -5px;transform:translateY(-18px)}.edsa-ref-courses{grid-template-columns:repeat(3,1fr)}.edsa-ref-cert-row{grid-template-columns:1fr 1fr}.edsa-ref-verify{grid-column:1/-1}.edsa-ref-lower{grid-template-columns:1fr}.edsa-ref-footer{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.edsa-ref-brand{min-width:0}.edsa-ref-brand strong{font-size:23px}.edsa-ref-brand small{font-size:6px}.edsa-ref-lang{display:none}.edsa-ref-hero{height:470px}.edsa-ref-hero-bg{width:100%;opacity:.55;background-position:70% center}.edsa-ref-hero:after{background:linear-gradient(90deg,#061b40 0%,rgba(6,27,64,.83) 60%,rgba(6,27,64,.38) 100%)}.edsa-ref-hero-content{padding:65px 7%}.edsa-ref-copy{max-width:100%}.edsa-ref-copy h1{font-size:31px}.edsa-ref-copy h2{font-size:21px}.edsa-ref-copy p{font-size:10px}.edsa-ref-stats{grid-template-columns:repeat(2,1fr)}.edsa-ref-stats>div:nth-child(2){border-right:0}.edsa-ref-steps{grid-template-columns:1fr;gap:15px}.edsa-ref-steps>em{display:none}.edsa-ref-step:before{display:none}.edsa-ref-courses{grid-template-columns:repeat(2,1fr)}.edsa-ref-cert-row{grid-template-columns:1fr}.edsa-ref-lower{grid-template-columns:1fr}.edsa-ref-test-grid{grid-template-columns:1fr}.edsa-ref-footer{grid-template-columns:1fr}.edsa-ref-copy{display:block}.edsa-ref-copy span{margin-top:5px}.edsa-ref-section-title{align-items:flex-start;gap:10px;flex-direction:column}}
+</style>
+</head>
 <body>
-<div class="edsa-public" id="edsaPublicHome">
-<nav class="edsa-pnav">
-<div class="edsa-pbrand"><span class="edsa-logo-mini">E</span><span class="edsa-brand-copy">EDSA — ETHIOPIAN DIGITAL SKILLS ACADEMY<small>Digital Skills & Certification</small></span></div>
-<div class="edsa-pnavlinks"><a href="#about">About</a><a href="#programs">Programs</a><a href="#how">How It Works</a><a href="/verify">Verify</a></div>
-<button class="edsa-psign" onclick="EDSA_SHOW_LOGIN()">Sign In</button>
-</nav>
-<section class="edsa-hero-public"><div class="edsa-hero-inner">
-<div class="edsa-hero-copy"><div class="tag">ETHIOPIAN DIGITAL SKILLS ACADEMY</div><h1>Master the <span>Digital Frontier.</span></h1><p>Build practical digital skills, prove your knowledge through professional examinations, and earn certificates that can be verified online.</p><div class="edsa-pactions"><button class="edsa-pbtn primary" onclick="EDSA_START()">Get Started <b>→</b></button><button class="edsa-pbtn outline" onclick="EDSA_SHOW_LOGIN()">Student Sign In</button><a class="edsa-pbtn outline" href="/verify">Verify Certificate</a></div><div class="edsa-hero-note">✓ Student account required &nbsp; ✓ 80% passing standard &nbsp; ✓ QR verification</div></div>
-<div class="edsa-hero-art"><div class="art-glow"></div><div class="art-card main"><div class="art-top">EDSA ACADEMY</div><div class="art-title">LEARN.<br>DEMONSTRATE.<br><span>GET CERTIFIED.</span></div><div class="art-lines"><i></i><i></i><i></i></div></div><div class="art-card float-card"><b>80%</b><small>PASSING SCORE</small></div><div class="art-card float-card two"><b>QR ✓</b><small>VERIFIED</small></div></div>
-</div></section>
-<div class="edsa-public-stats"><div class="edsa-public-stat"><b>6+</b><span>Professional Subjects</span></div><div class="edsa-public-stat"><b>50</b><span>Questions / Exam</span></div><div class="edsa-public-stat"><b>80%</b><span>Passing Mark</span></div><div class="edsa-public-stat"><b>QR</b><span>Online Verification</span></div></div>
-<section class="edsa-public-section" id="edsaPublicCourses"><div id="programs"></div><h2>Choose Your Professional Course</h2><p>Create your student account or sign in before starting an EDSA examination. Your exam attempts, results and certificates are linked to your student profile.</p><div style="max-width:760px;margin:0 auto 22px;padding:14px 16px;background:#fff;border:1px solid #dbeafe;border-radius:14px;text-align:center;color:#475569;font-size:11px;line-height:1.6">🔐 <strong style="color:#0b2145">Student Account Required:</strong> Sign in or create your EDSA student account before starting an examination. Your activity, results and certificates will be linked to your account.</div><div class="edsa-public-courses" id="publicCourseGrid">
-<div class="edsa-pcourse"><h3>Social Media Management</h3><p>Social strategy, content, communities and platform management.</p><button onclick="EDSA_OPEN_COURSE('smm')">Sign In to Start →</button><div class="edsa-course-account-note">Your student account is required before starting this examination.</div></div>
-<div class="edsa-pcourse"><h3>Digital Marketing Essentials</h3><p>Digital campaigns, channels, analytics and marketing strategy.</p><button onclick="EDSA_OPEN_COURSE('dme')">Sign In to Start →</button><div class="edsa-course-account-note">Your student account is required before starting this examination.</div></div>
-<div class="edsa-pcourse"><h3>Project & Business Management</h3><p>Planning, operations, projects, leadership and business decisions.</p><button onclick="EDSA_OPEN_COURSE('pbm')">Sign In to Start →</button><div class="edsa-course-account-note">Your student account is required before starting this examination.</div></div>
-<div class="edsa-pcourse"><h3>Graphic Design for Marketers</h3><p>Visual communication, design principles, branding and marketing graphics.</p><button onclick="EDSA_OPEN_COURSE('gdm')">Sign In to Start →</button><div class="edsa-course-account-note">Your student account is required before starting this examination.</div></div>
-<div class="edsa-pcourse"><h3>Financial Management for Entrepreneurs</h3><p>Budgeting, cash flow, financial decisions and entrepreneurial finance.</p><button onclick="EDSA_OPEN_COURSE('fme')">Sign In to Start →</button><div class="edsa-course-account-note">Your student account is required before starting this examination.</div></div>
-<div class="edsa-pcourse"><h3>Data Analysis & Business Intelligence</h3><p>Data, dashboards, analytics, databases and business intelligence.</p><button onclick="EDSA_OPEN_COURSE('dbi')">Sign In to Start →</button><div class="edsa-course-account-note">Your student account is required before starting this examination.</div></div>
-</div></section>
-<section class="edsa-public-section" id="about"><h2>About EDSA</h2><p>EDSA is an examination and certification platform focused on practical digital and business skills.</p><div class="edsa-public-info"><div class="edsa-info"><h3>Clear Standard</h3><p>Each examination contains 50 questions and requires a score of 80% or higher to pass.</p></div><div class="edsa-info"><h3>Verified Certificate</h3><p>Successful candidates receive a unique certificate ID and QR code connected to online verification.</p></div><div class="edsa-info"><h3>Privacy & Trust</h3><p>Student information and certificate records are handled through the EDSA platform and its published policies.</p></div></div></section>
-<section class="edsa-public-section" id="how"><h2>How EDSA Works</h2><p>From creating your student account to learning, activation, examination and verified certification.</p><div class="edsa-public-info"><div class="edsa-info"><h3>01 — Create Your Account</h3><p>Create a student profile with your name, email and secure password. Your account keeps your learning, exam results and certificates connected.</p></div><div class="edsa-info"><h3>02 — Choose & Learn</h3><p>Choose from six professional subjects and use the EDSA Learning Center to move through the lessons and learning materials.</p></div><div class="edsa-info"><h3>03 — Activate Your Course</h3><p>When you are ready for the final examination, activate your course with its activation key. A universal key can be used for any EDSA course.</p></div><div class="edsa-info"><h3>04 — Take the Exam</h3><p>Complete the 50-question examination. The passing standard is 80% or higher.</p></div><div class="edsa-info"><h3>05 — Get Certified</h3><p>Students who pass receive an EDSA certificate with a unique certificate ID and QR verification connected to the online verification system.</p></div><div class="edsa-info"><h3>06 — Verify & Share</h3><p>Anyone can use the certificate verification system to check the certificate record and confirm its authenticity.</p></div></div></section>
-<footer class="edsa-pfooter"><strong>EDSA — Ethiopian Digital Skills Academy</strong><br>Digital Skills Examination & Certification<br><br>Director: Cherenet Molla Alem<br><span style="color:#93c5fd">📞 0996173649</span> &nbsp;•&nbsp; <a href="mailto:cherentmolla27@gmail.com">cherentmolla27@gmail.com</a><br><button onclick="EDSA_OPEN_ADMIN()">🔐 Admin / Exam Key Generator</button><div style="margin-top:8px;color:#64748b;font-size:9px">Admin access is protected by a secure server-side PIN.</div></footer>
+
+<div class="edsa-public edsa-ref-home" id="edsaPublicHome">
+  <nav class="edsa-ref-nav">
+    <div class="edsa-ref-brand" onclick="EDSA_SHOW_HOME()">
+      <span class="edsa-ref-logo">◇</span>
+      <span><strong>EDSA</strong><small>ETHIOPIAN DIGITAL<br>SKILLS ACADEMY</small></span>
+    </div>
+    <div class="edsa-ref-links">
+      <a href="#about">ስለ EDSA</a>
+      <a href="#programs">ፕሮግራሞች</a>
+      <a href="#how">እንዴት ይሰራል</a>
+      <a href="#students">የተማሪዎች ልምድ</a>
+      <a href="#faq">ጥያቄዎች</a>
+      <a href="/verify">ማረጋገጫ</a>
+    </div>
+    <div class="edsa-ref-nav-actions">
+      <button class="edsa-ref-lang" id="edsaReferenceLang" type="button">አማ / EN</button>
+      <button class="edsa-ref-sign" type="button" onclick="EDSA_SHOW_LOGIN()">ግባ / Sign In</button>
+    </div>
+  </nav>
+
+  <section class="edsa-ref-hero">
+    <div class="edsa-ref-hero-bg"></div>
+    <div class="edsa-ref-hero-content">
+      <div class="edsa-ref-copy">
+        <h1>ዲጂታልን ክህሎትን<br>አንተ ይግባህ</h1>
+        <h2>Master the Digital Frontier</h2>
+        <p>ተግባራዊ የዲጂታል ክህሎቶችን ይማሩ፣ እውቀትዎን በሙያዊ ፈተና ያረጋግጡ፣ እና በመስመር ላይ የሚረጋገጥ ሰርተፊኬት ያግኙ።</p>
+        <div class="edsa-ref-actions">
+          <button type="button" class="edsa-ref-primary" onclick="EDSA_START()">ጀምር ወደ EDSA / Get Started <span>›</span></button>
+          <a class="edsa-ref-outline" href="/verify">የሰርተፊኬት ማረጋገጫ / Verify Certificate <span>⌑</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="edsa-ref-stats">
+    <div><span class="edsa-ref-stat-icon">▱</span><strong>6+ ኮርሶች</strong><small>የዲጂታል ክህሎት ስልጠና</small></div>
+    <div><span class="edsa-ref-stat-icon">?</span><strong>50 ጥያቄዎች</strong><small>በእያንዳንዱ ፈተና</small></div>
+    <div><span class="edsa-ref-stat-icon">↗</span><strong>80% እና ከዚያ በላይ</strong><small>ለማለፍ የሚያስፈልግ ውጤት</small></div>
+    <div><span class="edsa-ref-stat-icon">♙</span><strong>የተረጋገጠ ሰርተፊኬት</strong><small>QR ማረጋገጫ ከማዕከል</small></div>
+  </section>
+
+  <section class="edsa-ref-section edsa-ref-how" id="how">
+    <div class="edsa-ref-heading"><h2>እንዴት ይሰራል?</h2><p>How EDSA Works</p></div>
+    <div class="edsa-ref-steps">
+      <div class="edsa-ref-step"><i>◆</i><b>1</b><strong>ይማሩ</strong><span>Learn</span><p>በEDSA ትምህርቶች እና ቪዲዮዎች ይማሩ።</p></div>
+      <em>›</em>
+      <div class="edsa-ref-step"><i>▣</i><b>2</b><strong>ፈተናውን ይውሰዱ</strong><span>Take the Exam</span><p>50 ጥያቄዎችን በጥንቃቄ ይመልሱ።</p></div>
+      <em>›</em>
+      <div class="edsa-ref-step"><i>◎</i><b>3</b><strong>ያልፉ እና ውጤት ያግኙ</strong><span>Pass & Score</span><p>80% እና ከዚያ በላይ ያስፈልጋል።</p></div>
+      <em>›</em>
+      <div class="edsa-ref-step"><i>♧</i><b>4</b><strong>ሰርተፊኬት ያግኙ</strong><span>Get Certified</span><p>በQR ማረጋገጫ የሚረጋገጥ ሰርተፊኬት ያግኙ።</p></div>
+    </div>
+  </section>
+
+  <section class="edsa-ref-section" id="programs">
+    <div class="edsa-ref-section-title"><div><h2>የእኛ ተወዳጅ ኮርሶች</h2><p>Our Popular Courses</p></div><button type="button" onclick="EDSA_SHOW_COURSES()">ሁሉንም ኮርሶች ይመልከቱ / View All Courses</button></div>
+    <div class="edsa-ref-courses edsa-public-courses show" id="publicCourseGrid">
+      <article><div class="edsa-ref-course-icon">●</div><h3>Social Media<br>Management</h3><button onclick="EDSA_OPEN_COURSE('smm')">ጀምር / Start</button></article>
+      <article><div class="edsa-ref-course-icon">◢</div><h3>Digital Marketing<br>Strategy</h3><button onclick="EDSA_OPEN_COURSE('dme')">ጀምር / Start</button></article>
+      <article><div class="edsa-ref-course-icon">▣</div><h3>Project & Business<br>Management</h3><button onclick="EDSA_OPEN_COURSE('pbm')">ጀምር / Start</button></article>
+      <article><div class="edsa-ref-course-icon">◉</div><h3>Graphic Design<br>& Canva</h3><button onclick="EDSA_OPEN_COURSE('gdm')">ጀምር / Start</button></article>
+      <article><div class="edsa-ref-course-icon">▤</div><h3>Finance<br>Management</h3><button onclick="EDSA_OPEN_COURSE('fme')">ጀምር / Start</button></article>
+      <article><div class="edsa-ref-course-icon">⌁</div><h3>Data & Business<br>Intelligence</h3><button onclick="EDSA_OPEN_COURSE('dbi')">ጀምር / Start</button></article>
+    </div>
+  </section>
+
+  <section class="edsa-ref-section edsa-ref-cert-row" id="about">
+    <div class="edsa-ref-why">
+      <h2>ለምን EDSA?</h2><p>Why Choose EDSA?</p>
+      <ul>
+        <li>የተግባር ላይ የተመሠረተ የዲጂታል ሙያ ማስረጃ</li>
+        <li>ተመጣጣኝ ክፍያ — 200 ብር ብቻ</li>
+        <li>50 ጥያቄዎች ያሉት የሙያ ፈተና</li>
+        <li>80% እና ከዚያ በላይ የማለፊያ መስፈርት</li>
+        <li>QR የማረጋገጫ ስርዓት</li>
+        <li>ውጤትዎን እና ሰርተፊኬትዎን በመስመር ላይ ይከታተሉ</li>
+      </ul>
+    </div>
+    <div class="edsa-ref-certificate">
+      <div class="edsa-cert-paper"><small>EDSA</small><b>CERTIFICATE</b><span>OF COMPLETION</span><em>This is to certify that</em><strong>Your Name Here</strong><i>has successfully completed the</i><label>Social Media Management</label><div class="edsa-cert-seal">★</div><footer>Director</footer></div>
+    </div>
+    <div class="edsa-ref-verify">
+      <h2>የሰርተፊኬት ማረጋገጫ</h2><p>Certificate Verification</p>
+      <span>የሰርተፊኬት ቁጥርዎን ይጻፉ እና QR ማረጋገጫ እና እውነተኛነቱን ይፈትሹ።</span>
+      <div class="edsa-ref-verify-form"><input id="homeCertificateId" placeholder="Certificate ID ማስገቢያ"><button type="button" onclick="window.location.href='/verify?id='+encodeURIComponent(document.getElementById('homeCertificateId').value.trim())">♢ Verify Certificate</button></div>
+    </div>
+  </section>
+
+  <section class="edsa-ref-section edsa-ref-lower" id="students">
+    <div class="edsa-ref-testimonials"><div class="edsa-ref-section-title"><div><h2>የተማሪዎች አስተያየት</h2><p>What Our Students Say</p></div></div><div class="edsa-ref-test-grid">
+      <article><div class="avatar">S</div><b>Selam Tesfaye</b><small>Social Media Manager</small><p>በEDSA የተማርኩትን በተግባር በመጠቀም ስራዬን ማሻሻል ቻልኩ።</p><strong>★★★★★</strong></article>
+      <article><div class="avatar">A</div><b>Abel Worku</b><small>Digital Marketer</small><p>ፈተናው የማውቀውን በግልጽ መልኩ እንዳረጋግጥ ረድቶኛል።</p><strong>★★★★★</strong></article>
+      <article><div class="avatar">H</div><b>Hana Mohammed</b><small>Freelancer</small><p>ሰርተፊኬቴን በQR መረጋገጥ መቻሉ ለእኔ ጠቃሚ ነበር።</p><strong>★★★★★</strong></article>
+    </div></div>
+    <div class="edsa-ref-faq" id="faq"><h2>በተደጋጋሚ የሚጠየቁ ጥያቄዎች</h2><p>Frequently Asked Questions</p>
+      <details><summary>ፈተናው ስንት ጥያቄ አለው? <b>+</b></summary><span>እያንዳንዱ ፈተና 50 ጥያቄዎች አሉት።</span></details>
+      <details><summary>ለማለፍ ስንት ነጥብ ያስፈልጋል? <b>+</b></summary><span>80% ወይም ከዚያ በላይ ያስፈልጋል።</span></details>
+      <details><summary>የሰርተፊኬት ማረጋገጫ አለ? <b>+</b></summary><span>አዎ፣ በQR እና በCertificate ID መስመር ላይ ማረጋገጥ ይችላሉ።</span></details>
+      <details><summary>እንደገና መፈተን እችላለሁ? <b>+</b></summary><span>የሚገኝ የactivation key ካለ እንደገና መፈተን ይችላሉ።</span></details>
+      <details><summary>እንዴት እጀምራለሁ? <b>+</b></summary><span>የተማሪ መለያ ይፍጠሩ እና Get Started ይጫኑ።</span></details>
+    </div>
+  </section>
+
+  <footer class="edsa-ref-footer">
+    <div class="edsa-ref-footer-brand"><div class="edsa-ref-brand"><span class="edsa-ref-logo">◇</span><span><strong>EDSA</strong><small>ETHIOPIAN DIGITAL<br>SKILLS ACADEMY</small></span></div><p>በተግባራዊ ዲጂታል እና የንግድ ክህሎቶች የምርመራ እና የሰርተፊኬት መድረክ።</p></div>
+    <div><h4>ፈጣን አገናኞች</h4><a href="#about">ስለ EDSA</a><a href="#programs">ኮርሶች</a><a href="#how">እንዴት ይሰራል</a><a href="/verify">ማረጋገጫ</a></div>
+    <div><h4>ህጋዊ ጉዳዮች</h4><a href="#">Privacy Policy</a><a href="#">Terms & Conditions</a><a href="#">Refund Policy</a></div>
+    <div><h4>ያግኙን</h4><a href="mailto:cherentmolla27@gmail.com">✉ cherentmolla27@gmail.com</a><a href="tel:0996173649">⌕ 0996173649</a><span>⌖ Ethiopia</span></div>
+    <div><h4>ይወቁን ይቀጥሉ</h4><p>የEDSA ዜና እና ዝመናዎችን በኢሜይል ያግኙ።</p><div class="edsa-ref-sub"><input placeholder="Your email"><button>Subscribe</button></div></div>
+    <div class="edsa-ref-copy">© 2026 Ethiopian Digital Skills Academy (EDSA). All Rights Reserved. <span>Made with ♥ in Ethiopia</span></div>
+  </footer>
 </div>
-
-<div class="edsa-signin-screen" id="edsaLoginScreen">
-<div class="edsa-login-card">
-<div class="brand">EDSA ACADEMY</div><h2>Welcome Back</h2><p>Sign in to keep your EDSA experience organized with your student dashboard.</p>
-<div style="padding:12px 13px;background:#eff6ff;border-radius:12px;color:#475569;font-size:10px;line-height:1.55;margin-bottom:18px">🔐 <strong style="color:#0b2145">Student account required:</strong> sign in or create an account to take an EDSA examination. Your results and certificates are connected to your account.</div>
-<label>Email</label><input id="loginEmail" type="email" autocomplete="email" placeholder="Enter your email">
-<label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password">
-<button onclick="EDSA_SIGN_IN()">Sign In Securely</button>
-<div style="text-align:center;margin-top:15px;font-size:11px;color:#64748b">New to EDSA? <button onclick="EDSA_SHOW_REGISTER()" style="border:0;background:none;color:#1677ff;font-weight:900;cursor:pointer">Create Student Profile</button></div>
-<div class="edsa-login-links"><button onclick="EDSA_SHOW_HOME()">← Back to Home</button><button onclick="EDSA_SHOW_COURSES()">Sign In to Start →</button></div>
-<div class="edsa-note">Your EDSA account is secured with server-side authentication. Your password is never stored in your browser.</div>
-</div></div>
-
-<div class="edsa-signin-screen" id="edsaRegisterScreen">
-<div class="edsa-login-card"><div class="brand">EDSA ACADEMY</div><h2>Create Your Student Profile</h2><p>Create your required EDSA student account to access examinations, results and certificates.</p>
-<label>Full Name</label><input id="registerName" type="text" autocomplete="name" placeholder="Your full name">
-<label>Email</label><input id="registerEmail" type="email" autocomplete="email" placeholder="you@example.com">
-<label>Password</label><input id="registerPassword" type="password" autocomplete="new-password" placeholder="At least 8 characters">
-<label>Confirm Password</label><input id="registerPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat your password">
-<button onclick="EDSA_REGISTER()">Create Secure Account</button>
-<div class="edsa-login-links"><button onclick="EDSA_SHOW_LOGIN()">← Sign In</button><button onclick="EDSA_SHOW_COURSES()">Sign In to Start →</button></div>
-<div class="edsa-note">Your account is stored securely by EDSA. Passwords are protected server-side and sessions use an HttpOnly cookie.</div></div></div>
-
 <div class="edsa-dashboard" id="edsaDashboard"><div class="edsa-dash-wrap">
 <div class="edsa-dash-head"><div><h1>Student Dashboard</h1><p id="dashEmail"></p></div><div class="edsa-dash-actions"><button class="edsa-dash-btn light" onclick="EDSA_OPEN_LEARNING()">📚 Learning Center</button><button class="edsa-dash-btn light" onclick="EDSA_SHOW_HOME()">Home</button><button class="edsa-dash-btn blue" onclick="EDSA_LOGOUT()">Sign Out</button></div></div>
 <div class="edsa-welcome"><div class="k">WELCOME BACK</div><h2 id="dashName">Student</h2><p>Your EDSA learning and certification dashboard. Learn through the new Learning Center, then use the existing payment and examination system when you are ready for the final exam.</p></div><div class="edsa-dash-grid">
