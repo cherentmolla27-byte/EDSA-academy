@@ -14,13 +14,103 @@
   }catch(_){}
 })();
 
+/* EDSA authentication UI recovery — keeps student sign-in separate from admin auth. */
+(function(){
+  "use strict";
+  function show(id){
+    var home=document.querySelector('.edsa-public');
+    var dash=document.querySelector('.edsa-dashboard');
+    var login=document.getElementById('edsaLoginScreen');
+    var register=document.getElementById('edsaRegisterScreen');
+    if(home) home.style.display='none';
+    if(dash) dash.classList.remove('show');
+    if(login) login.classList.toggle('show',id==='login');
+    if(register) register.classList.toggle('show',id==='register');
+    window.scrollTo(0,0);
+  }
+  window.EDSA_SHOW_LOGIN=function(){show('login');var e=document.getElementById('loginEmail');if(e)setTimeout(function(){e.focus();},50);};
+  window.EDSA_SHOW_REGISTER=function(){show('register');var e=document.getElementById('registerName');if(e)setTimeout(function(){e.focus();},50);};
+  window.EDSA_SHOW_HOME=function(){
+    var login=document.getElementById('edsaLoginScreen'),register=document.getElementById('edsaRegisterScreen'),dash=document.querySelector('.edsa-dashboard'),home=document.querySelector('.edsa-public');
+    if(login)login.classList.remove('show');if(register)register.classList.remove('show');if(dash)dash.classList.remove('show');if(home)home.style.display='';window.scrollTo(0,0);
+  };
+  function saveUser(user){
+    if(!user||!user.email)return;
+    try{
+      var email=String(user.email).trim().toLowerCase();
+      var accounts=JSON.parse(localStorage.getItem('EDSA_STUDENT_ACCOUNTS')||'{}');
+      accounts[email]=Object.assign({},accounts[email]||{},user);
+      localStorage.setItem('EDSA_STUDENT_ACCOUNTS',JSON.stringify(accounts));
+      localStorage.setItem('EDSA_ACTIVE_EMAIL',email);
+      localStorage.setItem('EDSA_STUDENT_PROFILE',JSON.stringify(accounts[email]));
+    }catch(_){}
+  }
+  function openDashboard(user){
+    saveUser(user);
+    var home=document.querySelector('.edsa-public'),login=document.getElementById('edsaLoginScreen'),register=document.getElementById('edsaRegisterScreen'),dash=document.querySelector('.edsa-dashboard');
+    if(home)home.style.display='none';if(login)login.classList.remove('show');if(register)register.classList.remove('show');if(dash)dash.classList.add('show');
+    if(typeof window.EDSA_RENDER_DASH==='function'){
+      try{window.EDSA_RENDER_DASH(user);}catch(e){console.error('[EDSA dashboard]',e);}
+    }
+    window.dispatchEvent(new CustomEvent('edsa:auth-ready',{detail:{user:user}}));
+    window.scrollTo(0,0);
+  }
+  async function postAuth(endpoint,payload,button,successMessage){
+    if(button){button.disabled=true;button.dataset.oldText=button.textContent;button.textContent='Signing in…';}
+    var controller=typeof AbortController==='function'?new AbortController():null;
+    var timer=controller?setTimeout(function(){controller.abort();},20000):null;
+    try{
+      var response=await fetch(endpoint,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload),signal:controller?controller.signal:undefined});
+      if(timer)clearTimeout(timer);
+      var result=await response.json().catch(function(){return {};});
+      if(!response.ok||!result.ok)throw new Error(result.error||'Authentication failed.');
+      if(result.sessionToken)sessionStorage.setItem('EDSA_SESSION_TOKEN',result.sessionToken);
+      if(result.user)openDashboard(result.user);
+      return result;
+    }catch(error){
+      if(timer)clearTimeout(timer);
+      console.error('[EDSA auth]',error);
+      alert(error&&error.name==='AbortError'?'Sign-in took too long. Please check your connection and try again.':(error.message||'Authentication failed. Please try again.'));
+      throw error;
+    }finally{
+      if(button){button.disabled=false;button.textContent=button.dataset.oldText||'Sign In';}
+    }
+  }
+  window.EDSA_SIGN_IN=async function(){
+    var email=document.getElementById('loginEmail'),password=document.getElementById('loginPassword'),form=document.getElementById('edsaLoginForm');
+    if(!email||!password)return window.EDSA_SHOW_LOGIN();
+    var button=form?form.querySelector('button[type="submit"]'):null;
+    return postAuth('/api/auth-login',{email:email.value.trim(),password:password.value},button);
+  };
+  window.EDSA_REGISTER=async function(){
+    var name=document.getElementById('registerName'),email=document.getElementById('registerEmail'),password=document.getElementById('registerPassword'),confirm=document.getElementById('registerPasswordConfirm'),form=document.getElementById('edsaRegisterForm');
+    if(!name||!email||!password||!confirm)return window.EDSA_SHOW_REGISTER();
+    if(password.value!==confirm.value){alert('Passwords do not match.');return;}
+    var button=form?form.querySelector('button[type="submit"]'):null;
+    if(button){button.disabled=true;button.textContent='Creating account…';}
+    try{
+      var controller=typeof AbortController==='function'?new AbortController():null;
+      var timer=controller?setTimeout(function(){controller.abort();},20000):null;
+      var response=await fetch('/api/auth-register',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({name:name.value.trim(),email:email.value.trim(),password:password.value}),signal:controller?controller.signal:undefined});
+      if(timer)clearTimeout(timer);
+      var result=await response.json().catch(function(){return {};});
+      if(!response.ok||!result.ok)throw new Error(result.error||'Account registration failed.');
+      if(result.sessionToken)sessionStorage.setItem('EDSA_SESSION_TOKEN',result.sessionToken);
+      if(result.user)openDashboard(result.user);
+    }catch(error){
+      alert(error&&error.name==='AbortError'?'Account creation took too long. Please check your connection and try again.':(error.message||'Account registration failed. Please try again.'));
+    }finally{if(button){button.disabled=false;button.textContent='Create Account';}}
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    var lf=document.getElementById('edsaLoginForm');if(lf)lf.addEventListener('submit',function(e){e.preventDefault();window.EDSA_SIGN_IN();});
+    var rf=document.getElementById('edsaRegisterForm');if(rf)rf.addEventListener('submit',function(e){e.preventDefault();window.EDSA_REGISTER();});
+    document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.edsa-psign');if(b){e.preventDefault();window.EDSA_SHOW_LOGIN();}},true);
+  });
+})();
+
 /* EDSA Step 12 — server-backed student database bridge */
 (function () {
   "use strict";
-
-  // Some production browsers/proxies are dropping the session cookie on POST API calls.
-  // Keep the HttpOnly cookie as the primary mechanism, but attach the short-lived
-  // signed session token from sessionStorage as an Authorization fallback.
   const nativeFetch = window.fetch.bind(window);
   window.fetch = function (input, init) {
     try {
@@ -35,69 +125,26 @@
     } catch (_) {}
     return nativeFetch(input, init);
   };
-
   const JOURNEY_KEY = "EDSA_STUDENT_JOURNEY";
   const CERT_KEY = "EDSA_CERTIFICATES";
   let syncing = false;
-
-  function profile() {
-    try {
-      const accounts = JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS") || "{}");
-      const active = String(localStorage.getItem("EDSA_ACTIVE_EMAIL") || "").toLowerCase();
-      if (active && accounts[active]) return accounts[active];
-      const legacy = JSON.parse(localStorage.getItem("EDSA_STUDENT_PROFILE") || "null");
-      return legacy && legacy.email ? legacy : null;
-    } catch (_) { return null; }
-  }
-  function saveProfile(p) {
-    if (!p || !p.email) return;
-    try {
-      const accounts = JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS") || "{}");
-      const email = String(p.email).trim().toLowerCase();
-      accounts[email] = Object.assign({}, accounts[email] || {}, p);
-      localStorage.setItem("EDSA_STUDENT_ACCOUNTS", JSON.stringify(accounts));
-      localStorage.setItem("EDSA_ACTIVE_EMAIL", email);
-      localStorage.setItem("EDSA_STUDENT_PROFILE", JSON.stringify(accounts[email]));
-    } catch (_) {}
-  }
-  async function getServerProfile() {
-    try {
-      const response = await fetch("/api/auth-me", {method:"GET",credentials:"same-origin",cache:"no-store"});
-      const result = await response.json().catch(()=>({}));
-      if (response.ok && result.ok && result.user && result.user.email) { saveProfile(result.user); return result.user; }
-    } catch (_) {}
-    return null;
-  }
+  function profile() { try { const accounts=JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS")||"{}"); const active=String(localStorage.getItem("EDSA_ACTIVE_EMAIL")||"").toLowerCase(); if(active&&accounts[active])return accounts[active]; const legacy=JSON.parse(localStorage.getItem("EDSA_STUDENT_PROFILE")||"null"); return legacy&&legacy.email?legacy:null; } catch (_) { return null; } }
+  function saveProfile(p) { if(!p||!p.email)return; try{const accounts=JSON.parse(localStorage.getItem("EDSA_STUDENT_ACCOUNTS")||"{}");const email=String(p.email).trim().toLowerCase();accounts[email]=Object.assign({},accounts[email]||{},p);localStorage.setItem("EDSA_STUDENT_ACCOUNTS",JSON.stringify(accounts));localStorage.setItem("EDSA_ACTIVE_EMAIL",email);localStorage.setItem("EDSA_STUDENT_PROFILE",JSON.stringify(accounts[email]));}catch(_){} }
+  async function getServerProfile(){try{const response=await fetch("/api/auth-me",{method:"GET",credentials:"same-origin",cache:"no-store"});const result=await response.json().catch(()=>({}));if(response.ok&&result.ok&&result.user&&result.user.email){saveProfile(result.user);return result.user;}}catch(_){}return null;}
   function journey(){try{const v=JSON.parse(localStorage.getItem(JOURNEY_KEY)||"{}");return v&&typeof v==='object'?v:{};}catch(_){return {};}}
   function certificates(){try{const v=JSON.parse(localStorage.getItem(CERT_KEY)||"{}");return v&&typeof v==='object'?v:{};}catch(_){return {};}}
   function saveJourney(v){localStorage.setItem(JOURNEY_KEY,JSON.stringify(v));}
   function saveCertificates(v){localStorage.setItem(CERT_KEY,JSON.stringify(v));}
-  async function push(){
-    if(syncing)return false; let p=profile(); if(!p||!p.email)p=await getServerProfile(); if(!p||!p.email)return false; syncing=true;
-    try{const response=await fetch("/api/student-sync",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({profile:p,journey:journey(),certificates:certificates()})});return response.ok;}
-    catch(_){return false}finally{syncing=false;}
-  }
-  async function pull(){
-    let p=profile();if(!p||!p.email)p=await getServerProfile();if(!p||!p.email)return false;
-    try{const response=await fetch("/api/student-sync",{method:"GET",credentials:"same-origin",cache:"no-store"});const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok||!result.student)return false;
-      const email=String(result.student.email||p.email).toLowerCase(),allJourney=journey(),localStudent=allJourney[email]||{courses:{}};localStudent.courses=localStudent.courses||{};
-      (result.progress||[]).forEach(function(row){const current=localStudent.courses[row.course_id]||{};localStudent.courses[row.course_id]=Object.assign({},current,{courseTitle:row.course_title,attempts:Number(row.attempts||0),status:row.passed?'passed':(row.latest_status||current.status||'not-started'),bestScore:row.best_score,lastScore:row.latest_score,lastAttempt:row.last_attempt_at,certificateId:row.certificate_id||current.certificateId||null});});
-      allJourney[email]=localStudent;saveJourney(allJourney);const localCerts=certificates();
-      (result.certificates||[]).forEach(function(row){localCerts[row.certificate_id]=Object.assign({},localCerts[row.certificate_id]||{},{id:row.certificate_id,name:row.student_name,courseId:row.course_id,course:row.course_title,score:row.score,issueDate:row.issue_date,status:row.status,verificationUrl:row.verification_url,issuedBy:row.issued_by});});saveCertificates(localCerts);return true;
-    }catch(_){return false;}
-  }
+  async function push(){if(syncing)return false;let p=profile();if(!p||!p.email)p=await getServerProfile();if(!p||!p.email)return false;syncing=true;try{const response=await fetch("/api/student-sync",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({profile:p,journey:journey(),certificates:certificates()})});return response.ok;}catch(_){return false}finally{syncing=false;}}
+  async function pull(){let p=profile();if(!p||!p.email)p=await getServerProfile();if(!p||!p.email)return false;try{const response=await fetch("/api/student-sync",{method:"GET",credentials:"same-origin",cache:"no-store"});const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok||!result.student)return false;const email=String(result.student.email||p.email).toLowerCase(),allJourney=journey(),localStudent=allJourney[email]||{courses:{}};localStudent.courses=localStudent.courses||{};(result.progress||[]).forEach(function(row){const current=localStudent.courses[row.course_id]||{};localStudent.courses[row.course_id]=Object.assign({},current,{courseTitle:row.course_title,attempts:Number(row.attempts||0),status:row.passed?'passed':(row.latest_status||current.status||'not-started'),bestScore:row.best_score,lastScore:row.latest_score,lastAttempt:row.last_attempt_at,certificateId:row.certificate_id||current.certificateId||null});});allJourney[email]=localStudent;saveJourney(allJourney);const localCerts=certificates();(result.certificates||[]).forEach(function(row){localCerts[row.certificate_id]=Object.assign({},localCerts[row.certificate_id]||{},{id:row.certificate_id,name:row.student_name,courseId:row.course_id,course:row.course_title,score:row.score,issueDate:row.issue_date,status:row.status,verificationUrl:row.verification_url,issuedBy:row.issued_by});});saveCertificates(localCerts);return true;}catch(_){return false;}}
   async function syncNow(){const ok=await push();if(ok)await pull();return ok;}
   window.EDSA_DB_SYNC={push,pull,syncNow};
-  document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){if(typeof installGoldCertificateRenderer==='function')installGoldCertificateRenderer();if(profile()) syncNow();setInterval(function(){ if(document.visibilityState === "visible" && profile()) syncNow(); },30000);},1200);});
-  window.addEventListener("pagehide",function(){try{const p=profile();if(!p||!p.email||!navigator.sendBeacon)return;const payload=JSON.stringify({profile:p,journey:journey(),certificates:certificates()});navigator.sendBeacon("/api/student-sync",new Blob([payload],{type:"application/json"}));}catch(_){} });
+  document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){if(typeof installGoldCertificateRenderer==='function')installGoldCertificateRenderer();if(profile())syncNow();setInterval(function(){if(document.visibilityState==='visible'&&profile())syncNow();},30000);},1200);});
+  window.addEventListener("pagehide",function(){try{const p=profile();if(!p||!p.email||!navigator.sendBeacon)return;const payload=JSON.stringify({profile:p,journey:journey(),certificates:certificates()});navigator.sendBeacon("/api/student-sync",new Blob([payload],{type:"application/json"}));}catch(_){}});
 })();
 
 // Step 12: record each completed exam in Supabase without changing payment handling.
 (function installExamAttemptRecorder(){
-  let tries=0;const timer=setInterval(function(){tries++;
-    if(typeof window.startTimer==='function'&&!window.__EDSA_START_TIMER_WRAPPED){const originalStartTimer=window.startTimer;window.startTimer=function(){window.__EDSA_EXAM_STARTED_AT=new Date().toISOString();window.__EDSA_EXAM_ATTEMPT_RECORDED=false;return originalStartTimer.apply(this,arguments)};window.__EDSA_START_TIMER_WRAPPED=true;}
-    if(typeof window.renderResult==='function'&&!window.__EDSA_RESULT_WRAPPED){const originalRenderResult=window.renderResult;window.renderResult=function(passed,score,correctCount){const result=originalRenderResult.apply(this,arguments);recordExamAttempt(passed,score);return result};window.__EDSA_RESULT_WRAPPED=true;}
-    if((window.__EDSA_START_TIMER_WRAPPED&&window.__EDSA_RESULT_WRAPPED)||tries>120)clearInterval(timer);
-  },100);
+  let tries=0;const timer=setInterval(function(){tries++;if(typeof window.startTimer==='function'&&!window.__EDSA_START_TIMER_WRAPPED){const originalStartTimer=window.startTimer;window.startTimer=function(){window.__EDSA_EXAM_STARTED_AT=new Date().toISOString();window.__EDSA_EXAM_ATTEMPT_RECORDED=false;return originalStartTimer.apply(this,arguments)};window.__EDSA_START_TIMER_WRAPPED=true;}if(typeof window.renderResult==='function'&&!window.__EDSA_RESULT_WRAPPED){const originalRenderResult=window.renderResult;window.renderResult=function(passed,score,correctCount){const result=originalRenderResult.apply(this,arguments);recordExamAttempt(passed,score);return result};window.__EDSA_RESULT_WRAPPED=true;}if((window.__EDSA_START_TIMER_WRAPPED&&window.__EDSA_RESULT_WRAPPED)||tries>120)clearInterval(timer);},100);
   async function recordExamAttempt(passed,score){try{const params=new URLSearchParams(window.location.search);if(params.get('test')==='certificate')return;}catch(_){}if(window.__EDSA_EXAM_ATTEMPT_RECORDED)return;const numericScore=Number(score);if(!Number.isFinite(numericScore))return;const courseTitle=String((document.getElementById('examCourseTitle')||{}).innerText||'').trim();if(!courseTitle)return;window.__EDSA_EXAM_ATTEMPT_RECORDED=true;const completedAt=new Date().toISOString(),startedAt=window.__EDSA_EXAM_STARTED_AT||completedAt;try{const response=await fetch('/api/exam-attempt',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({courseTitle,score:numericScore,passed:!!passed,startedAt,completedAt})});const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)window.__EDSA_EXAM_ATTEMPT_RECORDED=false;}catch(_){window.__EDSA_EXAM_ATTEMPT_RECORDED=false;}}
 })();
