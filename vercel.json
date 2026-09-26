@@ -14,6 +14,7 @@
     { "source": "/api/exam-attempt", "destination": "/api/edsa?action=exam-attempt" },
     { "source": "/api/admin-dashboard", "destination": "/api/edsa?action=admin-dashboard" },
     { "source": "/api/register-certificate", "destination": "/api/edsa?action=register-certificate" },
-    { "source": "/api/verify-certificate", "destination": "/api/edsa?action=verify-certificate" }
+    { "source": "/api/verify-certificate", "destination": "/api/edsa?action=verify-certificate" },
+    { "source": "/edsa-real-hero.jpg", "destination": "/edsa-reference-hero.svg" }
   ]
 }
