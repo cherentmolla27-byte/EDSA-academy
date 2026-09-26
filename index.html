@@ -226,6 +226,51 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
 <div class="edsa-dash-card"><h3>Student Profile</h3><p>Your current EDSA account on this device.</p><div class="edsa-profile-box"><div class="edsa-profile-row"><span>Full Name</span><strong id="dashProfileName">Student</strong></div><div class="edsa-profile-row"><span>Email</span><strong id="dashProfileEmail">—</strong></div><div class="edsa-profile-row"><span>Member Since</span><strong id="dashProfileDate">—</strong></div></div><div class="edsa-mini-actions"><button onclick="EDSA_OPEN_LEARNING()">📚 Open Learning Center</button><button onclick="EDSA_SHOW_HOME()">Browse Courses</button><a href="/verify">Verify a Certificate</a></div></div>
 </div></div></div>
 
+
+<div class="edsa-signin-screen" id="edsaLoginScreen" aria-label="Student sign in">
+  <div class="edsa-login-card">
+    <div class="brand">EDSA ACADEMY</div>
+    <h2>Student Sign In</h2>
+    <p>Sign in to access your courses, learning progress, exams and certificates.</p>
+    <form id="edsaLoginForm">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" name="email" type="email" autocomplete="email" inputmode="email" required>
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Sign In</button>
+    </form>
+    <div class="edsa-login-links">
+      <button type="button" onclick="EDSA_SHOW_REGISTER()">Create account</button>
+      <button type="button" onclick="EDSA_SHOW_HOME()">Back to home</button>
+    </div>
+    <div class="edsa-note">Your student session is protected and separate from administrator authentication.</div>
+  </div>
+</div>
+
+<div class="edsa-signin-screen" id="edsaRegisterScreen" aria-label="Create student account">
+  <div class="edsa-login-card">
+    <div class="brand">EDSA ACADEMY</div>
+    <h2>Create Student Account</h2>
+    <p>Create your account to save learning progress, exam results and certificates.</p>
+    <form id="edsaRegisterForm">
+      <label for="registerName">Full Name</label>
+      <input id="registerName" name="name" type="text" autocomplete="name" required>
+      <label for="registerEmail">Email</label>
+      <input id="registerEmail" name="email" type="email" autocomplete="email" inputmode="email" required>
+      <label for="registerPassword">Password</label>
+      <input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="8" required>
+      <label for="registerPasswordConfirm">Confirm Password</label>
+      <input id="registerPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="8" required>
+      <button type="submit">Create Account</button>
+    </form>
+    <div class="edsa-login-links">
+      <button type="button" onclick="EDSA_SHOW_LOGIN()">Sign in instead</button>
+      <button type="button" onclick="EDSA_SHOW_HOME()">Back to home</button>
+    </div>
+    <div class="edsa-note">Password must be 8–128 characters.</div>
+  </div>
+</div>
+
 <script>
 const EDSA_COURSES=[
 ["smm","Social Media Management","Social strategy, content, communities and platform management."],
@@ -497,7 +542,11 @@ function EDSA_OPEN_LEARNING(id){
 window.addEventListener("edsa:auth-ready",function(){if(window.EDSA_DB_SYNC)window.EDSA_DB_SYNC.syncNow()});
 document.addEventListener("DOMContentLoaded",function(){
   try{
-    document.querySelectorAll("button").forEach(function(b){b.type="button"});
+    var loginForm=document.getElementById("edsaLoginForm");
+    if(loginForm) loginForm.addEventListener("submit",function(e){e.preventDefault();EDSA_SIGN_IN();});
+    var registerForm=document.getElementById("edsaRegisterForm");
+    if(registerForm) registerForm.addEventListener("submit",function(e){e.preventDefault();EDSA_REGISTER();});
+    document.querySelectorAll("button").forEach(function(b){if(!b.closest("form")) b.type="button"});
     const params=new URLSearchParams(window.location.search);
     if(params.get("login")==="1") return;
     EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(result){
