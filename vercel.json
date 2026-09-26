@@ -8,7 +8,7 @@
     { "source": "/api/admin-login", "destination": "/api/edsa?action=admin-login" },
     { "source": "/api/admin-me", "destination": "/api/edsa?action=admin-me" },
     { "source": "/api/activate-key", "destination": "/api/edsa?action=activate-key" },
-    { "source": "/api/admin-generate-key", "destination": "/api/edsa?action=admin-generate-key" },
+    { "source": "/api/admin-generate-key", "destination": "/api/admin-generate-key.js" },
     { "source": "/api/course-access", "destination": "/api/edsa?action=course-access" },
     { "source": "/api/student-sync", "destination": "/api/edsa?action=student-sync" },
     { "source": "/api/exam-attempt", "destination": "/api/edsa?action=exam-attempt" },
