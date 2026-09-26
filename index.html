@@ -453,6 +453,12 @@ document.addEventListener("DOMContentLoaded",function(){
 </script>
 <style>
 #edsaLanguageToggle{border:1px solid rgba(147,197,253,.45);background:#0b2145;color:#dbeafe;border-radius:10px;padding:8px 10px;font-size:10px;font-weight:900;cursor:pointer;white-space:nowrap}
+
+/* Final hero-photo visibility pass: keep the reference photo clear and unobstructed. */
+.edsa-ref-hero-bg{width:70%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;opacity:1!important;filter:none!important;image-rendering:auto!important;z-index:1!important;display:block!important}
+.edsa-ref-hero:after{background:linear-gradient(90deg,#061b40 0%,rgba(6,27,64,.62) 18%,rgba(6,27,64,.20) 34%,rgba(6,27,64,.035) 49%,rgba(6,27,64,0) 62%)!important;z-index:2!important}
+@media(max-width:900px){.edsa-ref-hero-bg{width:100%!important;height:245px!important;top:auto!important;bottom:0!important;object-position:center center!important}.edsa-ref-hero:after{background:linear-gradient(180deg,#061b40 0%,rgba(6,27,64,.94) 43%,rgba(6,27,64,.30) 68%,rgba(6,27,64,.03) 100%)!important}}
+@media(max-width:560px){.edsa-ref-hero-bg{width:100%!important;height:245px!important;top:auto!important;bottom:0!important;object-position:center center!important}.edsa-ref-hero:after{background:linear-gradient(180deg,#061b40 0%,rgba(6,27,64,.78) 42%,rgba(6,27,64,.22) 70%,rgba(6,27,64,0) 100%)!important}}
 </style>
 <script>
 (function(){
