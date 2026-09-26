@@ -324,7 +324,7 @@ async function EDSA_REGISTER(){
       window.location.href=returnUrl;
       return;
     }
-    EDSA_RENDER_DASH(session.user);
+    EDSA_RENDER_DASH(result.user);
   }catch(error){
     console.error("EDSA registration error",error);
     alert("Could not connect to EDSA authentication.");
@@ -340,6 +340,7 @@ async function EDSA_SIGN_IN(){
   const e=document.getElementById("loginEmail"),p=document.getElementById("loginPassword");
   const submit=document.querySelector("#edsaLoginScreen button[onclick*=\"EDSA_SIGN_IN\"]");
   const originalText=submit?submit.textContent:"";
+  const loginStartedAt=Date.now();
   const email=e?e.value.trim():"",password=p?p.value:"";
   if(!email||!password){alert("Please enter your email and password.");return}
   if(submit){submit.disabled=true;submit.textContent="Signing in…";submit.setAttribute("aria-busy","true");}
@@ -373,10 +374,13 @@ async function EDSA_SIGN_IN(){
       window.location.href=returnUrl;
       return;
     }
-    EDSA_RENDER_DASH(session.user);
+    EDSA_RENDER_DASH(result.user);
+    // Signal other EDSA modules that authentication is ready without making
+    // another network request.
+    window.dispatchEvent(new CustomEvent("edsa:auth-ready"));
   }catch(error){
     console.error("EDSA sign-in error",error);
-    alert("Could not connect to EDSA authentication.");
+    alert(error && error.name === "AbortError" ? "Sign-in took too long. Please check your connection and try again." : "Could not connect to EDSA authentication.");
   }finally{
     if(submit){submit.disabled=false;submit.textContent=originalText;submit.removeAttribute("aria-busy");}
   }
