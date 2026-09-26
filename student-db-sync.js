@@ -88,7 +88,7 @@
   }
   async function syncNow(){const ok=await push();if(ok)await pull();return ok;}
   window.EDSA_DB_SYNC={push,pull,syncNow};
-  document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){if(typeof installGoldCertificateRenderer==='function')installGoldCertificateRenderer();syncNow();setInterval(syncNow,5000);},1200);});
+  document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){if(typeof installGoldCertificateRenderer==='function')installGoldCertificateRenderer();if(profile()) syncNow();setInterval(function(){ if(document.visibilityState === "visible" && profile()) syncNow(); },30000);},1200);});
   window.addEventListener("pagehide",function(){try{const p=profile();if(!p||!p.email||!navigator.sendBeacon)return;const payload=JSON.stringify({profile:p,journey:journey(),certificates:certificates()});navigator.sendBeacon("/api/student-sync",new Blob([payload],{type:"application/json"}));}catch(_){} });
 })();
 
