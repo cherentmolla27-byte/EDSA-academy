@@ -16,5 +16,11 @@
     "email": "cherentchere966@gmail.com",
     "passwordHash": "scrypt$bcd346e0592eb1543b036295c5b20ad0$fb0e6a84c1f0fba968273ea425097140aad4e8a822f44b94316d0380f7bafa06d8837c1abdd5e62be8bf3244da53c431eb19ee2dbb0b494201c16833d3be20f6",
     "createdAt": "2026-09-22T12:46:47.208Z"
+  },
+  "yabinah0717@gmail.com": {
+    "name": "Yeabsira tesfaye",
+    "email": "yabinah0717@gmail.com",
+    "passwordHash": "scrypt$37586f61f852be15ef2e2a9adef56e1f$fa8a03bcdf6fdc299c2dfdc650fc03f18fccc0adc2523bcab2c821c7a7444784fe4f214ea1f8cd427ba1fcfb08e826b611a3ca28aa6e9b7b0e04200074be43a8",
+    "createdAt": "2026-09-30T07:06:43.444Z"
   }
 }
