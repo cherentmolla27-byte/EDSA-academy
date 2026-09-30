@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/verify", "destination": "/verify.html" },
+    { "source": "/learning.html", "destination": "/learning-v2.html" },
     { "source": "/api/auth-login", "destination": "/api/edsa?action=auth-login" },
     { "source": "/api/auth-register", "destination": "/api/edsa?action=auth-register" },
     { "source": "/api/auth-me", "destination": "/api/edsa?action=auth-me" },
