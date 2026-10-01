@@ -28,5 +28,11 @@
     "email": "mesfinamanuel73@gmail.com",
     "passwordHash": "scrypt$ef916bb6cc9d37c9416141e8852f845e$b4494d2d233a794f00fd99b6d2c073d838facd3b8615aa36e65f54f5e0af6f6142d575058ed7a1878caa3d98a0f7b0d7858bb9fdaa49be0bb423443c9d3ad5c6",
     "createdAt": "2026-10-01T07:34:15.152Z"
+  },
+  "mollaalem70@gmail.com": {
+    "name": "Molla Alem",
+    "email": "mollaalem70@gmail.com",
+    "passwordHash": "scrypt$99cee73ea16556e09753b8adc2b4af42$47d1974a86ccf922ee867cc04f520d35bd340bb5bd83616e474a123dd35807b611df5391213af01c99b650567154f8a610cde407ad8dcd46066ca8468def62d5",
+    "createdAt": "2026-10-01T08:07:00.244Z"
   }
 }
