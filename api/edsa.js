@@ -454,27 +454,43 @@ async function examAttempt(req, res) {
       });
     }
     if (!hasCourseAccess) return auth.json(res, 403, { ok: false, error: "This course exam requires an active course access. Please activate this course first." });
-    // Consume exactly one exam entitlement for this submission. Course ownership
-    // remains untouched, so a failed student keeps all 15 lessons unlocked.
-    const entitlementRows = await db.supabaseRequest(
+    // Validate the submitted result before consuming the paid attempt.
+    if (passed && score < 80) return auth.json(res, 400, { ok: false, error: "A passing result requires at least 80%." });
+    if (!passed && score >= 80) return auth.json(res, 400, { ok: false, error: "Result status does not match the score." });
+
+    // Find one available paid entitlement, then consume that exact entitlement.
+    // Course ownership remains untouched, so a failed student keeps all 15 lessons unlocked.
+    const availableEntitlements = await db.supabaseRequest(
       "/exam_entitlements?email=eq." + encodeURIComponent(email) +
       "&course_id=eq." + encodeURIComponent(courseId) +
       "&status=eq.available&order=created_at.asc&limit=1",
-      {
-        method: "PATCH",
-        headers: { Prefer: "return=representation" },
-        body: JSON.stringify({ status: "used", used_at: new Date().toISOString() })
-      }
+      { method: "GET" }
     );
-    if (!Array.isArray(entitlementRows) || !entitlementRows.length) {
+    const entitlement = Array.isArray(availableEntitlements) ? availableEntitlements[0] : null;
+    if (!entitlement || !entitlement.id) {
       return auth.json(res, 403, {
         ok: false,
         error: "This exam attempt has already been used. A new 400 ETB activation key is required for another attempt.",
         requiresNewPayment: true
       });
     }
-    if (passed && score < 80) return auth.json(res, 400, { ok: false, error: "A passing result requires at least 80%." });
-    if (!passed && score >= 80) return auth.json(res, 400, { ok: false, error: "Result status does not match the score." });
+
+    const consumed = await db.supabaseRequest(
+      "/exam_entitlements?id=eq." + encodeURIComponent(entitlement.id) + "&status=eq.available",
+      {
+        method: "PATCH",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify({ status: "used", used_at: completedAt })
+      }
+    );
+    if (!Array.isArray(consumed) || !consumed.length) {
+      return auth.json(res, 409, {
+        ok: false,
+        error: "This exam attempt was just used. Please refresh and try again.",
+        requiresNewPayment: true
+      });
+    }
+
     const name = auth.validateName(session.name) || cleanText(body.studentName, 120) || "EDSA Student";
     const studentRows = await db.upsert("students", { email, full_name: name, updated_at: new Date().toISOString() }, "email");
     const student = studentRows[0];
@@ -483,14 +499,6 @@ async function examAttempt(req, res) {
       method: "POST",
       body: JSON.stringify({ student_id: student.id, course_id: courseId, course_title: courseTitle, score, passed, started_at: startedAt, completed_at: completedAt })
     });
-    // Consume exactly the entitlement used for this attempt. Course ownership
-    // remains untouched, so failed students keep all 15 lessons unlocked.
-    if (entitlement && entitlement.id) {
-      await db.supabaseRequest("/exam_entitlements?id=eq." + encodeURIComponent(entitlement.id), {
-        method: "PATCH",
-        body: JSON.stringify({ status: "used", used_at: completedAt })
-      });
-    }
     return auth.json(res, 200, { ok: true, attempt: Array.isArray(rows) ? rows[0] || null : rows, student: { name, email }, passed });
   } catch (err) {
     console.error("[EDSA exam attempt]", err);
