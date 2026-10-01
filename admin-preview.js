@@ -12,7 +12,7 @@
   document.addEventListener('DOMContentLoaded',async function(){
     if(!(await isAdmin())) return;
 
-    if(location.pathname==='/learning.html'){
+    if(location.pathname==='/learning.html'||location.pathname==='/admin-learning.html'){
       setTimeout(async function(){
         try{
           state.email='admin'; state.name='EDSA Administrator';
@@ -41,7 +41,7 @@
         if(await isAdmin()){
           const course=COURSES.find(c=>c.id===courseId);
           if(course){
-            location.href='/learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
+            location.href='/admin-learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
           }
           return;
         }
@@ -62,7 +62,7 @@
       const q=new URLSearchParams(location.search).get('course');
       if(q&&COURSES.some(c=>c.id===q)){
         setTimeout(async function(){
-          if(await isAdmin()) location.href='/learning.html?course='+encodeURIComponent(q)+'&lesson=0';
+          if(await isAdmin()) location.href='/admin-learning.html?course='+encodeURIComponent(q)+'&lesson=0';
         },250);
       }
     }
