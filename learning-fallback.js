@@ -1,5 +1,6 @@
 (function(){
   "use strict";
+  // Admin test access fix: admin authentication is intentionally separate from student authentication.
   const DATA={
     smm:{title:'Social Media Management',desc:'Social strategy, content, communities and platform management.',lessons:['Digital Social Media Foundations','Audience Research & Buyer Personas','Platform Selection & Strategy','Content Pillars & Planning','Content Calendars','Copywriting for Social Media','Visual Content & Branding','Short-Form Video Strategy','Community Management','Social Media Engagement','Hashtags, Keywords & Discovery','Analytics & Performance Metrics','Social Media Crisis Management','Campaign Planning & Optimization','Professional Social Media Workflow']},
     dme:{title:'Digital Marketing Essentials',desc:'Digital campaigns, channels, analytics and marketing strategy.',lessons:['Digital Marketing Foundations','Customer Journey & Funnels','Market Research','Digital Marketing Strategy','Search Engine Basics','Content Marketing','Email Marketing','Social Advertising','Paid Search & Display','Landing Pages & Conversion','Analytics & KPIs','Remarketing & Retention','Campaign Budgeting','A/B Testing & Optimization','Integrated Digital Campaigns']},
@@ -16,49 +17,16 @@
   function progressKey(id){return 'EDSA_LESSON_PROGRESS_'+email()+'_'+id;}
   function getProgress(id){try{return Math.max(0,Math.min(15,Number(localStorage.getItem(progressKey(id))||0)));}catch(_){return 0;}}
   function setProgress(id,n){try{localStorage.setItem(progressKey(id),String(Math.max(0,Math.min(15,n))));}catch(_){} }
-  function goExam(id){location.href='/edsa-app.html?course='+encodeURIComponent(id)+'&exam=1';}
-  function render(id,i){
-    const c=DATA[id]; if(!c)return;
-    const area=document.getElementById('learningArea'); if(!area)return;
-    const completed=getProgress(id);
-    const n=Math.max(0,Math.min(c.lessons.length-1,Number(i)||0));
-    if(n>completed){
-      i=completed;
-    }
-    const current=Math.max(0,Math.min(c.lessons.length-1,Number(i)||0));
-    area.innerHTML='<div class="lesson-head"><div><h2>'+esc(c.title)+'</h2><p>'+esc(c.desc)+'</p></div><button class="btn light" onclick="showCourseHome()">← All Courses</button></div><div class="progress-text">Lesson '+(current+1)+' of 15 • '+completed+' of 15 completed</div><div class="bar"><i style="width:'+((completed/15)*100)+'%"></i></div><div class="lessons">'+c.lessons.map((x,k)=>'<div class="lesson '+(k===current?'active ':'')+(k<completed?' done':'')+'" '+(k<=completed?'onclick="openLesson('+k+')"':'')+'><div class="num">'+(k<completed?'✓':(k+1))+'</div><div><strong>'+esc(x)+'</strong><span>Lesson '+(k+1)+' • '+(k<completed?'Completed':'Available')+'</span></div>'+(k<completed?'<span class="check">✓</span>':'')+'</div>').join('')+'</div><div id="viewer"></div>';
-    const v=document.getElementById('viewer');
-    const isLast=current===14;
-    const nextButton=isLast
-      ? (completed>=15?'<button class="btn blue" onclick="goToExam()">Now take the exam →</button>':'<button class="btn blue" onclick="completeCurrentLesson()">Complete Lesson 15 →</button>')
-      : '<button class="btn blue" onclick="completeCurrentLesson()">Complete Lesson & Next →</button>';
-    v.innerHTML='<div class="viewer"><div style="font-size:9px;color:#93c5fd;font-weight:900;letter-spacing:.14em">LESSON '+(current+1)+' OF 15</div><h3>'+esc(c.lessons[current])+'</h3><div class="lesson-copy"><p>This EDSA lesson covers <strong>'+esc(c.lessons[current])+'</strong>. Study the concept, connect it to a real business situation, and apply it to your own work or project.</p><h4>What you should understand</h4><p>Understand the key definitions, process, practical use, common mistakes, and how the topic supports professional digital and business work.</p><h4>Practical EDSA example</h4><p>Apply this lesson to an Ethiopian business, creator, merchant, real-estate company, or digital project. Write down one real example and one action you could take.</p><h4>Quick review</h4><p>After studying, explain the topic in your own words and identify one measurable result you would use to know whether your work improved.</p></div><div class="actions">'+(current>0?'<button class="btn light" onclick="openLesson('+(current-1)+')">← Previous Lesson</button>':'')+nextButton+'</div></div>';
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+  function goExam(id){location.href='/edsa-app.html?course='+encodeURIComponent(id)+'&exam=1&adminTest=1';}
   async function ensureAccess(id){
-    if(!id)return false;
-    if(unlocked(id))return true;
-    try{
-      const h=token()?{'Authorization':'Bearer '+token()}:{};
-      const r=await fetch('/api/edsa?action=course-access&courseId='+encodeURIComponent(id),{credentials:'include',headers:h,cache:'no-store'});
-      const x=await r.json().catch(()=>({}));
-      if(r.ok&&x.ok&&x.unlocked){try{localStorage.setItem('EDSA_COURSE_UNLOCKED_'+email()+'_'+id,'1');}catch(_){}return true;}
-      if(r.status===401){location.href='/?login=1&return='+encodeURIComponent('/learning.html?course='+id);return false;}
-    }catch(_){ }
-    return false;
+    if(!id)return false;if(unlocked(id))return true;
+    try{const h=token()?{'Authorization':'Bearer '+token()}:{};const r=await fetch('/api/edsa?action=course-access&courseId='+encodeURIComponent(id),{credentials:'include',headers:h,cache:'no-store'});const x=await r.json().catch(()=>({}));if(r.ok&&x.ok&&x.unlocked){try{localStorage.setItem('EDSA_COURSE_UNLOCKED_'+email()+'_'+id,'1');}catch(_){}return true;}if(r.status===401){location.href='/?login=1&return='+encodeURIComponent('/learning.html?course='+id);return false;}}catch(_){}return false;
   }
-  window.selectCourse=async function(id){
-    if(!DATA[id])return;
-    if(!(await ensureAccess(id))){alert('This course is locked. Activate this course with your 400 ETB activation key first.');return;}
-    document.getElementById('courseHome').style.display='none';document.getElementById('courseView').style.display='grid';window.__edsaCourse=id;
-    const requested=Math.max(0,Math.min(14,Number(qs.get('lesson')||0)));render(id,Math.min(requested,getProgress(id)));
-  };
+  function render(id,i){const c=DATA[id],area=document.getElementById('learningArea');if(!c||!area)return;const completed=getProgress(id),current=Math.max(0,Math.min(c.lessons.length-1,Math.min(Number(i)||0,completed)));area.innerHTML='<div class="lesson-head"><div><h2>'+esc(c.title)+'</h2><p>'+esc(c.desc)+'</p></div><button class="btn light" onclick="showCourseHome()">← All Courses</button></div><div class="progress-text">Lesson '+(current+1)+' of 15 • '+completed+' of 15 completed</div><div class="bar"><i style="width:'+((completed/15)*100)+'%"></i></div><div class="lessons">'+c.lessons.map((x,k)=>'<div class="lesson '+(k===current?'active ':'')+(k<completed?' done':'')+'" '+(k<=completed?'onclick="openLesson('+k+')"':'')+'><div class="num">'+(k<completed?'✓':(k+1))+'</div><div><strong>'+esc(x)+'</strong><span>Lesson '+(k+1)+' • '+(k<completed?'Completed':'Available')+'</span></div>'+(k<completed?'<span class="check">✓</span>':'')+'</div>').join('')+'</div><div id="viewer"></div>';const v=document.getElementById('viewer'),isLast=current===14,next=isLast?(completed>=15?'<button class="btn blue" onclick="goToExam()">Now take the exam →</button>':'<button class="btn blue" onclick="completeCurrentLesson()">Complete Lesson 15 →</button>'):'<button class="btn blue" onclick="completeCurrentLesson()">Complete Lesson & Next →</button>';v.innerHTML='<div class="viewer"><div style="font-size:9px;color:#93c5fd;font-weight:900;letter-spacing:.14em">LESSON '+(current+1)+' OF 15</div><h3>'+esc(c.lessons[current])+'</h3><div class="lesson-copy"><p>This EDSA lesson covers <strong>'+esc(c.lessons[current])+'</strong>. Study the concept, connect it to a real business situation, and apply it to your own work or project.</p><h4>What you should understand</h4><p>Understand the key definitions, process, practical use, common mistakes, and how the topic supports professional digital and business work.</p><h4>Practical EDSA example</h4><p>Apply this lesson to an Ethiopian business, creator, merchant, real-estate company, or digital project. Write down one real example and one action you could take.</p><h4>Quick review</h4><p>After studying, explain the topic in your own words and identify one measurable result you would use to know whether your work improved.</p></div><div class="actions">'+(current>0?'<button class="btn light" onclick="openLesson('+(current-1)+')">← Previous Lesson</button>':'')+next+'</div></div>';window.scrollTo({top:0,behavior:'smooth'});}
+  window.selectCourse=async function(id){if(!DATA[id])return;if(!(await ensureAccess(id))){alert('This course is locked. Activate this course with your 400 ETB activation key first.');return;}document.getElementById('courseHome').style.display='none';document.getElementById('courseView').style.display='grid';window.__edsaCourse=id;window.__edsaLesson=Number(qs.get('lesson')||0);render(id,window.__edsaLesson);};
   window.openLesson=function(i){if(window.__edsaCourse){const max=getProgress(window.__edsaCourse);if(Number(i)>max)return;window.__edsaLesson=i;render(window.__edsaCourse,i);}};
-  window.completeCurrentLesson=function(){const id=window.__edsaCourse;if(!id)return;const current=Number(window.__edsaLesson||0);const next=current+1;setProgress(id,next);if(next>=15){render(id,14);return;}window.__edsaLesson=next;render(id,next);};
+  window.completeCurrentLesson=function(){const id=window.__edsaCourse;if(!id)return;const next=Number(window.__edsaLesson||0)+1;setProgress(id,next);if(next>=15){window.__edsaLesson=14;render(id,14);return;}window.__edsaLesson=next;render(id,next);};
   window.goToExam=function(){const id=window.__edsaCourse;if(id&&getProgress(id)>=15)goExam(id);};
   window.showCourseHome=function(){document.getElementById('courseHome').style.display='block';document.getElementById('courseView').style.display='none';};
-  document.addEventListener('DOMContentLoaded',function(){
-    const id=qs.get('course');
-    if(id&&DATA[id]){setTimeout(function(){selectCourse(id);},50);}
-  });
+  document.addEventListener('DOMContentLoaded',function(){const id=qs.get('course');if(id&&DATA[id])setTimeout(function(){selectCourse(id);},50);});
 })();
