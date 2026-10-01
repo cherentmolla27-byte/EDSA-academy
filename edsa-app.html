@@ -1063,16 +1063,27 @@ function generate50Questions(courseKey, courseTitle) {
       }
       document.getElementById("selectedCourseTitle").innerText = `Selected: ${state.selectedCourse.title}`;
       document.getElementById("userStatus").innerText = `Signed in: ${state.studentName || state.studentEmail}`;
+      // If this course was already activated, the student has already paid.
+      // Send them directly into the exam instead of showing the manual-payment screen again.
       try {
-        const accessResponse = await fetch("/api/course-access?courseId="+encodeURIComponent(courseId), {credentials:"include", headers:EDSA_AUTH_HEADERS(), cache:"no-store"});
+        const accessResponse = await EDSA_API_FETCH("/api/course-access?courseId="+encodeURIComponent(courseId), {
+          credentials:"include",
+          headers:EDSA_AUTH_HEADERS(),
+          cache:"no-store"
+        });
         const accessResult = await accessResponse.json().catch(() => ({}));
-        const note = document.querySelector("#stepPayment .text-slate-300.space-y-3 p.font-bold");
         if (accessResponse.ok && accessResult.ok && accessResult.unlocked) {
-          if (note) note.innerHTML = '<i class="fa-solid fa-rotate-right text-sky-400"></i> Exam retake fee: <span class="text-sky-400">400 ETB</span>';
-          const title = document.getElementById("selectedCourseTitle");
-          if (title) title.innerText = `Retake: ${state.selectedCourse.title} — Your course lessons remain unlocked`;
+          const nameInput = document.getElementById("studentName");
+          if (nameInput) nameInput.value = state.studentName || "";
+          const keyInput = document.getElementById("accessKey");
+          if (keyInput) keyInput.value = "";
+          await verifyAndStartExam({ preventDefault: function() {} });
+          return;
         }
-      } catch (_) {}
+      } catch (error) {
+        console.warn("[EDSA] Existing course access check failed:", error);
+      }
+      // New/unactivated course: show the one-time manual payment + activation flow.
       showSection("stepPayment");
     }
 
