@@ -36,18 +36,12 @@
     if(location.pathname==='/edsa-app.html'){
       const originalSelect=window.selectCourse;
       window.selectCourse=async function(courseId){
-        if(new URLSearchParams(location.search).get('adminPreview')==='1'){
-          const course=COURSES.find(c=>c.id===courseId);
-          if(course){
-            state.selectedCourse=course;state.studentEmail='admin';state.studentName='EDSA Administrator';state.adminAuthenticated=true;state.userAnswers={};state.currentPage=1;
-            document.getElementById('selectedCourseTitle').innerText='Admin Preview: '+course.title;
-            document.getElementById('userStatus').innerText='Admin Preview: '+course.title;
-            document.getElementById('examCourseTitle').innerText=course.title;
-            startTimer();renderPage();updateProgress();showSection('stepExam');
-          }
-          return;
+        const course=COURSES.find(c=>c.id===courseId);
+        if(course){
+          // Admins preview the exact student course/lesson flow without becoming a student,
+          // consuming a key, changing course ownership, or creating exam entitlements.
+          location.href='/learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
         }
-        return originalSelect.apply(this,arguments);
       };
 
       const originalAuth=window.authenticateAdmin;
@@ -61,11 +55,11 @@
         };
       }
 
-      if(new URLSearchParams(location.search).get('adminPreview')==='1'){
-        setTimeout(function(){
-          const cards=document.querySelectorAll('#courseList button[onclick^="selectCourse"]');
-          if(cards.length) document.getElementById('userStatus').innerText='Admin Preview Mode';
-        },200);
+      const q=new URLSearchParams(location.search).get('course');
+      if(q&&COURSES.some(c=>c.id===q)){
+        setTimeout(async function(){
+          if(await isAdmin()) location.href='/learning.html?course='+encodeURIComponent(q)+'&lesson=0';
+        },250);
       }
     }
   });
