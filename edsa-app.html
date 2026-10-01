@@ -1073,6 +1073,21 @@ function generate50Questions(courseKey, courseTitle) {
         });
         const accessResult = await accessResponse.json().catch(() => ({}));
         if (accessResponse.ok && accessResult.ok && accessResult.unlocked) {
+          // If the course is owned but the included first exam has not been
+          // taken yet, the correct next step is the 15-lesson Learning Center.
+          // Failed students are handled by the retake flow below.
+          try {
+            const examAccessResponse = await EDSA_API_FETCH("/api/exam-access?courseId=" + encodeURIComponent(courseId), {
+              credentials: "include", headers: EDSA_AUTH_HEADERS(), cache: "no-store"
+            });
+            const examAccessResult = await examAccessResponse.json().catch(() => ({}));
+            if (examAccessResponse.ok && examAccessResult.ok && !examAccessResult.hasAttempt && !examAccessResult.passed) {
+              window.location.href = "/learning.html?course=" + encodeURIComponent(courseId) + "&lesson=0";
+              return;
+            }
+          } catch (examStateError) {
+            console.warn("[EDSA] Initial course exam state check failed:", examStateError);
+          }
           const nameInput = document.getElementById("studentName");
           if (nameInput) nameInput.value = state.studentName || "";
           const keyInput = document.getElementById("accessKey");
