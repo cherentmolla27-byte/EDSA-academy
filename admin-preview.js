@@ -36,12 +36,16 @@
     if(location.pathname==='/edsa-app.html'){
       const originalSelect=window.selectCourse;
       window.selectCourse=async function(courseId){
-        const course=COURSES.find(c=>c.id===courseId);
-        if(course){
-          // Admins preview the exact student course/lesson flow without becoming a student,
-          // consuming a key, changing course ownership, or creating exam entitlements.
-          location.href='/learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
+        // Keep normal student behavior completely unchanged. Only an authenticated
+        // admin session gets the isolated preview route.
+        if(await isAdmin()){
+          const course=COURSES.find(c=>c.id===courseId);
+          if(course){
+            location.href='/learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
+          }
+          return;
         }
+        return originalSelect.apply(this,arguments);
       };
 
       const originalAuth=window.authenticateAdmin;
