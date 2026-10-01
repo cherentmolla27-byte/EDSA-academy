@@ -98,9 +98,9 @@ async function boot(){
       return;
     }
   }catch(e){}
-  document.getElementById("welcome").textContent="Sign in, activate a course with 500 ETB, then study all 15 lessons for free and take the exam when ready.";
+  document.getElementById("welcome").textContent="Sign in, activate a course with 400 ETB, then study all 15 lessons for free and take the exam when ready.";
 }
-function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100),open=state.unlocked[id]===true;return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">${open?"Open →":"🔒 Unlock with 500 ETB"}</span><strong>${c.title}</strong><span>${c.desc}</span><b>${open?pct+"% complete • "+(d.completed||[]).length+"/"+c.lessons.length+" lessons • Course access stays free after payment":"15 full lessons + videos • One exam attempt included with activation"}</b></div>`}
+function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100),open=state.unlocked[id]===true;return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">${open?"Open →":"🔒 Unlock with 400 ETB"}</span><strong>${c.title}</strong><span>${c.desc}</span><b>${open?pct+"% complete • "+(d.completed||[]).length+"/"+c.lessons.length+" lessons • Course access stays free after payment":"15 full lessons + videos • One exam attempt included with activation"}</b></div>`}
 function renderCourses(){
   const home=document.getElementById("courseList");
   const inside=document.getElementById("courseListInside");
@@ -122,7 +122,7 @@ async function selectCourse(id,lessonIndex=0){
     const unlocked=await checkCourseAccess(id);
     if(!unlocked){
       const name=COURSES[id].title;
-      alert(name+" is locked. Pay 500 ETB and receive an activation key. Once activated, all 15 lessons stay unlocked for you.");
+      alert(name+" is locked. Pay 400 ETB and receive an activation key. Once activated, all 15 lessons stay unlocked for you.");
       window.location.href="/edsa-app.html?course="+encodeURIComponent(id);
       return;
     }
@@ -166,7 +166,7 @@ function getLessons(id){return LESSON_CACHE[id]||[];}
 
 function renderCourse(){
   if(!state.unlocked[state.courseId]){
-    document.getElementById("learningArea").innerHTML="<div class=\"empty\"><strong>Course locked</strong><br><br>Pay 500 ETB and activate your first exam attempt. After activation, all 15 lessons and videos stay unlocked for you.</div>";
+    document.getElementById("learningArea").innerHTML="<div class=\"empty\"><strong>Course locked</strong><br><br>Pay 400 ETB and activate your first exam attempt. After activation, all 15 lessons and videos stay unlocked for you.</div>";
     return;
   }
   const c=COURSES[state.courseId], lessons=getLessons(state.courseId);
