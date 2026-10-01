@@ -1124,9 +1124,11 @@ function generate50Questions(courseKey, courseTitle) {
         return;
       }
 
-      // A student who already paid and activated this course must NOT pay/activate again
-      // just to enter the exam after completing the 15 lessons.
+      // Course ownership and exam-attempt entitlement are separate:
+      // ownership keeps the 15 lessons unlocked; each exam attempt needs one
+      // available entitlement created by an activation key.
       let alreadyUnlocked = false;
+      let examAttemptAvailable = false;
       try {
         const accessResponse = await EDSA_API_FETCH("/api/course-access?courseId=" + encodeURIComponent(courseId), {
           credentials: "include",
@@ -1139,14 +1141,32 @@ function generate50Questions(courseKey, courseTitle) {
         console.warn("[EDSA] Course access check failed:", error);
       }
 
-      if (!alreadyUnlocked) {
-        if (!inputKey) {
-          // Recover the key saved at the moment this course was activated.
+      if (alreadyUnlocked) {
+        try {
+          const examAccessResponse = await EDSA_API_FETCH("/api/exam-access?courseId=" + encodeURIComponent(courseId), {
+            credentials: "include",
+            headers: EDSA_AUTH_HEADERS(),
+            cache: "no-store"
+          });
+          const examAccessResult = await examAccessResponse.json().catch(() => ({}));
+          examAttemptAvailable = !!(examAccessResponse.ok && examAccessResult.ok && examAccessResult.available);
+        } catch (error) {
+          console.warn("[EDSA] Exam entitlement check failed:", error);
+        }
+      }
+
+      if (!alreadyUnlocked || !examAttemptAvailable) {
+        if (!inputKey && !alreadyUnlocked) {
+          // Recover the original key only when the course itself is not owned.
           try {
             inputKey = localStorage.getItem("EDSA_LAST_ACTIVATION_KEY_" + String(state.studentEmail || "").toLowerCase() + "_" + courseId) || "";
           } catch (_) {}
         }
         if (!inputKey) {
+          if (alreadyUnlocked && !examAttemptAvailable) {
+            showSection("stepPayment");
+            return;
+          }
           alert("Your course is not activated for this account. Please activate it first.");
           return;
         }
@@ -1388,10 +1408,10 @@ function generate50Questions(courseKey, courseTitle) {
         icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500"></i>';
         title.innerText = "Examination Failed";
         title.className = "text-3xl font-bold mb-2 text-rose-500";
-        msg.innerText = `You scored ${score}%, which is below the 80% passing mark. To attempt this exam again, please submit a new payment of 400 ETB.`;
+        msg.innerText = `You scored ${score}%, which is below the 80% passing mark. Your 15 lessons remain unlocked. To retake the exam, activate a new 400 ETB exam attempt — you do not need to take the course again.`;
         actions.innerHTML = `
           <button onclick="resetAndPayAgain()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 py-3.5 rounded-xl transition-colors shadow-lg">
-            Pay Again & Retake Exam (400 ETB)
+            Activate New Exam Attempt (400 ETB)
           </button>
         `;
       }
@@ -1421,9 +1441,17 @@ function generate50Questions(courseKey, courseTitle) {
     function resetAndPayAgain() {
       state.accessKey = "";
       state.userAnswers = {};
-      document.getElementById("accessKey").value = "";
-      document.getElementById("paymentForm").reset();
-      navToCatalog();
+      const keyInput = document.getElementById("accessKey");
+      if (keyInput) keyInput.value = "";
+      const paymentForm = document.getElementById("paymentForm");
+      if (paymentForm) paymentForm.reset();
+      if (state.selectedCourse) {
+        const title = document.getElementById("selectedCourseTitle");
+        if (title) title.innerText = "Retake: " + state.selectedCourse.title + " — New 400 ETB activation required";
+        showSection("stepPayment");
+      } else {
+        navToCatalog();
+      }
     }
 
     // DRAW THE OFFICIAL EDSA CERTIFICATE FOR IMAGE SAVE, PDF & PRINT
