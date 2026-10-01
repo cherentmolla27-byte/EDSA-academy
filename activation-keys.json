@@ -2,9 +2,13 @@
   {
     "code": "EDSA-0F2F9EB7",
     "scope": "all",
-    "amount": 500,
-    "status": "active",
-    "createdAt": "2026-10-01T09:25:40.625Z"
+    "amount": 400,
+    "status": "used",
+    "createdAt": "2026-10-01T09:25:40.625Z",
+    "usedAt": "2026-10-01T09:25:57.434Z",
+    "usedBy": "Molla Alem",
+    "usedEmail": "mollaalem70@gmail.com",
+    "usedCourse": "pbm"
   },
   {
     "code": "EDSA-02350936",
