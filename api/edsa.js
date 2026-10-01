@@ -163,7 +163,14 @@ async function activateKey(req, res) {
       const key = keys.find(k => k.code === code);
       if (!key) return auth.json(res, 404, { ok: false, error: "Invalid activation key." });
       if (key.status !== "active") return auth.json(res, 409, { ok: false, error: "This activation key has already been used." });
-      if (key.amount !== 400) return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 400 ETB fee." });
+      // Accept numeric/string 400 values and migrate any legacy active 500-ETB key
+      // so keys issued before the price change do not become unusable.
+      const keyAmount = Number(key.amount);
+      if (keyAmount === 500) {
+        key.amount = 400;
+      } else if (keyAmount !== 400) {
+        return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 400 ETB fee." });
+      }
       if (!courseId || (key.scope !== courseId && key.scope !== "all")) return auth.json(res, 409, { ok: false, error: "This 400 ETB key is for a different course." });
       key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
       try {
