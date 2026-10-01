@@ -171,7 +171,33 @@ async function activateKey(req, res) {
       } else if (keyAmount !== 400) {
         return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 400 ETB fee." });
       }
-      if (!courseId || (key.scope !== courseId && key.scope !== "all")) return auth.json(res, 409, { ok: false, error: "This 400 ETB key is for a different course." });
+      if (!courseId || (String(key.scope || "").toLowerCase() !== courseId && String(key.scope || "").toLowerCase() !== "all")) return auth.json(res, 409, { ok: false, error: "This 400 ETB key is for a different course." });
+
+      // First activation owns the course and includes the first exam attempt.
+      // A second key is only valid after a recorded failed attempt; it never
+      // removes or re-locks the student's lessons.
+      const normalizedEmail = auth.normalizeEmail(s.email);
+      let alreadyOwned = false;
+      let lastAttempt = null;
+      try {
+        if (db.dbConfigured()) {
+          const accessRows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(normalizedEmail) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
+          alreadyOwned = Array.isArray(accessRows) && accessRows.length > 0;
+          if (alreadyOwned) {
+            const students = await db.select("students", "select=id&email=eq." + encodeURIComponent(normalizedEmail) + "&limit=1");
+            const studentId = students[0]?.id;
+            if (studentId) {
+              const attempts = await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent(studentId) + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1");
+              lastAttempt = attempts[0] || null;
+            }
+          }
+        }
+      } catch (ownershipError) {
+        console.error("[EDSA activation ownership check]", ownershipError);
+      }
+      if (alreadyOwned && !lastAttempt) return auth.json(res, 409, { ok: false, error: "Your first exam attempt is already included. Complete the lessons and take that exam before buying another attempt." });
+      if (alreadyOwned && lastAttempt && lastAttempt.passed === true) return auth.json(res, 409, { ok: false, error: "You have already passed this course. A new exam attempt is not needed." });
+
       key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
       try {
         await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 400 ETB key");
@@ -254,18 +280,39 @@ async function examAccess(req, res) {
     const courseId = String((req.query && req.query.courseId) || "").trim().toLowerCase();
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
     const email = auth.normalizeEmail(s.email);
+    let lastAttempt = null;
+    try {
+      if (db.dbConfigured()) {
+        const students = await db.select("students", "select=id&email=eq." + encodeURIComponent(email) + "&limit=1");
+        const studentId = students[0]?.id;
+        if (studentId) {
+          const attempts = await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent(studentId) + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1");
+          lastAttempt = attempts[0] || null;
+        }
+      }
+    } catch (attemptError) {
+      console.error("[EDSA exam access attempts]", attemptError);
+    }
     const rows = await db.select("exam_entitlements",
       "select=id,activation_code,status,created_at&email=eq." + encodeURIComponent(email) +
       "&course_id=eq." + encodeURIComponent(courseId) +
       "&status=eq.available&order=created_at.asc&limit=1"
     );
-    return auth.json(res, 200, { ok: true, available: Array.isArray(rows) && rows.length > 0 });
+    const available = Array.isArray(rows) && rows.length > 0;
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    return auth.json(res, 200, {
+      ok: true,
+      available,
+      hasAttempt: !!lastAttempt,
+      passed: !!(lastAttempt && lastAttempt.passed === true),
+      lastScore: lastAttempt ? lastAttempt.score : null,
+      courseId
+    });
   } catch (e) {
     console.error("[EDSA exam access]", e);
     return auth.json(res, 500, { ok: false, error: "Exam access could not be checked." });
   }
 }
-
 async function courseAccess(req, res) {
   if (!method(req, res, ["GET"])) return;
   const s = requireRole(req, "student");
