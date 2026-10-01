@@ -126,7 +126,7 @@
 
         <!-- Telegram Action Button -->
         <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p class="text-xs text-slate-400">For your first exam, pay 400 ETB and send your transfer screenshot to get your activation key. After activation, the 15 lessons stay unlocked for you. A new exam attempt after a fail requires another 400 ETB key:</p>
+          <p id="paymentInstructions" class="text-xs text-slate-400">For your first exam, pay 400 ETB and send your transfer screenshot to get your activation key. After activation, the 15 lessons stay unlocked for you. A new exam attempt after a fail requires another 400 ETB key:</p>
           <a id="telegramBtn" href="https://t.me/Cheru178" target="_blank" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg inline-flex items-center gap-2 transition-colors whitespace-nowrap">
             <i class="fa-brands fa-telegram text-base"></i> Send Receipt on Telegram
           </a>
@@ -1448,6 +1448,8 @@ function generate50Questions(courseKey, courseTitle) {
       if (state.selectedCourse) {
         const title = document.getElementById("selectedCourseTitle");
         if (title) title.innerText = "Retake: " + state.selectedCourse.title + " — New 400 ETB activation required";
+        const instructions = document.getElementById("paymentInstructions");
+        if (instructions) instructions.innerText = "You do not need to repeat the lessons. Your course remains unlocked. Pay 400 ETB and send your receipt to receive a new activation key for this exam attempt.";
         showSection("stepPayment");
       } else {
         navToCatalog();
