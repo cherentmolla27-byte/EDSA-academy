@@ -1,0 +1,70 @@
+name: Fix admin learning flow
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin preview and learning page
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # Admin preview must only intercept course clicks for an authenticated admin.
+          p = Path('admin-preview.js')
+          s = p.read_text()
+          old = '''      window.selectCourse=async function(courseId){
+        const course=COURSES.find(c=>c.id===courseId);
+        if(course){
+          // Admins preview the exact student course/lesson flow without becoming a student,
+          // consuming a key, changing course ownership, or creating exam entitlements.
+          location.href='/learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
+        }
+      };'''
+          new = '''      window.selectCourse=async function(courseId){
+        // Keep normal student behavior completely unchanged. Only an authenticated
+        // admin session gets the isolated preview route.
+        if(await isAdmin()){
+          const course=COURSES.find(c=>c.id===courseId);
+          if(course){
+            location.href='/learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
+          }
+          return;
+        }
+        return originalSelect.apply(this,arguments);
+      };'''
+          if old not in s:
+              raise SystemExit('admin-preview.js target block not found')
+          p.write_text(s.replace(old,new))
+
+          # learning.html must load the admin-only preview bridge. It intentionally
+          # does not make the learning center public: admin-preview.js first checks /api/admin-me.
+          p = Path('learning.html')
+          s = p.read_text()
+          tag = '<script src="/admin-preview.js?v=2"></script>'
+          if tag not in s:
+              marker = '</head>'
+              if marker not in s:
+                  raise SystemExit('learning.html head marker not found')
+              s = s.replace(marker, tag + '\n' + marker, 1)
+              p.write_text(s)
+
+          # Remove this one-shot migration workflow after applying the patch.
+          wf = Path('.github/workflows/fix-admin-learning-flow.yml')
+          wf.unlink(missing_ok=True)
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add admin-preview.js learning.html .github/workflows/fix-admin-learning-flow.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Fix isolated admin learning preview flow"
+          git push
