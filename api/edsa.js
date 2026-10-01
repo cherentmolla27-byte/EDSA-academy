@@ -187,6 +187,15 @@ async function activateKey(req, res) {
               amount: 400,
               activated_at: new Date().toISOString()
             }, "email,course_id");
+            // Every successful activation grants exactly one exam attempt.
+            await db.upsert("exam_entitlements", {
+              email: auth.normalizeEmail(s.email),
+              course_id: courseId,
+              activation_code: code,
+              status: "available",
+              created_at: new Date().toISOString(),
+              used_at: null
+            }, "activation_code");
           }
         } catch (accessWriteError) {
           console.error("[EDSA activation access record]", accessWriteError);
@@ -234,6 +243,26 @@ async function adminGenerateKey(req, res) {
   } catch (e) {
     console.error("[EDSA generate key]", e);
     return auth.json(res, e.status || 500, { ok: false, error: "Activation key could not be generated." });
+  }
+}
+
+async function examAccess(req, res) {
+  if (!method(req, res, ["GET"])) return;
+  const s = requireRole(req, "student");
+  if (!s) return auth.json(res, 401, { ok: false, error: "Student sign-in required." });
+  try {
+    const courseId = String((req.query && req.query.courseId) || "").trim().toLowerCase();
+    if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
+    const email = auth.normalizeEmail(s.email);
+    const rows = await db.select("exam_entitlements",
+      "select=id,activation_code,status,created_at&email=eq." + encodeURIComponent(email) +
+      "&course_id=eq." + encodeURIComponent(courseId) +
+      "&status=eq.available&order=created_at.asc&limit=1"
+    );
+    return auth.json(res, 200, { ok: true, available: Array.isArray(rows) && rows.length > 0 });
+  } catch (e) {
+    console.error("[EDSA exam access]", e);
+    return auth.json(res, 500, { ok: false, error: "Exam access could not be checked." });
   }
 }
 
@@ -378,11 +407,25 @@ async function examAttempt(req, res) {
       });
     }
     if (!hasCourseAccess) return auth.json(res, 403, { ok: false, error: "This course exam requires an active course access. Please activate this course first." });
-    const studentLookup = await db.select("students", "select=id&email=eq." + encodeURIComponent(email) + "&limit=1");
-    const studentId = studentLookup[0]?.id;
-    const previousAttempts = studentId ? await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent(studentId) + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1") : [];
-    const lastAttempt = previousAttempts[0];
-    if (lastAttempt && (!courseKey.usedAt || new Date(courseKey.usedAt).getTime() <= new Date(lastAttempt.created_at).getTime())) return auth.json(res, 403, { ok: false, error: "This exam access has already been used. A new 400 ETB activation is required for another attempt.", requiresNewPayment: true });
+    // Consume exactly one exam entitlement for this submission. Course ownership
+    // remains untouched, so a failed student keeps all 15 lessons unlocked.
+    const entitlementRows = await db.supabaseRequest(
+      "/exam_entitlements?email=eq." + encodeURIComponent(email) +
+      "&course_id=eq." + encodeURIComponent(courseId) +
+      "&status=eq.available&order=created_at.asc&limit=1",
+      {
+        method: "PATCH",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify({ status: "used", used_at: new Date().toISOString() })
+      }
+    );
+    if (!Array.isArray(entitlementRows) || !entitlementRows.length) {
+      return auth.json(res, 403, {
+        ok: false,
+        error: "This exam attempt has already been used. A new 400 ETB activation key is required for another attempt.",
+        requiresNewPayment: true
+      });
+    }
     if (passed && score < 80) return auth.json(res, 400, { ok: false, error: "A passing result requires at least 80%." });
     if (!passed && score >= 80) return auth.json(res, 400, { ok: false, error: "Result status does not match the score." });
     const name = auth.validateName(session.name) || cleanText(body.studentName, 120) || "EDSA Student";
@@ -501,7 +544,7 @@ async function certificateVerify(req, res) {
 const routes = {
   "auth-login": authLogin, "auth-register": authRegister, "auth-me": authMe, "auth-logout": authLogout,
   "admin-login": adminLogin, "admin-me": adminMe, "activate-key": activateKey, "admin-generate-key": adminGenerateKey,
-  "course-access": courseAccess, "student-sync": studentSync, "exam-attempt": examAttempt,
+  "course-access": courseAccess, "exam-access": examAccess, "student-sync": studentSync, "exam-attempt": examAttempt,
   "admin-dashboard": adminDashboard, "register-certificate": certificateRegister, "verify-certificate": certificateVerify
 };
 
