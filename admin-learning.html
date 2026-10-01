@@ -7,20 +7,21 @@
   <style>body{margin:0;background:#061a3b;color:#fff;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}main{text-align:center;padding:30px}p{color:#bfdbfe;font-size:14px}</style>
 </head>
 <body>
-<main><strong>Loading EDSA Admin Preview…</strong><p>Opening the real Learning Center in isolated admin-preview mode.</p></main>
+<main><strong>Loading EDSA Admin Learning Preview…</strong><p>Opening the real Learning Center in isolated admin-preview mode.</p></main>
 <script>
 (async function(){
   try{
     const auth=await fetch('/api/admin-me',{credentials:'include',cache:'no-store'});
     const a=await auth.json().catch(()=>({}));
-    if(!auth.ok||!a.ok||a.role!=='admin'){
+    const role=a&&a.user&&a.user.role ? a.user.role : (a&&a.role ? a.role : '');
+    if(!auth.ok||!a.ok||role!=='admin'){
       location.href='/';
       return;
     }
     const source=await fetch('/learning.html'+location.search,{credentials:'include',cache:'no-store'});
     if(!source.ok) throw new Error('Learning Center unavailable');
     let html=await source.text();
-    const bridge='<script src="/admin-preview.js?v=3">'+'<'+'/script>';
+    const bridge='<script src="/admin-preview.js?v=4">'+'<'+'/script>';
     if(html.includes('</head>')) html=html.replace('</head>',bridge+'\n</head>');
     document.open();
     document.write(html);
