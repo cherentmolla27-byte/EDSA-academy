@@ -8,6 +8,10 @@
       return !!(r.ok&&x.ok&&role==='admin');
     }catch(_){return false;}
   }
+  function adminOpenCourse(courseId){
+    if(!courseId)return;
+    location.href='/admin-learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
+  }
   async function getLessons(courseId){
     const r=await fetch('/api/admin-course-content?courseId='+encodeURIComponent(courseId),{credentials:'include',cache:'no-store'});
     const x=await r.json().catch(()=>({}));
@@ -15,20 +19,22 @@
     return x.lessons||[];
   }
   async function initAdminPreview(){
-    if(window.__EDSA_ADMIN_PREVIEW_INITIALIZED) return;
+    if(window.__EDSA_ADMIN_PREVIEW_INITIALIZED)return;
     window.__EDSA_ADMIN_PREVIEW_INITIALIZED=true;
     if(location.pathname==='/edsa-app.html'){
-      const originalSelect=window.selectCourse;
-      if(typeof originalSelect==='function'&&!window.__EDSA_ADMIN_SELECT_WRAPPED){
-        window.__EDSA_ADMIN_SELECT_WRAPPED=true;
-        window.selectCourse=async function(courseId){
-          if(await isAdmin()){
-            const course=typeof COURSES!=='undefined'&&Array.isArray(COURSES)?COURSES.find(c=>c.id===courseId):null;
-            if(course){location.href='/admin-learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';return;}
-          }
-          return originalSelect.apply(this,arguments);
-        };
-      }
+      // Use click interception as the primary admin route. This does not depend
+      // on wrapping selectCourse before/after the main app script initializes.
+      document.addEventListener('click',async function(e){
+        const button=e.target&&e.target.closest?e.target.closest('button[onclick^="selectCourse("]'):null;
+        if(!button)return;
+        const match=(button.getAttribute('onclick')||'').match(/selectCourse\(['\"]([^'\"]+)['\"]\)/);
+        if(!match)return;
+        if(await isAdmin()){
+          e.preventDefault();e.stopImmediatePropagation();
+          adminOpenCourse(match[1]);
+        }
+      },true);
+
       const originalAuth=window.authenticateAdmin;
       if(typeof originalAuth==='function'&&!window.__EDSA_ADMIN_AUTH_WRAPPED){
         window.__EDSA_ADMIN_AUTH_WRAPPED=true;
@@ -36,20 +42,21 @@
           await originalAuth.apply(this,arguments);
           if(state.adminAuthenticated){
             closeAdminModal();
-            if(typeof stopTimer==='function') stopTimer();
+            if(typeof stopTimer==='function')stopTimer();
             state.selectedCourse=null;
-            if(typeof showSection==='function') showSection('stepCatalog');
+            if(typeof initCatalog==='function')initCatalog();
+            if(typeof showSection==='function')showSection('stepCatalog');
             const status=document.getElementById('userStatus');
-            if(status) status.innerText='Admin Preview Mode — Select a Course';
+            if(status)status.innerText='Admin Preview Mode — Select a Course';
           }
         };
       }
       const q=new URLSearchParams(location.search).get('course');
       if(q&&typeof COURSES!=='undefined'&&Array.isArray(COURSES)&&COURSES.some(c=>c.id===q)){
-        setTimeout(async function(){if(await isAdmin()) location.href='/admin-learning.html?course='+encodeURIComponent(q)+'&lesson=0';},250);
+        setTimeout(async function(){if(await isAdmin())adminOpenCourse(q);},250);
       }
     }
-    if(!(await isAdmin())) return;
+    if(!(await isAdmin()))return;
     if(location.pathname==='/learning.html'||location.pathname==='/admin-learning.html'){
       try{
         state.email='admin';state.name='EDSA Administrator';
@@ -61,16 +68,16 @@
           const requested=Number(new URLSearchParams(location.search).get('lesson'));
           state.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),Math.max(0,lessons.length-1)):0;
           const home=document.getElementById('courseHome'),view=document.getElementById('courseView');
-          if(home) home.style.display='none';if(view) view.style.display='grid';
-          if(typeof renderCourses==='function') renderCourses();
-          if(typeof renderCourse==='function') renderCourse();
+          if(home)home.style.display='none';if(view)view.style.display='grid';
+          if(typeof renderCourses==='function')renderCourses();
+          if(typeof renderCourse==='function')renderCourse();
         }else{
           const welcome=document.getElementById('welcome');
-          if(welcome) welcome.textContent='Admin Preview Mode — all courses, lessons and exams are available for testing. Student access and payments are unchanged.';
-          if(typeof renderCourses==='function') renderCourses();
+          if(welcome)welcome.textContent='Admin Preview Mode — all courses, lessons and exams are available for testing. Student access and payments are unchanged.';
+          if(typeof renderCourses==='function')renderCourses();
         }
       }catch(e){console.error('[EDSA] Admin learning preview:',e);}
     }
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initAdminPreview,{once:true});else initAdminPreview();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAdminPreview,{once:true});else initAdminPreview();
 })();
