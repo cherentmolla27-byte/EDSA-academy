@@ -96,7 +96,7 @@
         </div>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Examination & Professional Certification</h2>
         <p class="text-slate-300 text-sm max-w-xl mx-auto leading-relaxed">
-          Select a professional track below. Score <span class="text-sky-400 font-bold">80% or higher</span> on the exam to earn your verified digital certificate. Fee: <span class="text-sky-400 font-bold">500 ETB per attempt</span>.
+          Select a professional track below. Score <span class="text-sky-400 font-bold">80% or higher</span> on the exam to earn your verified digital certificate. Fee: <span class="text-sky-400 font-bold">400 ETB per attempt</span>.
         </p>
       </div>
 
@@ -114,7 +114,7 @@
 
       <div class="bg-black/80 p-5 rounded-xl border border-slate-800 mb-6 text-sm text-slate-300 space-y-3">
         <p class="font-bold text-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-receipt text-sky-400"></i> Exam attempt: <span class="text-sky-400">500 ETB</span>
+          <i class="fa-solid fa-receipt text-sky-400"></i> Exam attempt: <span class="text-sky-400">400 ETB</span>
         </p>
         <div class="space-y-1 font-mono text-xs">
           <p>• Telebirr: <span class="text-sky-400 font-bold">0996173649</span></p>
@@ -126,7 +126,7 @@
 
         <!-- Telegram Action Button -->
         <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p class="text-xs text-slate-400">For your first exam, pay 500 ETB and send your transfer screenshot to get your activation key. After activation, the 15 lessons stay unlocked for you. A new exam attempt after a fail requires another 500 ETB key:</p>
+          <p class="text-xs text-slate-400">For your first exam, pay 400 ETB and send your transfer screenshot to get your activation key. After activation, the 15 lessons stay unlocked for you. A new exam attempt after a fail requires another 400 ETB key:</p>
           <a id="telegramBtn" href="https://t.me/Cheru178" target="_blank" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg inline-flex items-center gap-2 transition-colors whitespace-nowrap">
             <i class="fa-brands fa-telegram text-base"></i> Send Receipt on Telegram
           </a>
@@ -156,7 +156,7 @@
           <p class="text-xs text-slate-400">Total Questions: 50 | Passing Mark: 80% (40/50 correct)</p>
         </div>
         <span class="text-xs bg-sky-500/10 text-sky-400 font-bold px-3 py-1.5 rounded-full border border-sky-500/30">
-          Exam attempt: 500 ETB
+          Exam attempt: 400 ETB
         </span>
       </div>
 
@@ -232,7 +232,7 @@
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
           <div>
             <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-key text-sky-400"></i> Key Generator (500 ETB)
+              <i class="fa-solid fa-key text-sky-400"></i> Key Generator (400 ETB)
             </h3>
             <p class="text-[11px] text-slate-400">Generate activation keys to send to students on Telegram</p>
           </div>
@@ -967,7 +967,7 @@ function generate50Questions(courseKey, courseTitle) {
               <i class="fa-solid ${course.icon}"></i>
             </div>
             <h3 class="font-bold text-white text-base mb-1 group-hover:text-sky-400 transition-colors">${course.title}</h3>
-            <p class="text-xs text-slate-400 mb-4">15 Lessons + 50 Questions • 80% Pass Grade • 500 ETB per exam attempt</p>
+            <p class="text-xs text-slate-400 mb-4">15 Lessons + 50 Questions • 80% Pass Grade • 400 ETB per exam attempt</p>
           </div>
           <button onclick="selectCourse('${course.id}')" class="w-full bg-sky-500/10 hover:bg-sky-500 text-sky-400 hover:text-white border border-sky-500/30 text-xs font-bold py-2.5 rounded-xl transition-all">
             Study Course / Take Exam
@@ -1068,7 +1068,7 @@ function generate50Questions(courseKey, courseTitle) {
         const accessResult = await accessResponse.json().catch(() => ({}));
         const note = document.querySelector("#stepPayment .text-slate-300.space-y-3 p.font-bold");
         if (accessResponse.ok && accessResult.ok && accessResult.unlocked) {
-          if (note) note.innerHTML = '<i class="fa-solid fa-rotate-right text-sky-400"></i> Exam retake fee: <span class="text-sky-400">500 ETB</span>';
+          if (note) note.innerHTML = '<i class="fa-solid fa-rotate-right text-sky-400"></i> Exam retake fee: <span class="text-sky-400">400 ETB</span>';
           const title = document.getElementById("selectedCourseTitle");
           if (title) title.innerText = `Retake: ${state.selectedCourse.title} — Your course lessons remain unlocked`;
         }
@@ -1100,58 +1100,85 @@ function generate50Questions(courseKey, courseTitle) {
         window.location.href = "/?login=1&return=" + encodeURIComponent(window.location.pathname + window.location.search);
         return;
       }
-      const inputKey = document.getElementById("accessKey").value.trim().toUpperCase();
+      const courseId = state.selectedCourse ? state.selectedCourse.id : "";
       const name = document.getElementById("studentName").value.trim();
+      let inputKey = document.getElementById("accessKey").value.trim().toUpperCase();
 
-      if (!inputKey || !name) {
-        alert("Please enter both your full name and valid payment key.");
+      if (!name) {
+        alert("Please enter your full name.");
+        return;
+      }
+      if (!courseId) {
+        alert("Please select a course first.");
         return;
       }
 
-      let activation;
+      // A student who already paid and activated this course must NOT pay/activate again
+      // just to enter the exam after completing the 15 lessons.
+      let alreadyUnlocked = false;
       try {
-        const response = await EDSA_API_FETCH("/api/activate-key", {
-          method: "POST",
+        const accessResponse = await EDSA_API_FETCH("/api/course-access?courseId=" + encodeURIComponent(courseId), {
           credentials: "include",
-          headers: { ...EDSA_AUTH_HEADERS(), "Content-Type": "application/json" },
-          body: JSON.stringify({
-            code: inputKey,
-            courseId: state.selectedCourse ? state.selectedCourse.id : ""
-          })
+          headers: EDSA_AUTH_HEADERS(),
+          cache: "no-store"
         });
-        activation = await response.json().catch(() => ({}));
-        if (!response.ok || !activation.ok) {
-          alert(activation.error || "This activation key is invalid or has already been used.");
+        const accessResult = await accessResponse.json().catch(() => ({}));
+        alreadyUnlocked = !!(accessResponse.ok && accessResult.ok && accessResult.unlocked);
+      } catch (error) {
+        console.warn("[EDSA] Course access check failed:", error);
+      }
+
+      if (!alreadyUnlocked) {
+        if (!inputKey) {
+          alert("Please enter your valid 400 ETB activation key.");
           return;
         }
-      } catch (error) {
-        console.error("[EDSA] Activation validation failed:", error);
-        alert("We could not verify your payment key right now. Please try again.");
-        return;
-      }
+        try {
+          const response = await EDSA_API_FETCH("/api/activate-key", {
+            method: "POST",
+            credentials: "include",
+            headers: { ...EDSA_AUTH_HEADERS(), "Content-Type": "application/json" },
+            body: JSON.stringify({ code: inputKey, courseId })
+          });
+          const activation = await response.json().catch(() => ({}));
+          if (!response.ok || !activation.ok) {
+            alert(activation.error || "This activation key is invalid or has already been used.");
+            return;
+          }
+        } catch (error) {
+          console.error("[EDSA] Activation validation failed:", error);
+          alert("We could not verify your payment key right now. Please try again.");
+          return;
+        }
 
-      const keys = getStoredKeys();
-      const keyObj = keys.find(k => k.code === inputKey);
-      if (keyObj) {
-        keyObj.used = true;
-        keyObj.status = "used";
-        keyObj.usedBy = name;
-        keyObj.usedAt = new Date().toISOString();
-        keyObj.usedCourse = state.selectedCourse ? state.selectedCourse.id : "";
-        keyObj.usedEmail = state.studentEmail || "";
-        saveStoredKeys(keys);
+        const keys = getStoredKeys();
+        const keyObj = keys.find(k => k.code === inputKey);
+        if (keyObj) {
+          keyObj.used = true;
+          keyObj.status = "used";
+          keyObj.usedBy = name;
+          keyObj.usedAt = new Date().toISOString();
+          keyObj.usedCourse = courseId;
+          keyObj.usedEmail = state.studentEmail || "";
+          saveStoredKeys(keys);
+        }
+        saveLocalPaymentRecord({
+          id: "PAY-" + Date.now(),
+          date: new Date().toISOString(),
+          name: name,
+          email: state.studentEmail || "",
+          course: state.selectedCourse ? state.selectedCourse.title : "",
+          courseId: courseId,
+          amount: 400,
+          status: "Activated",
+          activationKey: inputKey
+        });
+      } else if (!inputKey) {
+        // Keep the original activation key when available for the exam record.
+        try {
+          inputKey = localStorage.getItem("EDSA_LAST_ACTIVATION_KEY_" + String(state.studentEmail || "").toLowerCase() + "_" + courseId) || "";
+        } catch (_) {}
       }
-      saveLocalPaymentRecord({
-        id: "PAY-" + Date.now(),
-        date: new Date().toISOString(),
-        name: name,
-        email: state.studentEmail || "",
-        course: state.selectedCourse ? state.selectedCourse.title : "",
-        courseId: state.selectedCourse ? state.selectedCourse.id : "",
-        amount: 500,
-        status: "Activated",
-        activationKey: inputKey
-      });
 
       state.studentName = name;
       state.accessKey = inputKey;
@@ -1336,10 +1363,10 @@ function generate50Questions(courseKey, courseTitle) {
         icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500"></i>';
         title.innerText = "Examination Failed";
         title.className = "text-3xl font-bold mb-2 text-rose-500";
-        msg.innerText = `You scored ${score}%, which is below the 80% passing mark. To attempt this exam again, please submit a new payment of 500 ETB.`;
+        msg.innerText = `You scored ${score}%, which is below the 80% passing mark. To attempt this exam again, please submit a new payment of 400 ETB.`;
         actions.innerHTML = `
           <button onclick="resetAndPayAgain()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 py-3.5 rounded-xl transition-colors shadow-lg">
-            Pay Again & Retake Exam (500 ETB)
+            Pay Again & Retake Exam (400 ETB)
           </button>
         `;
       }
@@ -2002,7 +2029,7 @@ function generate50Questions(courseKey, courseTitle) {
       courseBox.innerHTML=courseRows.map(x=>'<div class="flex justify-between gap-2 text-[10px]"><span class="text-slate-300 truncate">'+escapeHtml(x.c.title)+'</span><span class="text-slate-500 whitespace-nowrap">'+x.a+' attempts • '+x.p+' passed'+(x.best!=null?' • best '+x.best+'%':'')+'</span></div>').join("");
 
       const events=[];
-      payments.forEach(r=>events.push({date:r.date||"",html:'<strong class="text-slate-200">'+escapeHtml(r.name||"Student")+'</strong> activated <span class="text-sky-400">'+escapeHtml(r.course||"Course")+'</span> • 500 ETB'}));
+      payments.forEach(r=>events.push({date:r.date||"",html:'<strong class="text-slate-200">'+escapeHtml(r.name||"Student")+'</strong> activated <span class="text-sky-400">'+escapeHtml(r.course||"Course")+'</span> • 400 ETB'}));
       Object.values(journey).forEach(st=>Object.values(st.courses||{}).forEach(j=>{if(j.lastAttempt)events.push({date:j.lastAttempt,html:'<strong class="text-slate-200">'+escapeHtml(j.studentName||"Student")+'</strong> • '+escapeHtml(j.courseTitle||"Course")+' • '+(j.status==="passed"?'Passed':'Attempt recorded')+(j.lastScore!=null?' • '+j.lastScore+'%':'')});}));
       events.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
       activityBox.innerHTML=events.slice(0,10).map(e=>'<div class="border-b border-slate-800 pb-2"><div class="text-[10px]">'+e.html+'</div><div class="text-[9px] text-slate-600 mt-1">'+escapeHtml(formatRegistryDate(e.date))+'</div></div>').join("")||'<div class="text-[10px] text-slate-500">No activity recorded yet.</div>';
@@ -2059,7 +2086,7 @@ function generate50Questions(courseKey, courseTitle) {
         (result.keys || []).reverse().forEach(k => keys.unshift({
           code: k.code,
           scope: k.scope,
-          amount: 500,
+          amount: 400,
           status: "active",
           used: false,
           usedBy: null,
@@ -2067,7 +2094,7 @@ function generate50Questions(courseKey, courseTitle) {
         }));
         saveStoredKeys(keys);
         renderKeysTable();
-        alert((result.keys || []).length + " secure 500 ETB activation key(s) generated.");
+        alert((result.keys || []).length + " secure 400 ETB activation key(s) generated.");
       } catch (error) {
         console.error("[EDSA] Key generation failed:", error);
         alert("Key generation could not be completed. Please try again.");
