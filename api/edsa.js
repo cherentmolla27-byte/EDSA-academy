@@ -230,7 +230,7 @@ async function courseAccess(req, res) {
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
     const email = auth.normalizeEmail(s.email);
     const { data: keys } = await readJsonFile("activation-keys.json", []);
-    const unlocked = keys.some(k => k.status === "used" && k.amount === 400 && auth.normalizeEmail(k.usedEmail) === email && k.usedCourse === courseId && (k.scope === courseId || k.scope === "all"));
+    const unlocked = keys.some(k => k.status === "used" && Number(k.amount) === 400 && auth.normalizeEmail(k.usedEmail) === email && k.usedCourse === courseId && (k.scope === courseId || k.scope === "all"));
     if (!unlocked) return auth.json(res, 200, { ok: true, unlocked: false, courseId });
     if (String((req.query && req.query.include) || "") !== "lessons") return auth.json(res, 200, { ok: true, unlocked: true, courseId });
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
@@ -326,7 +326,7 @@ async function examAttempt(req, res) {
     if (!courseId || score == null || score < 0 || score > 100) return auth.json(res, 400, { ok: false, error: "Valid course and score are required." });
     const email = auth.normalizeEmail(session.email);
     const { data: keys } = await readJsonFile("activation-keys.json", []);
-    const courseKey = keys.find(k => k.status === "used" && k.amount === 400 && auth.normalizeEmail(k.usedEmail) === email && k.usedCourse === courseId && (k.scope === courseId || k.scope === "all"));
+    const courseKey = keys.find(k => k.status === "used" && Number(k.amount) === 400 && auth.normalizeEmail(k.usedEmail) === email && k.usedCourse === courseId && (k.scope === courseId || k.scope === "all"));
     if (!courseKey) return auth.json(res, 403, { ok: false, error: "This course exam requires an active 400 ETB course access. Please purchase or activate this course first." });
     const studentLookup = await db.select("students", "select=id&email=eq." + encodeURIComponent(email) + "&limit=1");
     const studentId = studentLookup[0]?.id;
