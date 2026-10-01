@@ -1207,6 +1207,20 @@ function generate50Questions(courseKey, courseTitle) {
           keyObj.usedEmail = state.studentEmail || "";
           saveStoredKeys(keys);
         }
+        // First activation is a course purchase, so send the student to the
+        // Learning Center instead of dropping them directly into the exam.
+        // Retake activations happen only when the course is already owned and
+        // therefore continue below into the exam.
+        if (!alreadyUnlocked) {
+          try {
+            localStorage.setItem("EDSA_LAST_ACTIVATED_COURSE", courseId);
+            localStorage.setItem("EDSA_LAST_ACTIVATED_EMAIL", String(state.studentEmail || "").toLowerCase());
+            localStorage.setItem("EDSA_COURSE_UNLOCKED_" + String(state.studentEmail || "").toLowerCase() + "_" + courseId, "1");
+          } catch (_) {}
+          window.location.href = "/learning.html?course=" + encodeURIComponent(courseId) + "&lesson=0";
+          return;
+        }
+
         saveLocalPaymentRecord({
           id: "PAY-" + Date.now(),
           date: new Date().toISOString(),
