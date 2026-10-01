@@ -43,8 +43,6 @@
     var rf=document.getElementById("edsaRegisterForm");if(rf)rf.addEventListener("submit",function(e){e.preventDefault();if(typeof window.EDSA_REGISTER==="function")window.EDSA_REGISTER();},true);
     try{if(new URLSearchParams(location.search).get("login")==="1")showLogin();}catch(_){}
     if(location.pathname==="/edsa-app.html"){
-      // Keep the original exam launcher for students who already own the course.
-      // Only send unactivated students through the key -> Learning Center flow.
       var originalVerifyAndStartExam=window.verifyAndStartExam;
       window.verifyAndStartExam=async function(e){
         try{
@@ -57,9 +55,7 @@
               return originalVerifyAndStartExam(e);
             }
           }
-        }catch(err){
-          console.warn("[EDSA] Existing course access check failed:",err);
-        }
+        }catch(err){console.warn("[EDSA] Existing course access check failed:",err);}
         return activateAndOpenLearning(e);
       };
     }
@@ -67,5 +63,6 @@
       var lfScript=document.createElement("script");lfScript.src="/learning-fallback.js?v=15";lfScript.async=false;document.head.appendChild(lfScript);
     }
   });
+  var ap=document.createElement("script");ap.src="/admin-preview.js?v=1";ap.async=false;document.head.appendChild(ap);
   var s=document.createElement("script");s.src="/student-db-sync-original.js?v=2";s.async=false;document.head.appendChild(s);
 })();
