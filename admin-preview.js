@@ -1,52 +1,44 @@
 (function(){
   "use strict";
+
   async function isAdmin(){
-    try{const r=await fetch('/api/admin-me',{credentials:'include',cache:'no-store'});const x=await r.json().catch(()=>({}));return !!(r.ok&&x.ok&&x.role==='admin');}catch(_){return false;}
+    try{
+      const r=await fetch('/api/admin-me',{credentials:'include',cache:'no-store'});
+      const x=await r.json().catch(()=>({}));
+      return !!(r.ok&&x.ok&&x.role==='admin');
+    }catch(_){return false;}
   }
+
   async function getLessons(courseId){
     const r=await fetch('/api/admin-course-content?courseId='+encodeURIComponent(courseId),{credentials:'include',cache:'no-store'});
     const x=await r.json().catch(()=>({}));
     if(!r.ok||!x.ok) throw new Error(x.error||'Admin course preview unavailable');
     return x.lessons||[];
   }
+
   async function initAdminPreview(){
     if(window.__EDSA_ADMIN_PREVIEW_INITIALIZED) return;
     window.__EDSA_ADMIN_PREVIEW_INITIALIZED=true;
-    if(!(await isAdmin())) return;
 
-    if(location.pathname==='/learning.html'||location.pathname==='/admin-learning.html'){
-      try{
-        state.email='admin'; state.name='EDSA Administrator';
-        const q=new URLSearchParams(location.search).get('course');
-        if(q&&COURSES[q]){
-          const lessons=await getLessons(q);
-          LESSON_CACHE[q]=lessons; state.unlocked[q]=true; state.courseId=q;
-          const requested=Number(new URLSearchParams(location.search).get('lesson'));
-          state.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),Math.max(0,lessons.length-1)):0;
-          const home=document.getElementById('courseHome'), view=document.getElementById('courseView');
-          if(home) home.style.display='none';
-          if(view) view.style.display='grid';
-          if(typeof renderCourses==='function') renderCourses();
-          if(typeof renderCourse==='function') renderCourse();
-        }else{
-          const welcome=document.getElementById('welcome');
-          if(welcome) welcome.textContent='Admin Preview Mode — all courses are available for testing. Student access and payments are unchanged.';
-          if(typeof renderCourses==='function') renderCourses();
-        }
-      }catch(e){console.error('[EDSA] Admin learning preview:',e);}
-    }
-
+    /*
+      IMPORTANT: install the course wrapper before waiting for the admin API.
+      Previously the wrapper could miss the first click, and the learning
+      preview also treated COURSES like an object (COURSES[q]) even though it
+      is an array. That sent the admin back to the exam/certificate portal.
+    */
     if(location.pathname==='/edsa-app.html'){
       const originalSelect=window.selectCourse;
       if(typeof originalSelect==='function' && !window.__EDSA_ADMIN_SELECT_WRAPPED){
         window.__EDSA_ADMIN_SELECT_WRAPPED=true;
         window.selectCourse=async function(courseId){
           if(await isAdmin()){
-            const course=typeof COURSES!=='undefined'&&COURSES.find(c=>c.id===courseId);
+            const course=typeof COURSES!=='undefined'&&Array.isArray(COURSES)
+              ? COURSES.find(c=>c.id===courseId)
+              : null;
             if(course){
               location.href='/admin-learning.html?course='+encodeURIComponent(courseId)+'&lesson=0';
+              return;
             }
-            return;
           }
           return originalSelect.apply(this,arguments);
         };
@@ -69,10 +61,47 @@
       }
 
       const q=new URLSearchParams(location.search).get('course');
-      if(q&&typeof COURSES!=='undefined'&&COURSES.some(c=>c.id===q)){
+      if(q&&typeof COURSES!=='undefined'&&Array.isArray(COURSES)&&COURSES.some(c=>c.id===q)){
         setTimeout(async function(){
           if(await isAdmin()) location.href='/admin-learning.html?course='+encodeURIComponent(q)+'&lesson=0';
         },250);
+      }
+    }
+
+    if(!(await isAdmin())) return;
+
+    if(location.pathname==='/learning.html'||location.pathname==='/admin-learning.html'){
+      try{
+        state.email='admin';
+        state.name='EDSA Administrator';
+        const q=new URLSearchParams(location.search).get('course');
+        const course=typeof COURSES!=='undefined'&&Array.isArray(COURSES)
+          ? COURSES.find(c=>c.id===q)
+          : null;
+
+        if(q&&course){
+          const lessons=await getLessons(q);
+          LESSON_CACHE[q]=lessons;
+          state.unlocked[q]=true;
+          state.courseId=q;
+          const requested=Number(new URLSearchParams(location.search).get('lesson'));
+          state.lesson=Number.isFinite(requested)
+            ? Math.min(Math.max(0,requested),Math.max(0,lessons.length-1))
+            : 0;
+
+          const home=document.getElementById('courseHome');
+          const view=document.getElementById('courseView');
+          if(home) home.style.display='none';
+          if(view) view.style.display='grid';
+          if(typeof renderCourses==='function') renderCourses();
+          if(typeof renderCourse==='function') renderCourse();
+        }else{
+          const welcome=document.getElementById('welcome');
+          if(welcome) welcome.textContent='Admin Preview Mode — all courses, lessons and exams are available for testing. Student access and payments are unchanged.';
+          if(typeof renderCourses==='function') renderCourses();
+        }
+      }catch(e){
+        console.error('[EDSA] Admin learning preview:',e);
       }
     }
   }
