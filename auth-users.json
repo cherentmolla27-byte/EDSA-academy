@@ -22,5 +22,11 @@
     "email": "yabinah0717@gmail.com",
     "passwordHash": "scrypt$37586f61f852be15ef2e2a9adef56e1f$fa8a03bcdf6fdc299c2dfdc650fc03f18fccc0adc2523bcab2c821c7a7444784fe4f214ea1f8cd427ba1fcfb08e826b611a3ca28aa6e9b7b0e04200074be43a8",
     "createdAt": "2026-09-30T07:06:43.444Z"
+  },
+  "mesfinamanuel73@gmail.com": {
+    "name": "Aman",
+    "email": "mesfinamanuel73@gmail.com",
+    "passwordHash": "scrypt$ef916bb6cc9d37c9416141e8852f845e$b4494d2d233a794f00fd99b6d2c073d838facd3b8615aa36e65f54f5e0af6f6142d575058ed7a1878caa3d98a0f7b0d7858bb9fdaa49be0bb423443c9d3ad5c6",
+    "createdAt": "2026-10-01T07:34:15.152Z"
   }
 }
