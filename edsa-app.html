@@ -1168,6 +1168,14 @@ function generate50Questions(courseKey, courseTitle) {
           return;
         }
 
+        // Persist the successful activation key for this student/course so the
+        // exam can be entered without asking the student to pay or re-enter it.
+        try {
+          localStorage.setItem(
+            "EDSA_LAST_ACTIVATION_KEY_" + String(state.studentEmail || "").toLowerCase() + "_" + courseId,
+            inputKey
+          );
+        } catch (_) {}
         const keys = getStoredKeys();
         const keyObj = keys.find(k => k.code === inputKey);
         if (keyObj) {
