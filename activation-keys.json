@@ -1,5 +1,12 @@
 [
   {
+    "code": "EDSA-4251C06C",
+    "scope": "dme",
+    "amount": 500,
+    "status": "active",
+    "createdAt": "2026-10-01T09:09:04.148Z"
+  },
+  {
     "code": "EDSA-AFCD67AA",
     "scope": "all",
     "amount": 500,
