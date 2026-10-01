@@ -518,19 +518,22 @@ function EDSA_START(){
   EDSA_SHOW_LOGIN();
 }
 async function EDSA_OPEN_COURSE(id,profile){
-  const returnUrl="/edsa-app.html?course="+encodeURIComponent(String(id));
+  // Course cards must enter the Learning Center first. The Exam Portal is
+  // only opened from the Learning Center after the student completes all 15
+  // lessons, or explicitly chooses an available exam/retake.
+  const learningUrl="/learning.html?course="+encodeURIComponent(String(id));
   try{
     const response=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",cache:"no-store"});
     const result=await response.json().catch(()=>({}));
     if(response.ok&&result.ok&&result.authenticated&&result.user&&result.user.role==="student"){
       EDSA_SAVE_ACCOUNT(result.user);
-      window.location.href=returnUrl;
+      window.location.href=learningUrl;
       return;
     }
   }catch(error){
     console.error("EDSA course authentication check failed",error);
   }
-  window.location.href="/?login=1&return="+encodeURIComponent(returnUrl);
+  window.location.href="/?login=1&return="+encodeURIComponent(learningUrl);
 }
 function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
 function EDSA_OPEN_LEARNING(id){
