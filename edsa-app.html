@@ -1141,7 +1141,13 @@ function generate50Questions(courseKey, courseTitle) {
 
       if (!alreadyUnlocked) {
         if (!inputKey) {
-          alert("Please enter your valid 400 ETB activation key.");
+          // Recover the key saved at the moment this course was activated.
+          try {
+            inputKey = localStorage.getItem("EDSA_LAST_ACTIVATION_KEY_" + String(state.studentEmail || "").toLowerCase() + "_" + courseId) || "";
+          } catch (_) {}
+        }
+        if (!inputKey) {
+          alert("Your course is not activated for this account. Please activate it first.");
           return;
         }
         try {
