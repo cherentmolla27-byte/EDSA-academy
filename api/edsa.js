@@ -483,7 +483,15 @@ async function examAttempt(req, res) {
       method: "POST",
       body: JSON.stringify({ student_id: student.id, course_id: courseId, course_title: courseTitle, score, passed, started_at: startedAt, completed_at: completedAt })
     });
-    return auth.json(res, 200, { ok: true, attempt: Array.isArray(rows) ? rows[0] || null : rows, student: { name, email } });
+    // Consume exactly the entitlement used for this attempt. Course ownership
+    // remains untouched, so failed students keep all 15 lessons unlocked.
+    if (entitlement && entitlement.id) {
+      await db.supabaseRequest("/exam_entitlements?id=eq." + encodeURIComponent(entitlement.id), {
+        method: "PATCH",
+        body: JSON.stringify({ status: "used", used_at: completedAt })
+      });
+    }
+    return auth.json(res, 200, { ok: true, attempt: Array.isArray(rows) ? rows[0] || null : rows, student: { name, email }, passed });
   } catch (err) {
     console.error("[EDSA exam attempt]", err);
     return auth.json(res, err.status || 500, { ok: false, error: "Exam attempt could not be saved." });
