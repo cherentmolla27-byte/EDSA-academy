@@ -40,5 +40,11 @@
     "email": "kidusanmolla6@gmail.com",
     "passwordHash": "scrypt$87c61217274306590aa2ce266bbd45a7$e1fb9569a5bd2fe025f468d71dae133851bc324a5d60fa847dbe6459c3ea7df949b6b6bc1704446efa9a765b8b787aebb434be1d744bb5cdc309798bc5a8d7c3",
     "createdAt": "2026-10-01T18:50:38.864Z"
+  },
+  "bereketniguse418@gmail.com": {
+    "name": "Bereket Niguse",
+    "email": "bereketniguse418@gmail.com",
+    "passwordHash": "scrypt$3629912166c7d37e3b832cfada8232cb$1164d23a3cf1f5efbaf92c7c53bb72750a3e5280b96dc8af225d2a21aec3b7f14fc3aa06e1d6516e55eb3b4326d8d2efd2ad25fd3acaae5aa9fe01de31b3fe02",
+    "createdAt": "2026-10-02T19:00:07.958Z"
   }
 }
