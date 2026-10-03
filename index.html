@@ -73,7 +73,10 @@
         <p class="text-[10px] text-sky-400 tracking-wider uppercase font-semibold">Certification Portal</p>
       </div>
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button onclick="openLearningInline('')" class="text-xs bg-sky-600 hover:bg-sky-500 px-3 py-1.5 rounded-full text-white font-semibold transition-colors">
+        <i class="fa-solid fa-book-open mr-1"></i> Learning Center
+      </button>
       <button onclick="openAdminModal()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300 font-medium transition-colors">
         <i class="fa-solid fa-lock text-sky-400 mr-1"></i> Admin Panel
       </button>
@@ -94,10 +97,18 @@
         <div class="inline-block p-3 rounded-2xl bg-sky-500/10 border border-sky-500/20 mb-3 float-anim">
           <i class="fa-solid fa-award text-sky-400 text-3xl"></i>
         </div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Examination & Professional Certification</h2>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Learn • Practice • Get Certified</h2>
         <p class="text-slate-300 text-sm max-w-xl mx-auto leading-relaxed">
-          Select a professional track below. Score <span class="text-sky-400 font-bold">80% or higher</span> on the exam to earn your verified digital certificate. Fee: <span class="text-sky-400 font-bold">400 ETB per attempt</span>.
+          Welcome to <span class="text-sky-400 font-bold">EDSA Academy</span>. Learn through 15-lesson professional courses, take the exam, and earn your verified digital certificate. Exam fee: <span class="text-sky-400 font-bold">400 ETB per attempt</span>.
         </p>
+        <div class="flex flex-wrap justify-center gap-3 mt-5">
+          <button onclick="openLearningInline('')" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-5 py-2.5 rounded-xl transition-colors">
+            <i class="fa-solid fa-graduation-cap mr-2"></i>Explore Courses & Lessons
+          </button>
+          <button onclick="document.getElementById('courseList')?.scrollIntoView({behavior:'smooth'})" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-5 py-2.5 rounded-xl transition-colors">
+            <i class="fa-solid fa-pen-to-square mr-2"></i>View Exams
+          </button>
+        </div>
       </div>
 
       <!-- Course Cards -->
