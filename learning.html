@@ -268,7 +268,7 @@ function nextLesson(){
   renderCourse(); renderCourses();
   if(state.done[state.courseId].completed.length===total){
     // The intended course journey is automatic: finish lesson 15 -> open the exam.
-    setTimeout(()=>{ location.href="/edsa-app.html?course="+encodeURIComponent(state.courseId); },250);
+    setTimeout(()=>{ location.href="/edsa-app.html?course="+encodeURIComponent(state.courseId)+"&exam=1"; },250);
   }
 }
 function toggleComplete(){
