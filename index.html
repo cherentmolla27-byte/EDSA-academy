@@ -2981,7 +2981,7 @@ function sendPaymentReceipt(){
   const course=state.selectedCourse;
   if(!file){ if(status) status.textContent="Choose your payment screenshot first."; return; }
   if(!course){ if(status) status.textContent="Choose a course first."; return; }
-  if(!/^image\\/(png|jpe?g|webp)$/i.test(file.type)){ if(status) status.textContent="Please choose a PNG, JPG or WEBP screenshot."; return; }
+  if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)){ if(status) status.textContent="Please choose a PNG, JPG or WEBP screenshot."; return; }
   if(file.size>8*1024*1024){ if(status) status.textContent="Please choose a screenshot under 8 MB."; return; }
 
   const message = [
