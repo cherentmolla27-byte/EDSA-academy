@@ -6,331 +6,132 @@
 <title>EDSA Learning Center</title>
 <meta name="description" content="EDSA student learning center">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f9ff;color:#0b2145;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.top{background:#061a3b;color:#fff;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}.brand{font-weight:950;letter-spacing:.04em}.brand small{display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em;margin-top:3px}.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:850;cursor:pointer}.blue{background:#1677ff;color:#fff}.light{background:#fff;color:#0b2145;border:1px solid #dbeafe}.wrap{max-width:1150px;margin:auto;padding:25px 5% 60px}.hero{background:linear-gradient(120deg,#061a3b,#0b3f83 60%,#1677ff);color:#fff;border-radius:22px;padding:26px;margin-bottom:16px}.hero .tag{font-size:9px;letter-spacing:.16em;color:#bfdbfe;font-weight:900}.hero h1{font-size:32px;margin:8px 0}.hero p{margin:0;color:#dbeafe;font-size:13px;line-height:1.6}.grid{display:grid;grid-template-columns:1fr;gap:14px}.panel{background:#fff;border:1px solid #dbeafe;border-radius:18px;padding:19px;box-shadow:0 10px 28px rgba(15,66,120,.07)}.courses{display:grid;gap:8px}.course{padding:13px;border:1px solid #e2e8f0;border-radius:12px;cursor:pointer;background:#f8fbff}.course.active{border-color:#1677ff;background:#eff6ff}.course strong{display:block;font-size:12px}.course span{display:block;font-size:9px;color:#64748b;margin-top:3px}.course b{display:block;font-size:9px;color:#1677ff;margin-top:7px}.lesson-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.lesson-head h2{margin:0;font-size:22px}.lesson-head p{margin:5px 0 0;color:#64748b;font-size:11px;line-height:1.5}.bar{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:14px 0 5px}.bar i{display:block;height:100%;width:0;background:#1677ff}.progress-text{font-size:9px;color:#64748b;font-weight:800}.lessons{display:grid;gap:8px;margin-top:18px}.lesson{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer}.lesson.active{border-color:#1677ff;background:#eff6ff}.lesson.done{border-color:#bbf7d0;background:#f0fdf4}.num{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#eff6ff;color:#1677ff;font-weight:900;font-size:10px;flex:none}.done .num{background:#dcfce7;color:#16a34a}.lesson strong{font-size:11px;display:block}.lesson span{font-size:9px;color:#64748b}.check{margin-left:auto;color:#16a34a;font-weight:900}.viewer{margin-top:16px;background:#061a3b;color:#fff;border-radius:17px;padding:24px}.viewer h3{margin:0 0 12px;font-size:25px}.viewer .lesson-copy{color:#dbeafe;font-size:13px;line-height:1.85}.viewer .lesson-copy h4{color:#fff;font-size:16px;margin:22px 0 8px}.viewer .lesson-copy p{margin:0 0 12px}.viewer .lesson-copy ul{margin:8px 0 16px;padding-left:22px}.viewer .lesson-copy li{margin:7px 0}.viewer .example{background:#0b3f83;border:1px solid #3b82f6;border-radius:12px;padding:15px;margin:16px 0}.viewer .example strong{display:block;color:#bfdbfe;margin-bottom:6px}.video{margin-top:20px;background:#020617;border:1px solid #315b91;border-radius:12px;padding:18px;text-align:center}.video b{display:block;color:#60a5fa;font-size:15px}.video span{display:block;color:#94a3b8;font-size:10px;margin-top:5px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.empty{text-align:center;padding:35px;color:#64748b;font-size:12px;background:#f8fbff;border-radius:14px}@media(min-width:800px){.grid{grid-template-columns:300px 1fr}.courses{max-height:70vh;overflow:auto}.wrap{padding-top:30px}}
-</style>
-</head>
-<body>
-<header class="top"><div class="brand">EDSA ACADEMY<small>LEARNING CENTER</small></div><div><button class="btn light" onclick="location.href='/'">Dashboard</button> <button class="btn blue" onclick="location.href='/edsa-app.html'">Exam Portal</button></div></header>
+*{box-sizing:border-box}body{margin:0;background:#f5f8fc;color:#0b2145;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.top{position:sticky;top:0;z-index:20;background:#061a3b;color:#fff;padding:13px 5%;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 4px 20px rgba(3,18,45,.15)}.brand{font-weight:950;font-size:16px;letter-spacing:.04em}.brand span{color:#60a5fa}.brand small{display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em;margin-top:3px}.top-actions{display:flex;align-items:center;gap:8px}.student-chip{font-size:10px;font-weight:800;color:#bfdbfe;background:#0b315f;padding:8px 10px;border-radius:999px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:900;cursor:pointer}.primary{background:#1677ff;color:#fff}.ghost{background:#fff;color:#0b2145}.wrap{max-width:1180px;margin:auto;padding:26px 5% 70px}.welcome{background:linear-gradient(125deg,#061a3b,#0b3f83 58%,#1677ff);color:#fff;border-radius:24px;padding:30px;display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px;box-shadow:0 18px 40px rgba(11,63,131,.18)}.eyebrow{font-size:9px;letter-spacing:.17em;font-weight:950;color:#bfdbfe}.eyebrow.dark{color:#1677ff}.welcome h1{font-size:34px;line-height:1.08;margin:8px 0 10px;letter-spacing:-.03em}.welcome h1 span{color:#60a5fa}.welcome p{margin:0;color:#dbeafe;font-size:13px;line-height:1.6;max-width:650px}.welcome-stat{min-width:130px;height:130px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);border-radius:22px;display:grid;place-items:center;align-content:center}.welcome-stat strong{font-size:42px;line-height:1}.welcome-stat span{font-size:10px;color:#bfdbfe;font-weight:800;margin-top:7px}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:15px}.section-heading h2{font-size:22px;margin:5px 0 0}.small-note{font-size:10px;color:#64748b;font-weight:800}.course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.course-card{position:relative;overflow:hidden;background:#fff;border:1px solid #dbe6f3;border-radius:18px;padding:20px;min-height:190px;cursor:pointer;transition:.18s;box-shadow:0 8px 24px rgba(15,66,120,.06)}.course-card:hover{transform:translateY(-3px);border-color:#93c5fd;box-shadow:0 16px 32px rgba(15,66,120,.11)}.course-top{display:flex;justify-content:space-between;align-items:center}.course-icon{width:45px;height:45px;border-radius:13px;background:#eff6ff;color:#1677ff;display:grid;place-items:center;font-size:22px}.status{font-size:9px;font-weight:950;padding:6px 8px;border-radius:999px;background:#f1f5f9;color:#64748b}.status.unlocked{background:#dcfce7;color:#15803d}.course-card h3{font-size:15px;margin:17px 0 7px}.course-card p{font-size:10px;line-height:1.55;color:#64748b;margin:0}.course-meta{display:flex;justify-content:space-between;margin-top:16px;font-size:9px;font-weight:900;color:#1677ff}.portal{display:grid;grid-template-columns:315px 1fr;gap:16px}.lesson-sidebar,.lesson-main{background:#fff;border:1px solid #dbe6f3;border-radius:20px;box-shadow:0 8px 24px rgba(15,66,120,.06)}.lesson-sidebar{padding:16px}.back-link{border:0;background:none;color:#1677ff;font-weight:900;font-size:11px;cursor:pointer;padding:6px 0 16px}.side-title{font-size:17px;font-weight:950;line-height:1.2;margin:2px 0 5px}.side-desc{font-size:9px;color:#64748b;line-height:1.5}.progress-card{margin:17px 0 13px;padding:13px;background:#f8fbff;border:1px solid #e2e8f0;border-radius:13px}.progress-row{display:flex;justify-content:space-between;font-size:9px;font-weight:900}.progress-row b{color:#1677ff}.progress{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:9px 0 5px}.progress i{display:block;height:100%;width:0;background:#1677ff;border-radius:99px}.progress-card small{font-size:8px;color:#64748b;font-weight:800}.lesson-list{display:grid;gap:7px;max-height:55vh;overflow:auto}.lesson-item{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #e2e8f0;border-radius:11px;background:#fff;cursor:pointer}.lesson-item.active{border-color:#1677ff;background:#eff6ff}.lesson-item.done{background:#f0fdf4;border-color:#bbf7d0}.lesson-num{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;background:#eff6ff;color:#1677ff;font-size:9px;font-weight:950;flex:none}.lesson-item.done .lesson-num{background:#dcfce7;color:#15803d}.lesson-item strong{font-size:9px;line-height:1.35}.lesson-item span{display:block;font-size:8px;color:#64748b;margin-top:2px}.lesson-main{padding:24px}.lesson-kicker{font-size:9px;color:#1677ff;font-weight:950;letter-spacing:.14em}.lesson-main h2{font-size:27px;line-height:1.15;margin:7px 0}.lesson-intro{font-size:12px;color:#64748b;line-height:1.7;margin:0}.lesson-copy{margin-top:20px;background:#061a3b;color:#fff;border-radius:17px;padding:24px}.lesson-copy h4{font-size:15px;margin:19px 0 7px;color:#fff}.lesson-copy h4:first-child{margin-top:0}.lesson-copy p{font-size:12px;line-height:1.85;color:#dbeafe;margin:0 0 10px}.example{background:#0b3f83;border:1px solid #3b82f6;border-radius:12px;padding:15px;margin-top:18px}.example strong{display:block;color:#bfdbfe;font-size:10px;letter-spacing:.08em;margin-bottom:5px}.example p{margin:0}.video{margin-top:18px;background:#020617;border:1px solid #315b91;border-radius:13px;padding:15px}.video b{display:block;color:#60a5fa;font-size:13px}.video iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:12px}.lesson-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:18px}.action-right{display:flex;gap:8px;flex-wrap:wrap}.complete{background:#16a34a;color:#fff}.exam-ready{margin-top:16px;background:#ecfdf5;border:1px solid #86efac;border-radius:14px;padding:17px}.exam-ready h3{margin:0 0 5px;font-size:15px;color:#166534}.exam-ready p{margin:0 0 12px;font-size:10px;color:#166534;line-height:1.5}.locked{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:17px}.empty{text-align:center;padding:35px;color:#64748b;font-size:12px}@media(max-width:900px){.course-grid{grid-template-columns:repeat(2,1fr)}.portal{grid-template-columns:1fr}.lesson-list{max-height:none}}@media(max-width:620px){.top{padding:11px 4%}.student-chip{display:none}.ghost{display:none}.wrap{padding:18px 4% 45px}.welcome{padding:23px;align-items:flex-start}.welcome h1{font-size:27px}.welcome-stat{min-width:86px;width:86px;height:86px}.welcome-stat strong{font-size:30px}.welcome-stat span{text-align:center;font-size:8px}.course-grid{grid-template-columns:1fr}.lesson-main{padding:16px}.lesson-main h2{font-size:23px}.lesson-copy{padding:18px}}
+</style></head><body><header class="top">
+  <div class="brand">EDSA <span>ACADEMY</span><small>STUDENT LEARNING PORTAL</small></div>
+  <div class="top-actions">
+    <span id="studentName" class="student-chip">Student</span>
+    <button class="btn ghost" onclick="location.href='/'">Home</button>
+    <button class="btn primary" onclick="location.href='/edsa-app.html'">Exam Portal</button>
+  </div>
+</header>
 <main class="wrap">
-<section class="hero"><div class="tag">STEP 14 — LEARNING PLATFORM</div><h1>Learn. Practice. Get Certified.</h1><p id="welcome">Loading your student account...</p></section>
-<div id="courseHome" class="panel"><h2 style="margin:0 0 6px">Choose a Course</h2><p style="margin:0 0 18px;color:#64748b;font-size:12px">Tap a course to enter it. Your lessons and progress stay inside that course.</p><div id="courseList" class="courses"><div class="course" onclick="selectCourse('smm')"><strong>Social Media Management</strong><span>Social strategy, content, communities and platform management.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('dme')"><strong>Digital Marketing Essentials</strong><span>Digital campaigns, channels, analytics and marketing strategy.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('pbm')"><strong>Project &amp; Business Management</strong><span>Planning, operations, projects, leadership and business decisions.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('gdm')"><strong>Graphic Design for Marketers</strong><span>Visual communication, design principles, branding and marketing graphics.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('fme')"><strong>Financial Management for Entrepreneurs</strong><span>Budgeting, cash flow, financial decisions and entrepreneurial finance.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('dbi')"><strong>Data Analysis &amp; Business Intelligence</strong><span>Data, dashboards, analytics, databases and business intelligence.</span><b>15 lessons • Open →</b></div></div></div>
-<div id="courseView" class="grid" style="display:none"><aside class="panel"><button class="btn light" style="margin-bottom:14px" onclick="showCourseHome()">← All Courses</button><div id="courseListInside" class="courses"></div></aside><section class="panel"><div id="learningArea"></div></section></div>
-</main>
-<script>
+  <section class="welcome">
+    <div>
+      <div class="eyebrow">YOUR LEARNING SPACE</div>
+      <h1>Choose your course.<br><span>Start learning.</span></h1>
+      <p id="welcome">Your courses, lessons, progress and exam journey — all in one place.</p>
+    </div>
+    <div class="welcome-stat"><strong>15</strong><span>lessons per course</span></div>
+  </section>
+
+  <section id="courseHome">
+    <div class="section-heading">
+      <div><div class="eyebrow dark">MY COURSES</div><h2>What do you want to learn today?</h2></div>
+      <div id="courseCount" class="small-note">Checking your access…</div>
+    </div>
+    <div id="courseList" class="course-grid"></div>
+  </section>
+
+  <section id="courseView" class="portal" style="display:none">
+    <aside class="lesson-sidebar">
+      <button class="back-link" onclick="showCourseHome()">← All courses</button>
+      <div id="sideCourse"></div>
+      <div class="progress-card">
+        <div class="progress-row"><span>Course progress</span><b id="progressPct">0%</b></div>
+        <div class="progress"><i id="progressBar"></i></div>
+        <small id="progressText">0 / 15 lessons</small>
+      </div>
+      <div id="lessonList" class="lesson-list"></div>
+    </aside>
+
+    <section class="lesson-main">
+      <div id="lessonArea"></div>
+    </section>
+  </section>
+</main><script>
 const COURSES={
-smm:{title:"Social Media Management",desc:"Social strategy, content, communities and platform management.",lessons:["Digital Social Media Foundations","Audience Research & Buyer Personas","Platform Selection & Strategy","Content Pillars & Planning","Content Calendars","Copywriting for Social Media","Visual Content & Branding","Short-Form Video Strategy","Community Management","Social Media Engagement","Hashtags, Keywords & Discovery","Analytics & Performance Metrics","Social Media Crisis Management","Campaign Planning & Optimization","Professional Social Media Workflow"]},
-dme:{title:"Digital Marketing Essentials",desc:"Digital campaigns, channels, analytics and marketing strategy.",lessons:["Digital Marketing Foundations","Customer Journey & Funnels","Market Research","Digital Marketing Strategy","Search Engine Basics","Content Marketing","Email Marketing","Social Advertising","Paid Search & Display","Landing Pages & Conversion","Analytics & KPIs","Remarketing & Retention","Campaign Budgeting","A/B Testing & Optimization","Integrated Digital Campaigns"]},
-pbm:{title:"Project & Business Management",desc:"Planning, operations, projects, leadership and business decisions.",lessons:["Business Management Foundations","Business Models","Goal Setting & SMART Objectives","Project Life Cycle","Project Scope & Requirements","Work Breakdown Structures","Scheduling & Milestones","Budgeting & Cost Control","Risk Management","Team Leadership","Communication Management","Operations & Process Improvement","Decision Making","Performance Measurement","Project Closeout & Review"]},
-gdm:{title:"Graphic Design for Marketers",desc:"Visual communication, design principles, branding and marketing graphics.",lessons:["Design Foundations","Color Theory","Typography","Layout & Composition","Visual Hierarchy","Brand Identity","Logo & Brand Systems","Social Media Graphics","Marketing Banners","Image Selection & Editing","Canva Workflow","Design for Mobile","Accessibility & Readability","Creative Briefs","Professional Design Review"]},
-fme:{title:"Financial Management for Entrepreneurs",desc:"Budgeting, cash flow, financial decisions and entrepreneurial finance.",lessons:["Finance Foundations","Revenue, Costs & Profit","Business Budgeting","Cash Flow Management","Pricing Decisions","Break-Even Analysis","Financial Statements","Assets & Liabilities","Working Capital","Financial Ratios","Investment Decisions","Risk & Contingency Planning","Record Keeping","Financial Performance Review","Entrepreneurial Finance Strategy"]},
-dbi:{title:"Data Analysis & Business Intelligence",desc:"Data, dashboards, analytics, databases and business intelligence.",lessons:["Data & Business Intelligence Foundations","Data Collection","Data Quality","Data Types & Structures","Spreadsheet Analysis","Descriptive Statistics","Data Visualization","Dashboard Design","KPIs & Business Metrics","Database Concepts","SQL Foundations","Business Reporting","Trend & Pattern Analysis","Decision-Making with Data","BI Project Workflow"]}
+ smm:{title:"Social Media Management",desc:"Social strategy, content, communities and platform management.",icon:"📱"},
+ dme:{title:"Digital Marketing Essentials",desc:"Digital campaigns, channels, analytics and marketing strategy.",icon:"📈"},
+ pbm:{title:"Project & Business Management",desc:"Planning, operations, projects, leadership and business decisions.",icon:"📋"},
+ gdm:{title:"Graphic Design for Marketers",desc:"Visual communication, design principles, branding and marketing graphics.",icon:"🎨"},
+ fme:{title:"Financial Management for Entrepreneurs",desc:"Budgeting, cash flow, financial decisions and entrepreneurial finance.",icon:"💰"},
+ dbi:{title:"Data Analysis & Business Intelligence",desc:"Data, dashboards, analytics, databases and business intelligence.",icon:"📊"}
 };
-const SMM_LESSONS=[
-{
-title:"Digital Social Media Foundations",
-intro:"Social media management is the organized process of using social platforms to communicate with an audience, build a brand, create relationships and support measurable business goals. It is much more than posting a picture every day. A professional social media manager studies the audience, plans content, publishes consistently, responds to people, monitors performance and improves the strategy based on evidence.",
-sections:[
-["What social media management means","A business may have a Facebook page, Instagram account, TikTok profile, LinkedIn page or other channels, but simply having accounts does not create a strategy. Management begins by deciding what each channel is supposed to accomplish. The goal might be awareness, trust, leads, sales, customer service, community building or a combination of these. Each post should have a reason for existing."],
-["The main responsibilities of a social media manager","A professional workflow normally includes research, strategy, content planning, writing, design coordination, publishing, community management, monitoring, analytics and reporting. The manager also protects the brand voice and makes sure that information is accurate and appropriate for the audience."],
-["Business goals and social media goals","Start with the business objective. If a company wants more customers, social media should support discovery and conversion. If the objective is reputation, content may focus more on education, proof, customer stories and transparent communication. A social goal should be measurable, such as increasing qualified inquiries, improving engagement from a target audience or generating visits to a landing page."],
-["Content is a communication system","Good social content normally falls into useful categories such as education, entertainment, inspiration, product information, proof and community conversation. A healthy content mix prevents the page from becoming a constant advertisement. People are more likely to pay attention when a brand gives them useful information instead of asking them to buy in every post."],
-["Consistency and quality","Consistency means maintaining a reliable publishing and communication process. It does not mean posting low-quality content just to fill a calendar. A smaller number of useful, well-made posts can be more valuable than many posts with no clear purpose. Create a repeatable workflow so ideas can move from research to draft, review, publication and measurement."],
-["The social media mindset","Think like both a marketer and a community member. Ask: Why would someone stop scrolling for this? What does the audience learn? What feeling does it create? What action should the person take? What evidence will show whether the post worked? These questions turn random posting into professional management."]
-],
-example:"Imagine an Ethiopian real-estate company launching a new housing project. Instead of posting only “Buy now,” a manager could publish a location guide, explain payment options, show construction progress, answer common buyer questions, introduce the project team, share customer stories and then publish a clear sales call-to-action. The content supports awareness, trust and conversion."
-},
-{
-title:"Audience Research & Buyer Personas",
-intro:"Strong social media begins with knowing who you are communicating with. Audience research helps a business understand the people it wants to reach, their needs, problems, habits and motivations. A buyer persona turns this information into a practical description that helps the content team make better decisions.",
-sections:[
-["Why audience research matters","A message designed for everyone often feels relevant to nobody. A young entrepreneur, a university student, a parent buying a home and a corporate purchasing manager can have completely different questions and priorities. Audience research helps the manager choose the right language, examples, content format and platform."],
-["What to research","Look at age range, location, occupation, interests, common problems, goals, buying triggers, objections and preferred communication style. Also study what questions people repeatedly ask. Comments, messages, reviews, surveys, sales conversations and competitor discussions can reveal valuable patterns."],
-["Building a buyer persona","A persona is a realistic working profile, not a fictional celebrity. Give the persona a name, general background, goal, problem, concerns and decision factors. For example: “Sara, 24, Addis Ababa, junior professional, wants affordable career training, compares prices carefully, uses TikTok and Instagram daily, and wants proof that a certificate is useful.”"],
-["Needs, pain points and motivations","A pain point is a problem the audience wants solved. A motivation is the desired outcome that pushes a person toward action. Good content connects the two: it identifies the problem accurately and shows a credible path toward the desired result."],
-["Using audience research in content","Research should change the content itself. If people are confused about price, create a price explanation. If they distrust online offers, create proof and transparent information. If they do not understand a product, create educational demonstrations. The best content often answers questions before the customer asks them."],
-["Ethics and respect","Do not invent customer information or use private data without permission. Audience research should improve relevance while respecting privacy. Avoid manipulative messaging and misleading claims."]
-],
-example:"For EDSA, audience research could separate high-school graduates, university students, job seekers and small-business owners. Each group may need different examples even though they are all interested in digital skills."
-},
-{
-title:"Platform Selection & Strategy",
-intro:"Every social platform has its own audience behavior, content formats and strengths. Professional management does not mean copying the same post everywhere without adaptation. Platform strategy starts with the audience and objective, then chooses channels that make sense.",
-sections:[
-["Choosing a platform","Ask where the target audience already spends time and what they do there. TikTok and Instagram can be strong for short visual discovery; Facebook can support broad community communication; LinkedIn is useful for professional audiences. These are general tendencies, not rules. The correct choice depends on the specific audience and business."],
-["One idea, different execution","A single campaign idea can be adapted across platforms. A long educational explanation might become a carousel on Instagram, a short video on TikTok, a discussion post on Facebook and a professional insight on LinkedIn. The core message remains consistent while the format changes."],
-["Organic and paid activity","Organic content is distributed without paying the platform for each impression. Paid advertising uses a budget to reach selected audiences. They can work together: organic content can build trust and provide creative ideas, while paid campaigns can expand targeted reach."],
-["Setting platform objectives","Define a primary objective for each channel. For example, a TikTok account might prioritize discovery and video engagement, while a LinkedIn page might prioritize professional credibility and qualified business inquiries. Objectives make measurement easier."],
-["Avoiding platform overload","A small business does not need every platform. Managing too many channels can reduce quality and consistency. Start with channels that match the audience and resources, build a reliable workflow, then expand when there is a clear reason."]
-],
-example:"If an EDSA campaign targets young Ethiopian learners, short educational videos could be adapted for TikTok and Instagram Reels, while longer explanations and announcements could be used on Facebook or Telegram."
-},
-{
-title:"Content Pillars & Planning",
-intro:"Content pillars are the main themes a brand repeatedly communicates. They create structure so the page does not depend on random ideas. A content plan connects pillars to business objectives and audience needs.",
-sections:[
-["What is a content pillar?","A content pillar is a broad topic that represents an important part of the brand's communication. For a digital academy, pillars might include education, career advice, student stories, digital tools, course information and community content."],
-["Why pillars help","Without pillars, managers often repeat the same sales message or struggle to find ideas. Pillars create boundaries while still allowing creativity. They also make it easier to balance educational, promotional and community content."],
-["Planning a content mix","A plan should include different purposes. Educational posts teach. Proof posts demonstrate credibility. Promotional posts explain an offer. Community posts invite conversation. Entertainment can increase attention when it fits the brand. The exact ratio should be tested rather than treated as a universal rule."],
-["From idea to post","A simple workflow is: identify audience problem → choose pillar → choose format → write message → create visual → review → publish → measure → learn. This makes content production repeatable."],
-["Calls to action","A call to action tells the audience what to do next. Examples include save this post, comment your question, visit the website, register for a course or contact the business. The CTA should match the purpose of the post."]
-],
-example:"For a weekly EDSA plan: Monday educational tip, Tuesday short tutorial, Wednesday student story, Thursday digital tool explanation, Friday course information, weekend community question. The actual schedule can change based on results."
-},
-{
-title:"Content Calendars",
-intro:"A content calendar turns a strategy into a practical publishing schedule. It helps a social media manager know what is being published, where, when, by whom and for what purpose.",
-sections:[
-["What a calendar contains","Useful fields include date, platform, content pillar, topic, format, caption, creative asset, CTA, approval status and result. A calendar can be simple; its purpose is organization, not complexity."],
-["Batching work","Instead of creating one post from beginning to end every day, teams can research several topics, write several captions and prepare several visuals in batches. Batching reduces context switching and makes consistency easier."],
-["Approval and quality control","Before publishing, check spelling, facts, links, branding, image quality, pricing and contact information. A second person can review sensitive posts when available."],
-["Flexible planning","A calendar should not prevent timely content. If an important event or customer question appears, the manager may adjust the schedule. Planned content provides structure while real-time opportunities provide relevance."],
-["Measuring the calendar","At the end of a period, compare content types and results. Identify which topics generated useful engagement, clicks, leads or other meaningful actions. Use the evidence to improve the next calendar."]
-],
-example:"A simple spreadsheet can contain Date | Platform | Pillar | Topic | Format | Caption | CTA | Status | Result. This is enough for a beginner to run a professional weekly workflow."
-},
-{
-title:"Copywriting for Social Media",
-intro:"Social media copywriting is the skill of using short, clear and persuasive language to earn attention and encourage an appropriate action. Good copy is audience-centered, easy to understand and consistent with the brand voice.",
-sections:[
-["The opening matters","People scroll quickly, so the first line should create a reason to continue. A useful opening may identify a problem, ask a relevant question, promise a useful lesson or present a surprising fact without exaggeration."],
-["Clarity before cleverness","A clever sentence that nobody understands is weak marketing. Prefer familiar words, short paragraphs and one main idea. Write for the audience rather than trying to impress them."],
-["Benefits versus features","A feature describes what a product has. A benefit explains why that feature matters to the customer. For example, “24/7 online access” is a feature; “study when your schedule allows” communicates the benefit."],
-["Brand voice","Brand voice is the recognizable personality of communication. A youth-focused education brand may be friendly and encouraging; a financial company may require a more formal and careful tone. Voice should remain consistent while adapting to context."],
-["Calls to action","Use one clear next step when possible. “Register today,” “Send us your question,” “Save this guide,” or “Visit the course page” are clearer than vague requests."],
-["Responsible persuasion","Do not create fake urgency, fake testimonials or unsupported guarantees. Persuasion should be based on real value and accurate information."]
-],
-example:"Weak: “BEST COURSE!!! BUY NOW!!!” Stronger: “Want to build practical digital skills? Start with our Social Media Management course and learn how to plan content, manage communities and measure performance.”"
-},
-{
-title:"Visual Content & Branding",
-intro:"Visual content helps audiences understand and remember information. Social media design should combine readability, brand consistency and a clear communication goal.",
-sections:[
-["Visual hierarchy","Hierarchy tells the eye what to notice first, second and third. Use size, contrast, spacing and position to establish importance. Do not give every word the same visual weight."],
-["Brand consistency","Use consistent logo treatment, colors, typography, image style and tone. Consistency does not mean every post looks identical; it means the audience can recognize the brand."],
-["Mobile-first design","Most social content is viewed on phones. Use readable text, strong contrast and enough spacing. Avoid putting important information in tiny text or crowded layouts."],
-["Information density","One graphic should communicate one primary message. If a design contains too much information, split it into a carousel or create a separate post."],
-["Accessibility","Use readable type, strong contrast, descriptive captions where appropriate and avoid relying only on color to communicate meaning. Accessible content can help more people understand the message."]
-],
-example:"A course promotion graphic should make the course name, main benefit and action obvious within seconds. Supporting details can appear in the caption or additional slides."
-},
-{
-title:"Short-Form Video Strategy",
-intro:"Short-form video combines a fast opening, clear value and visual movement. The objective is not simply to make a video; it is to communicate something worth watching.",
-sections:[
-["The hook","The first seconds should establish why the viewer should continue. A hook can be a question, problem, promise, demonstration or relevant statement."],
-["Simple video structure","A practical structure is Hook → Value → Example → CTA. This keeps the video focused and makes production easier."],
-["Retention","Retention describes how much of the video people continue watching. Strong pacing, clear visuals, useful information and removal of unnecessary pauses can improve viewing experience."],
-["Authenticity","Professional does not mean artificial. Clear explanations, demonstrations, behind-the-scenes content and real people can build trust when presented appropriately."],
-["Repurposing","A longer lesson can produce multiple short clips: a definition, a common mistake, a practical tip, a case example and a final summary. Repurposing increases the value of one research effort."]
-],
-example:"For EDSA: “Three mistakes beginners make when managing Instagram” → explain each mistake in a few seconds → show one corrected example → CTA: “Follow EDSA for the next lesson.”"
-},
-{
-title:"Community Management",
-intro:"Community management is the relationship side of social media. It includes responding to comments and messages, answering questions, guiding conversations and recognizing useful feedback.",
-sections:[
-["Why community matters","A follower is not automatically a customer or loyal supporter. Helpful interactions can build trust and make people feel heard."],
-["Response standards","Create simple rules for response time, tone, escalation and frequently asked questions. Accuracy is more important than replying quickly with incorrect information."],
-["Positive conversations","Thank people for useful feedback, answer questions directly and invite constructive discussion. Community managers should represent the brand respectfully."],
-["Difficult comments","Separate genuine criticism from spam or abuse. Genuine complaints should be investigated and answered professionally. Harassment or harmful content may require moderation according to platform and brand policy."],
-["Escalation","Some questions should move to private support, sales or management. Do not expose private customer information in public comments."]
-],
-example:"If a learner comments, “I paid but my course is not active,” the manager should acknowledge the issue, avoid asking for private payment details publicly, and direct the learner to the official support process."
-},
-{
-title:"Social Media Engagement",
-intro:"Engagement includes actions such as comments, shares, saves, replies, reactions and meaningful conversations. The goal is not to chase a large number blindly, but to encourage useful interaction from the right audience.",
-sections:[
-["Meaningful engagement","A thousand random reactions may be less useful than a smaller number of comments from people who genuinely need the product. Evaluate engagement in relation to the business objective."],
-["Designing for interaction","Ask specific questions, invite opinions, create useful checklists, request examples or use polls when appropriate. Give people a reason to contribute."],
-["Responding to engagement","When people comment, continue the conversation instead of replying with the same generic phrase every time. A thoughtful response can create a second interaction."],
-["Engagement and trust","Never buy fake engagement or use misleading tactics. Artificial numbers can make analytics less useful and damage credibility."],
-["Learning from comments","Comments are also research. Repeated questions can become future posts, FAQs or product improvements."]
-],
-example:"If many people ask the same question under an EDSA post, turn the question into a new educational video. The community has given you the next content idea."
-},
-{
-title:"Hashtags, Keywords & Discovery",
-intro:"Discovery is the process by which people find content that they were not already following. Hashtags and keywords can help organize and describe content, but they work best when they accurately match the topic.",
-sections:[
-["Keywords","Use the words your audience actually uses when searching or describing a problem. Include relevant terms naturally in captions, titles, on-screen text and other appropriate places."],
-["Hashtags","Hashtags can categorize content and help discovery on platforms that support them. Relevance is more important than filling a caption with unrelated popular tags."],
-["Local discovery","For an Ethiopian business, location and language can matter. Relevant Ethiopian, Addis Ababa or industry-specific terms may help reach the intended community when they genuinely match the content."],
-["Search-friendly content","Answer real questions directly. A post titled “How to create a content calendar” is clearer for discovery than a vague title such as “You need to see this.”"],
-["Testing","Track which topics and terms bring useful reach or engagement. Discovery strategies should be tested rather than assumed to work forever."]
-],
-example:"For an EDSA post about social media courses, relevant keywords might include social media management, digital skills, digital marketing, Ethiopia and the specific learning topic. Do not add unrelated trending tags simply because they are popular."
-},
-{
-title:"Analytics & Performance Metrics",
-intro:"Analytics turns social media activity into information for decision-making. A professional manager asks what happened, why it happened and what should change next.",
-sections:[
-["Reach and impressions","Reach is generally the number of unique accounts that saw content, while impressions represent the number of times content was displayed. Exact definitions can vary by platform."],
-["Engagement","Engagement may include reactions, comments, shares, saves and other interactions. Compare engagement with reach or views when evaluating content quality."],
-["Clicks and conversions","Clicks show movement toward another destination. A conversion is a desired outcome such as registration, purchase, inquiry or download. These are often closer to business value than likes alone."],
-["Watch time and retention","For video, watch time and retention help show whether viewers continue watching. A video with strong views but very weak retention may need a stronger opening or tighter structure."],
-["Reporting","A useful report includes the period, objective, key results, strongest content, weak content, observations and recommended next actions. Reporting should lead to decisions, not just numbers."]
-],
-example:"If one EDSA video gets fewer views but produces many course inquiries, while another gets many views but no inquiries, the manager should investigate the difference instead of automatically calling the second video better."
-},
-{
-title:"Social Media Crisis Management",
-intro:"A crisis can involve misinformation, service failures, angry customers, security problems or other situations that may damage trust. Preparation is easier than improvisation during a crisis.",
-sections:[
-["Prepare before the crisis","Create escalation contacts, response principles, approved information sources and basic scenarios. Know who can make official statements."],
-["Verify facts","Do not respond based only on rumors. Confirm what happened, what is known, what is unknown and what action is being taken."],
-["Respond clearly","A crisis response should be accurate, respectful and proportionate. Avoid arguments, jokes or defensive language when people are genuinely affected."],
-["Protect privacy","Never publish private customer details to prove a point. Move sensitive cases to secure support channels."],
-["Learn afterward","After the situation is resolved, document what happened and what process should change. A crisis can reveal weaknesses in customer service or communication."]
-],
-example:"If a false post claims EDSA certificates are fake, the response should use verifiable information, explain the official verification process and direct students to the correct verification page rather than attacking the person who posted the claim."
-},
-{
-title:"Campaign Planning & Optimization",
-intro:"A social media campaign is a coordinated set of activities designed around a specific objective, audience, message and time period. Good campaigns are planned, measured and adjusted.",
-sections:[
-["Campaign brief","A simple brief defines objective, audience, offer or message, channels, dates, budget if applicable, creative requirements and success metrics."],
-["Creative variations","Test different hooks, images, videos, headlines or calls to action. Keep the test focused so you can understand what changed."],
-["Optimization","Optimization means using performance information to improve the campaign. You might shift budget, change creative, adjust targeting, improve a landing page or clarify the CTA."],
-["Avoiding random changes","If everything changes at once, it becomes difficult to know what caused improvement. Make structured changes and record them."],
-["Post-campaign review","Compare results with the original objective. Document what worked, what did not and what should be repeated or changed next time."]
-],
-example:"For an EDSA enrollment campaign, track video views, landing-page visits, registration starts, completed registrations and cost if paid advertising is used. This creates a path from attention to business result."
-},
-{
-title:"Professional Social Media Workflow",
-intro:"A professional workflow connects all the skills in this course into a repeatable system. The goal is to move from business objective to research, content, publishing, community management and measurement without losing quality.",
-sections:[
-["Step 1 — Objective","Write down what the business needs from social media. A clear objective gives every later decision direction."],
-["Step 2 — Research","Study the target audience, competitors, questions, market context and previous performance."],
-["Step 3 — Strategy","Choose priority platforms, content pillars, brand voice, formats and measurement approach."],
-["Step 4 — Production","Create briefs, write copy, prepare designs or videos and review accuracy and branding."],
-["Step 5 — Publishing","Schedule or publish content at appropriate times while keeping room for timely opportunities."],
-["Step 6 — Community","Monitor comments and messages, answer questions, escalate sensitive issues and collect feedback."],
-["Step 7 — Analytics","Review performance against the objective. Identify patterns instead of focusing on one number."],
-["Step 8 — Improvement","Turn lessons into the next content calendar and campaign. Professional social media is a continuous learning cycle."]
-],
-example:"A simple weekly workflow can be: Monday research and planning; Tuesday–Wednesday production; Thursday review and scheduling; daily community management; Friday analytics review; weekend preparation for the next cycle."
+let state={email:"",name:"",courseId:"",lessons:[],lesson:0,completed:[]};
+const token=()=>sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||"";
+const authHeaders=()=>token()?{Authorization:"Bearer "+token()}: {};
+const progressKey=id=>"EDSA_PORTAL_PROGRESS_"+(state.email||"guest").toLowerCase()+"_"+id;
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function loadProgress(){try{state.completed=JSON.parse(localStorage.getItem(progressKey(state.courseId))||"[]").map(Number).filter(Number.isInteger)}catch(_){state.completed=[]}}
+function saveProgress(){localStorage.setItem(progressKey(state.courseId),JSON.stringify(state.completed));}
+async function api(path){
+ const r=await fetch(path,{credentials:"include",headers:authHeaders(),cache:"no-store"});
+ const x=await r.json().catch(()=>({}));
+ return {r,x};
 }
-];
-const VIDEO_LESSONS={smm:[
- {"id":"AbrwOkhoeKU","title":"Social Media Management for Beginners","start":0,"query":"","note":"Lesson 1: foundations and beginner social media management strategy."},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":"sTSTTRFhmis","title":"How To Create A Content Calendar For Social Media (+ Free Tools)","start":0,"query":"","note":"Lesson 5: step-by-step content calendar walkthrough."},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":"kCy2adkj4HM","title":"8 Social Media Engagement Hacks, Strategies, and Tips","start":0,"query":"","note":"Lesson 10: practical social media engagement strategies."},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":null,"title":"","start":0,"query":"","note":""},
- {"id":"-kv3KbTtr4U","title":"Social Media Management Workflow","start":0,"query":"","note":"Lesson 15: professional social media management workflow."}
-]};
-function getVideo(courseId,index){const list=VIDEO_LESSONS[courseId]||[];return list[index]||null}
-let state={email:"",name:"",courseId:"",lesson:0,done:{}};
-function key(){return "EDSA_LEARNING_"+state.email.toLowerCase()}
-function load(){try{state.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){state.done={}}}
-function save(){localStorage.setItem(key(),JSON.stringify(state.done))}
 async function boot(){
- // Render the course catalog first. Course/lesson content must never disappear
- // just because the optional session check is slow or unavailable.
- renderCourses();
- const q=new URLSearchParams(location.search).get("course");
- if(COURSES[q]) selectCourse(q); else showCourseHome();
- try{
-  const r=await fetch("/api/auth-me",{credentials:"same-origin",cache:"no-store"}),x=await r.json().catch(()=>({}));
-  if(r.ok&&x.ok&&x.authenticated&&x.user){
-   state.email=x.user.email||"";
-   state.name=x.user.name||"Student";
-   load();
-   document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose a course to enter its lessons and continue your learning.";
-   renderCourses();
-   if(COURSES[q]) selectCourse(q);
-  } else {
-   document.getElementById("welcome").textContent="Choose a course to enter its lessons and continue learning.";
-  }
- }catch(e){
-  document.getElementById("welcome").textContent="Choose a course to enter its lessons and continue learning.";
- }
+ const auth=await api("/api/auth-me");
+ if(!auth.r.ok||!auth.x.authenticated){location.href="/?login=1&return="+encodeURIComponent("/learning.html");return;}
+ state.email=auth.x.user?.email||"";state.name=auth.x.user?.name||"Student";
+ document.getElementById("studentName").textContent=state.name;
+ document.getElementById("welcome").textContent="Pick an activated course below. Your lessons stay available after you finish them, including after an exam attempt.";
+ await renderCourseCards();
+ const requested=new URLSearchParams(location.search).get("course");
+ if(requested&&COURSES[requested]) openCourse(requested);
 }
-function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct}% complete • ${(d.completed||[]).length}/${c.lessons.length} lessons</b></div>`}
-function renderCourses(){
-  const home=document.getElementById("courseList");
-  const inside=document.getElementById("courseListInside");
-  const html=Object.entries(COURSES).map(([id,c])=>courseCard(id,c)).join("");
-  if(home) home.innerHTML=html;
-  if(inside) inside.innerHTML=html;
+async function getAccess(id,withLessons=false){
+ const {r,x}=await api("/api/course-access?courseId="+encodeURIComponent(id)+(withLessons?"&include=lessons":""));
+ return {ok:r.ok&&x.ok&&x.unlocked,body:x};
+}
+async function renderCourseCards(){
+ const list=document.getElementById("courseList");list.innerHTML="";
+ let unlocked=0;
+ for(const [id,c] of Object.entries(COURSES)){
+   const a=await getAccess(id,false);if(a.ok)unlocked++;
+   const pct=JSON.parse(localStorage.getItem(progressKey(id))||"[]").length;
+   list.insertAdjacentHTML("beforeend",'<article class="course-card" onclick="openCourse(\''+id+'\')"><div class="course-top"><div class="course-icon">'+c.icon+'</div><span class="status '+(a.ok?"unlocked":"")+'">'+(a.ok?"UNLOCKED":"LOCKED")+'</span></div><h3>'+esc(c.title)+'</h3><p>'+esc(c.desc)+'</p><div class="course-meta"><span>15 lessons</span><span>'+(a.ok?pct+"% complete":"Activate →")+'</span></div></article>');
+ }
+ document.getElementById("courseCount").textContent=unlocked+" course"+(unlocked===1?"":"s")+" unlocked";
+}
+async function openCourse(id){
+ if(!COURSES[id])return;
+ const access=await getAccess(id,true);
+ if(!access.ok){alert("This course is locked. Complete the 400 ETB activation process to unlock its lessons and first exam attempt.");return;}
+ const lessons=Array.isArray(access.body.lessons)?access.body.lessons:[];
+ if(!lessons.length){alert("The course lessons are not available yet. Please try again.");return;}
+ state.courseId=id;state.lessons=lessons;state.lesson=0;loadProgress();
+ document.getElementById("courseHome").style.display="none";document.getElementById("courseView").style.display="grid";
+ history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id));
+ renderCourse();window.scrollTo({top:0,behavior:"smooth"});
 }
 function showCourseHome(){
-  state.courseId="";
-  document.getElementById("courseHome").style.display="";
-  document.getElementById("courseView").style.display="none";
-  renderCourses();
-  history.replaceState(null,"","/learning.html");
+ state.courseId="";document.getElementById("courseHome").style.display="";document.getElementById("courseView").style.display="none";
+ history.replaceState(null,"","/learning.html");renderCourseCards();window.scrollTo({top:0,behavior:"smooth"});
 }
-function selectCourse(id){
-  if(!COURSES[id]) return;
-  state.courseId=id;
-  state.lesson=0;
-  if(state.email) load();
-  document.getElementById("courseHome").style.display="none";
-  document.getElementById("courseView").style.display="grid";
-  renderCourses();
-  renderCourse();
-  history.replaceState(null,"","/learning.html?course="+encodeURIComponent(id));
-}
-function getLessons(id){
-  if(id==="smm") return SMM_LESSONS;
-  return COURSES[id].lessons.map(title=>({
-    title,
-    intro:"This lesson is part of the EDSA course curriculum. The full study material for this course will be developed course-by-course after Social Media Management is completed.",
-    sections:[["Course lesson focus","Study the topic carefully, connect the ideas to real business situations, and take notes on the concepts that would be useful in practice."],["Practical learning","Think about how this topic would be applied by a real company, entrepreneur, manager or digital professional. Build examples instead of only memorizing definitions."]],
-    example:"EDSA practical task: write a short example showing how this lesson could be applied to a real Ethiopian business."
-  }));
+function normalizeLesson(raw,index){
+ if(typeof raw==="string")return {title:raw,intro:"Study this lesson carefully and connect it to a real business situation.",sections:[["Lesson focus",raw]],example:"Write one practical example showing how this lesson could be used."};
+ return {title:raw?.title||"Lesson "+(index+1),intro:raw?.intro||raw?.description||"",sections:Array.isArray(raw?.sections)?raw.sections:[],example:raw?.example||raw?.practicalExample||"",video:raw?.video||null};
 }
 function renderCourse(){
-  const c=COURSES[state.courseId], lessons=getLessons(state.courseId);
-  const d=state.done[state.courseId]||{completed:[]};
-  const completed=d.completed||[];
-  const pct=Math.round(completed.length/lessons.length*100);
-  const l=lessons[state.lesson]||lessons[0];
-  const video=getVideo(state.courseId,state.lesson);
-  const sections=l.sections.map(s=>"<h4>"+escapeHtml(s[0])+"</h4><p>"+escapeHtml(s[1])+"</p>").join("");
-  const isDone=completed.includes(state.lesson);
-  const videoHtml=video&&video.id
-    ? '<div class="video"><b>🎥 Lesson Video</b><iframe title="'+escapeHtml(video.title)+'" src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(video.id)+'?rel=0" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe><span>'+escapeHtml(video.note||"Watch the video, then return to the lesson and continue studying.")+'</span></div>'
-    : '<div class="video"><b>🎥 YouTube lesson video</b><span>This lesson has a dedicated YouTube video section. Until a fixed video is selected, use the topic-specific YouTube search below.</span><a class="btn blue" style="display:inline-block;margin-top:12px;text-decoration:none" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+encodeURIComponent(l.title+" social media management tutorial")+'">Watch on YouTube ↗</a></div>';
-  document.getElementById("learningArea").innerHTML=
-    '<div class="lesson-head"><div><div style="font-size:9px;color:#1677ff;font-weight:900;letter-spacing:.12em">LESSON '+(state.lesson+1)+' OF '+lessons.length+'</div><h2>'+escapeHtml(l.title)+'</h2><p>'+escapeHtml(l.intro)+'</p></div></div>'+
-    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
-    '<div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div>'+
-    '<div class="viewer"><h3>'+escapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+escapeHtml(l.example)+'</div></div>'+videoHtml+
-    '<div class="actions"><button class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button class="btn light" onclick="prevLesson()">← Previous</button><button class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>';
+ const c=COURSES[state.courseId], l=normalizeLesson(state.lessons[state.lesson],state.lesson);
+ const total=state.lessons.length, done=state.completed.length, pct=Math.round(done/total*100), isDone=state.completed.includes(state.lesson), last=state.lesson===total-1;
+ document.getElementById("sideCourse").innerHTML='<div class="side-title">'+esc(c.title)+'</div><div class="side-desc">'+esc(c.desc)+'</div>';
+ document.getElementById("progressPct").textContent=pct+"%";document.getElementById("progressBar").style.width=pct+"%";document.getElementById("progressText").textContent=done+" / "+total+" lessons completed";
+ document.getElementById("lessonList").innerHTML=state.lessons.map((raw,i)=>{const x=normalizeLesson(raw,i),d=state.completed.includes(i);return '<div class="lesson-item '+(i===state.lesson?"active ":"")+(d?"done":"")+'" onclick="openLesson('+i+')"><div class="lesson-num">'+(d?"✓":i+1)+'</div><div><strong>'+esc(x.title)+'</strong><span>'+(d?"Completed":"Lesson "+(i+1))+'</span></div></div>'}).join("");
+ const sections=l.sections.map(s=>Array.isArray(s)?'<h4>'+esc(s[0])+'</h4><p>'+esc(s[1])+'</p>':'<p>'+esc(s)+'</p>').join("");
+ let video="";
+ if(l.video&&typeof l.video==="object"&&l.video.id) video='<div class="video"><b>🎥 Lesson video</b><iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(l.video.id)+'?rel=0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe></div>';
+ document.getElementById("lessonArea").innerHTML='<div class="lesson-kicker">LESSON '+(state.lesson+1)+' OF '+total+'</div><h2>'+esc(l.title)+'</h2><p class="lesson-intro">'+esc(l.intro)+'</p><div class="lesson-copy">'+sections+(l.example?'<div class="example"><strong>PRACTICAL EXAMPLE</strong><p>'+esc(l.example)+'</p></div>':"")+video+'</div><div class="lesson-actions"><div>'+(state.lesson>0?'<button class="btn ghost" onclick="openLesson('+(state.lesson-1)+')">← Previous</button>':"")+'</div><div class="action-right"><button class="btn '+(isDone?"ghost":"complete")+'" onclick="completeLesson()">'+(isDone?"✓ Completed":"✓ Mark Lesson Complete")+'</button>'+(state.lesson<total-1?'<button class="btn primary" onclick="nextLesson()">Next Lesson →</button>':"")+'</div></div>'+(done===total?'<div class="exam-ready"><h3>🎓 All lessons completed</h3><p>Your course is complete. Your next step is the examination. If you fail, your lessons remain unlocked; only the next exam attempt requires another exam payment.</p><button class="btn primary" onclick="goExam()">Take the Exam →</button></div>':"");
 }
-function openLesson(i){
-  const lessons=getLessons(state.courseId);
-  if(i<0||i>=lessons.length)return;
-  state.lesson=i;
-  renderCourse();
-  window.scrollTo({top:0,behavior:"smooth"});
+function openLesson(i){if(i<0||i>=state.lessons.length)return;if(i>0&&!state.completed.includes(i)&&i>Math.max(-1,...state.completed))return;state.lesson=i;renderCourse();window.scrollTo({top:0,behavior:"smooth"});}
+function completeLesson(){
+ if(!state.completed.includes(state.lesson))state.completed.push(state.lesson);
+ state.completed.sort((a,b)=>a-b);saveProgress();renderCourse();renderCourseCards();
+ if(state.completed.length===state.lessons.length){setTimeout(goExam,500);return;}
+ if(state.lesson<state.lessons.length-1){setTimeout(()=>{state.lesson++;renderCourse();window.scrollTo({top:0,behavior:"smooth"});},350);}
 }
-function prevLesson(){if(state.lesson>0)openLesson(state.lesson-1)}
-function nextLesson(){if(state.lesson<getLessons(state.courseId).length-1)openLesson(state.lesson+1)}
-function toggleComplete(){
-  const d=state.done[state.courseId]||{completed:[]};
-  d.completed=d.completed||[];
-  const n=d.completed.indexOf(state.lesson);
-  if(n>=0)d.completed.splice(n,1);else d.completed.push(state.lesson);
-  state.done[state.courseId]=d; save(); renderCourse(); renderCourses();
-}
-function escapeHtml(v){
-  return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-}
+function nextLesson(){if(!state.completed.includes(state.lesson))return completeLesson();if(state.lesson<state.lessons.length-1){state.lesson++;renderCourse();}}
+function goExam(){if(state.completed.length<state.lessons.length)return alert("Complete every lesson first.");location.href="/edsa-app.html?course="+encodeURIComponent(state.courseId)+"&exam=1";}
 document.addEventListener("DOMContentLoaded",boot);
 </script>
-</body>
-</html>
