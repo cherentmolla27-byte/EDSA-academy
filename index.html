@@ -2927,7 +2927,8 @@ async function studentLogin(){
  state.studentEmail=j.user.email||email;state.studentName=j.user.name||"Student";closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
  const pendingCourse=window.__EDSA_PENDING_COURSE||"";
  window.__EDSA_PENDING_COURSE="";
- openLearningInline(pendingCourse,false);
+ localStorage.setItem("EDSA_PENDING_COURSE",pendingCourse);
+ window.location.href="/learn.html";
  }catch(e){err.textContent="Could not connect to EDSA."; } finally{btn.disabled=false;btn.textContent="Sign In";}
 }
 async function studentRegister(){
@@ -2938,7 +2939,8 @@ async function studentRegister(){
  try{const r=await EDSA_API_FETCH("/api/auth-register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,password}),cache:"no-store"});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||!j.user){err.textContent=j.error||"Registration failed.";return;}if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}state.studentEmail=j.user.email||email;state.studentName=j.user.name||name;closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
  const pendingCourse=window.__EDSA_PENDING_COURSE||"";
  window.__EDSA_PENDING_COURSE="";
- openLearningInline(pendingCourse,false);
+ localStorage.setItem("EDSA_PENDING_COURSE",pendingCourse);
+ window.location.href="/learn.html";
  }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
 }
 function openLearningInline(courseId,adminMode){
