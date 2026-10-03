@@ -226,7 +226,7 @@ async function activateKey(req, res) {
         } catch (accessWriteError) {
           console.error("[EDSA activation access record]", accessWriteError);
         }
-        return auth.json(res, 200, { ok: true, activated: true, amount: 400, courseId });
+        return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId });
       } catch (writeError) {
         if (writeError.status === 409) continue;
         throw writeError;
