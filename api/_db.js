@@ -1,5 +1,19 @@
 const API_BASE = (process.env.SUPABASE_URL || "").replace(/\/$/, "") + "/rest/v1";
-const SECRET = process.env.SUPABASE_SECRET_KEY || "";
+
+function getServerKey() {
+  // Prefer the legacy service_role key when explicitly configured, then the
+  // newer secret key. Both are backend-only elevated credentials that bypass RLS.
+  // SUPABASE_SECRET_KEYS is supported as a JSON fallback for newer environments.
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) return process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (process.env.SUPABASE_SECRET_KEY) return process.env.SUPABASE_SECRET_KEY;
+  try {
+    const keys = JSON.parse(process.env.SUPABASE_SECRET_KEYS || "{}");
+    if (keys && typeof keys === "object" && keys.default) return keys.default;
+  } catch (_) {}
+  return "";
+}
+
+const SECRET = getServerKey();
 
 function dbConfigured() {
   return Boolean(process.env.SUPABASE_URL && SECRET);
