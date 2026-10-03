@@ -117,13 +117,6 @@
 <section class="hero"><div class="tag">STEP 14 — LEARNING PLATFORM</div><h1>Learn. Practice. Get Certified.</h1><p id="learn_welcome">Loading your student account...</p></section>
 <div id="learn_courseHome" class="panel"><h2 style="margin:0 0 6px">Choose a Course</h2><p style="margin:0 0 18px;color:#64748b;font-size:12px">Tap a course to enter it. Your lessons and progress stay inside that course.</p><div id="learn_courseList" class="courses"><div class="course" onclick="learningSelectCourse('smm')"><strong>Social Media Management</strong><span>Social strategy, content, communities and platform management.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('dme')"><strong>Digital Marketing Essentials</strong><span>Digital campaigns, channels, analytics and marketing strategy.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('pbm')"><strong>Project &amp; Business Management</strong><span>Planning, operations, projects, leadership and business decisions.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('gdm')"><strong>Graphic Design for Marketers</strong><span>Visual communication, design principles, branding and marketing graphics.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('fme')"><strong>Financial Management for Entrepreneurs</strong><span>Budgeting, cash flow, financial decisions and entrepreneurial finance.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('dbi')"><strong>Data Analysis &amp; Business Intelligence</strong><span>Data, dashboards, analytics, databases and business intelligence.</span><b>15 lessons • Open →</b></div></div></div>
 <div id="learn_courseView" class="grid" style="display:none"><aside class="panel"><button class="btn light" style="margin-bottom:14px" onclick="showCourseHome()">← All Courses</button><div id="learn_courseListInside" class="courses"></div></aside><section class="panel"><div id="learn_learningArea"></div></section></div>
-<section id="learn_examWorkspace" class="panel" style="display:none;margin-top:16px;padding:10px">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 8px 10px">
-    <div><strong style="font-size:15px">EDSA Exam</strong><div style="font-size:10px;color:#64748b">Your course, lessons and exam stay in one workspace.</div></div>
-    <button type="button" class="btn light" onclick="closeExamWorkspace()">← Back to Lessons</button>
-  </div>
-  <iframe id="learn_examFrame" title="EDSA Exam" style="width:100%;height:900px;border:1px solid #dbeafe;border-radius:14px;background:#020617" allow="fullscreen"></iframe>
-</section>
 </main>
 </div>
 <section id="stepPayment" class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl hidden-section">
@@ -172,9 +165,12 @@
     <!-- STEP 3: Examination -->
     <section id="stepExam" class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl hidden-section space-y-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
-        <div>
-          <h2 id="examCourseTitle" class="text-xl font-bold text-white"></h2>
-          <p class="text-xs text-slate-400">Total Questions: 50 | Passing Mark: 80% (40/50 correct)</p>
+        <div class="flex items-start gap-3">
+          <button type="button" id="learningExamBackBtn" onclick="closeInlineExam()" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-white font-semibold px-3 py-2 rounded-lg">← Lessons</button>
+          <div>
+            <h2 id="examCourseTitle" class="text-xl font-bold text-white"></h2>
+            <p class="text-xs text-slate-400">Total Questions: 50 | Passing Mark: 80% (40/50 correct)</p>
+          </div>
         </div>
         <span class="text-xs bg-sky-500/10 text-sky-400 font-bold px-3 py-1.5 rounded-full border border-sky-500/30">
           Exam attempt: 400 ETB
@@ -2144,6 +2140,7 @@ async function studentRegister(){
  }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
 }
 function openLearningInline(courseId,adminMode){
+  window.__EDSA_IN_LEARNING_EXAM=false;
   closeInlineExam();
   document.getElementById("stepCatalog").classList.add("hidden-section");
   document.getElementById("stepPayment").classList.add("hidden-section");
@@ -2167,12 +2164,36 @@ function closeLearningInline(){
 function openInlinePayment(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse; if(state.selectedCourse){document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;showSection("stepPayment");}}
 function openInlineExam(courseId){
   if(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse;}
-  document.getElementById("learn_shell").style.display="none";
   if(!state.selectedCourse){showSection("stepCatalog");return;}
+  window.__EDSA_IN_LEARNING_EXAM=true;
+  const shell=document.getElementById("learn_shell");
+  if(shell) shell.style.display="none";
+  const back=document.getElementById("learningExamBackBtn");
+  if(back) back.classList.remove("hidden");
   document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;
   verifyAndStartExam({preventDefault:function(){}});
 }
-function closeInlineExam(){if(document.getElementById("learn_shell"))document.getElementById("learn_shell").style.display="none";}
+function closeInlineExam(){
+  stopTimer();
+  const back=document.getElementById("learningExamBackBtn");
+  if(back) back.classList.add("hidden");
+  if(window.__EDSA_IN_LEARNING_EXAM){
+    window.__EDSA_IN_LEARNING_EXAM=false;
+    showSection("stepCatalog");
+    const shell=document.getElementById("learn_shell");
+    if(shell){
+      shell.style.display="block";
+      renderCourses();
+      if(learningState.courseId){
+        renderCourse();
+        scrollToLesson();
+      }
+    }
+    return;
+  }
+  const shell=document.getElementById("learn_shell");
+  if(shell) shell.style.display="none";
+}
 </script></body>
           </html>
         `);
