@@ -267,7 +267,8 @@ function nextLesson(){
   if(state.lesson<total-1){ openLesson(state.lesson+1); return; }
   renderCourse(); renderCourses();
   if(state.done[state.courseId].completed.length===total){
-    setTimeout(()=>{ if(confirm("🎓 You completed all 15 lessons. Go to the exam now?")) location.href="/edsa-app.html?course="+encodeURIComponent(state.courseId); },120);
+    // The intended course journey is automatic: finish lesson 15 -> open the exam.
+    setTimeout(()=>{ location.href="/edsa-app.html?course="+encodeURIComponent(state.courseId); },250);
   }
 }
 function toggleComplete(){
