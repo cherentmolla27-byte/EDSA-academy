@@ -2,20 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EDSA Admin Dashboard</title>
+<title>EDSA Premium Admin Console</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{background:radial-gradient(circle at 20% 0%,rgba(14,165,233,.10),transparent 32%),radial-gradient(circle at 90% 10%,rgba(234,179,8,.08),transparent 28%),#020617}
+.admin-shell{background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(3,7,18,.96));border:1px solid rgba(148,163,184,.13);box-shadow:0 30px 90px rgba(0,0,0,.35)}
+.admin-glow{box-shadow:0 0 0 1px rgba(250,204,21,.08),0 18px 50px rgba(2,6,23,.28)}
+.premium-stat{background:linear-gradient(145deg,rgba(15,23,42,.98),rgba(15,23,42,.72));border:1px solid rgba(148,163,184,.12);transition:.2s}
+.premium-stat:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.28)}
+.section-card{background:rgba(15,23,42,.82);border:1px solid rgba(148,163,184,.12);box-shadow:0 14px 40px rgba(0,0,0,.18)}
+</style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-<div class="max-w-7xl mx-auto p-4 sm:p-6">
+<body class="text-slate-100 min-h-screen"><div class="max-w-7xl mx-auto p-3 sm:p-6">
+<div class="admin-shell rounded-3xl p-4 sm:p-6">
 <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-<div><p class="text-yellow-400 text-xs font-bold tracking-widest uppercase">EDSA Academy</p><h1 class="text-2xl sm:text-3xl font-black">Admin Dashboard</h1><p class="text-slate-400 text-sm">Live Supabase academy management.</p></div>
+<div><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 text-slate-950 grid place-items-center font-black text-xl">E</div><div><p class="text-yellow-400 text-[10px] font-black tracking-[.22em] uppercase">EDSA Academy • Secure Operations</p><h1 class="text-2xl sm:text-3xl font-black">Premium Admin Console</h1><p class="text-slate-400 text-sm">Live academy operations, students, payments, exams and certificates.</p></div></div></div>
 <div class="flex gap-2">
 <button id="refreshBtn" class="px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm">Refresh</button>
 <button id="logoutBtn" class="px-4 py-2 rounded-lg bg-rose-900/60 font-bold text-sm">Logout</button>
 <button id="academyBtn" class="px-4 py-2 rounded-lg bg-slate-800 font-bold text-sm">Learning Preview</button><button id="examPreviewBtn" class="px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm">Exam Preview</button>
 </div></header>
 
-<section id="login" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6">
+<section id="login" class="max-w-md mx-auto admin-shell rounded-3xl p-7 admin-glow">
 <h2 class="font-bold text-lg mb-2">Administrator Sign In</h2>
 <p class="text-slate-400 text-sm mb-4">Use the existing EDSA administrator PIN.</p>
 <input id="pin" type="password" autocomplete="current-password" placeholder="Admin PIN" class="w-full bg-black border border-slate-700 rounded-lg p-3 mb-3">
@@ -23,10 +31,10 @@
 <p id="loginError" class="text-rose-400 text-xs mt-3 min-h-4"></p>
 </section>
 
-<main id="dashboard" class="hidden space-y-5">
+<main id="dashboard" class="hidden space-y-6">
 <div id="stats" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
 
-<section class="bg-slate-900 border border-yellow-500/30 rounded-2xl p-4">
+<section class="section-card border-yellow-500/30 rounded-2xl p-5 admin-glow">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 <div><h2 class="font-bold">Activation Keys</h2><p class="text-slate-500 text-xs mt-1">Generate a 400 ETB key for one course or a universal key that can activate any course.</p></div>
 <div class="flex flex-wrap gap-2">
@@ -47,14 +55,14 @@
 </section>
 
 <section class="grid lg:grid-cols-2 gap-5">
-<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+<div class="section-card rounded-2xl p-5">
 <div class="flex justify-between gap-2"><h2 class="font-bold mb-3">Students</h2><input id="studentSearch" placeholder="Search" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-32"></div>
 <div class="overflow-auto max-h-80"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Name</th><th class="text-left p-2">Email</th><th class="text-left p-2">Created</th></tr></thead><tbody id="students"></tbody></table></div>
 </div>
 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><h2 class="font-bold mb-3">Course Statistics</h2><div id="courses" class="space-y-2"></div></div>
 </section>
 
-<section class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+<section class="section-card rounded-2xl p-5">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3"><h2 class="font-bold">Exam Attempts</h2><input id="examSearch" placeholder="Search student/course" class="bg-black border border-slate-700 rounded px-2 py-1 text-xs w-44"></div>
 <div class="overflow-auto max-h-96"><table class="w-full text-xs"><thead class="text-slate-500 border-b border-slate-800"><tr><th class="text-left p-2">Student</th><th class="text-left p-2">Course</th><th class="text-left p-2">Score</th><th class="text-left p-2">Result</th><th class="text-left p-2">Date</th><th></th></tr></thead><tbody id="attempts"></tbody></table></div>
 </section>
@@ -156,7 +164,7 @@ function showCertificate(id){
 function renderAll(){
  const s=DATA.stats||{};
  const cards=[[s.students,"Students","text-sky-400"],[s.attempts,"Exam Attempts","text-white"],[s.passed_attempts,"Passed","text-emerald-400"],[s.certificates,"Certificates","text-yellow-400"],[s.payments,"Payments","text-violet-400"],[Number(s.revenue_etb||0).toLocaleString()+" ETB","Revenue","text-yellow-300"]];
- $("stats").innerHTML=cards.map(x=>`<div class="bg-slate-900 border border-slate-800 rounded-xl p-3"><b class="text-xl ${x[2]}">${esc(x[0])}</b><div class="text-[10px] text-slate-500 uppercase mt-1">${esc(x[1])}</div></div>`).join("");
+ $("stats").innerHTML=cards.map(x=>`<div class="premium-stat rounded-2xl p-4"><b class="text-xl ${x[2]}">${esc(x[0])}</b><div class="text-[10px] text-slate-500 uppercase mt-1">${esc(x[1])}</div></div>`).join("");
  renderStudents();renderAttempts();renderCertificates();
  $("courses").innerHTML=(DATA.course_stats||[]).map(x=>`<div class="bg-black/40 border border-slate-800 rounded-lg p-3 flex justify-between gap-3"><b class="text-sm">${esc(x.course_title)}</b><span class="text-xs text-slate-400">${x.attempts} attempts • ${x.passed} passed • Avg ${x.average_score}%</span></div>`).join("")||'<div class="text-slate-500 text-sm">No exam data yet.</div>';
  $("payments").innerHTML=(DATA.payments||[]).map(x=>`<tr class="border-b border-slate-800/70"><td class="p-2">${esc(x.amount)} ETB</td><td class="p-2">${esc(x.status||"Recorded")}</td><td class="p-2 text-slate-500">${esc(fmtDate(x.created_at||x.payment_date))}</td></tr>`).join("")||'<tr><td colspan="3" class="p-3 text-slate-500">No payments.</td></tr>';
@@ -183,7 +191,7 @@ $("loginBtn").addEventListener("click",login);
 $("pin").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
 $("logoutBtn").addEventListener("click",logout);
 $("refreshBtn").addEventListener("click",()=>loadDashboard());
-$("academyBtn").addEventListener("click",()=>location.href="/learning.html?adminPreview=1");
+$("academyBtn").addEventListener("click",()=>location.href="/learn.html?adminPreview=1");
 $("examPreviewBtn").addEventListener("click",()=>location.href="/learning.html?adminPreview=1");
 $("generateKeyBtn").addEventListener("click",async()=>{
  const btn=$("generateKeyBtn"), box=$("keyResult");
