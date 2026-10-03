@@ -75,7 +75,7 @@ async function boot(){
  if(!auth.r.ok||!auth.x.authenticated){location.href="/?login=1&return="+encodeURIComponent("/learning.html");return;}
  state.email=auth.x.user?.email||"";state.name=auth.x.user?.name||"Student";
  document.getElementById("studentName").textContent=state.name;
- document.getElementById("welcome").textContent="Pick an activated course below. Your lessons stay available after you finish them, including after an exam attempt.";
+ document.getElementById("welcome").textContent="Choose any course and start learning immediately. All 15 lessons are free after sign-in. Only the exam attempt requires payment.";
  await renderCourseCards();
  const requested=new URLSearchParams(location.search).get("course");
  if(requested&&COURSES[requested]) openCourse(requested);
@@ -90,14 +90,14 @@ async function renderCourseCards(){
  for(const [id,c] of Object.entries(COURSES)){
    const a=await getAccess(id,false);if(a.ok)unlocked++;
    const pct=JSON.parse(localStorage.getItem(progressKey(id))||"[]").length;
-   list.insertAdjacentHTML("beforeend",'<article class="course-card" onclick="openCourse(\''+id+'\')"><div class="course-top"><div class="course-icon">'+c.icon+'</div><span class="status '+(a.ok?"unlocked":"")+'">'+(a.ok?"UNLOCKED":"LOCKED")+'</span></div><h3>'+esc(c.title)+'</h3><p>'+esc(c.desc)+'</p><div class="course-meta"><span>15 lessons</span><span>'+(a.ok?pct+"% complete":"Activate →")+'</span></div></article>');
+   list.insertAdjacentHTML("beforeend",'<article class="course-card" onclick="openCourse(\''+id+'\')"><div class="course-top"><div class="course-icon">'+c.icon+'</div><span class="status '+(a.ok?"unlocked":"")+'">'+(a.ok?"FREE":"AVAILABLE")+'</span></div><h3>'+esc(c.title)+'</h3><p>'+esc(c.desc)+'</p><div class="course-meta"><span>15 lessons</span><span>'+(a.ok?pct+"% complete":"Start Learning →")+'</span></div></article>');
  }
  document.getElementById("courseCount").textContent=unlocked+" course"+(unlocked===1?"":"s")+" unlocked";
 }
 async function openCourse(id){
  if(!COURSES[id])return;
  const access=await getAccess(id,true);
- if(!access.ok){alert("This course is locked. Complete the 400 ETB activation process to unlock its lessons and first exam attempt.");return;}
+ if(!access.ok){alert("Please sign in to access the free lessons.");return;}
  const lessons=Array.isArray(access.body.lessons)?access.body.lessons:[];
  if(!lessons.length){alert("The course lessons are not available yet. Please try again.");return;}
  state.courseId=id;state.lessons=lessons;state.lesson=0;loadProgress();
