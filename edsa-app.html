@@ -2345,11 +2345,12 @@ function generate50Questions(courseKey, courseTitle) {
         state.studentName = "EDSA Administrator";
         document.getElementById("userStatus").innerText = "ADMIN PREVIEW";
         const courseId = params.get("course") || "";
-        if (courseId && COURSES.some(c => c.id === courseId)) {
-          launchAdminExamPreview(courseId);
-        } else {
-          showSection("stepCatalog");
-        }
+        // Admin preview always starts in the Learning Center. The administrator
+        // must see the real course/15 lessons first, then can open the exam from
+        // the course completion screen. Never drop admin directly into the exam.
+        window.location.href = "/learning.html?adminPreview=1" + (courseId && COURSES.some(c => c.id === courseId)
+          ? "&course=" + encodeURIComponent(courseId) + "&lesson=0"
+          : "");
       } catch (error) {
         console.error("[EDSA] Admin exam preview error:", error);
       }
