@@ -1226,7 +1226,10 @@ function generate50Questions(courseKey, courseTitle) {
         // Learning Center instead of dropping them directly into the exam.
         // Retake activations happen only when the course is already owned and
         // therefore continue below into the exam.
-        if (!alreadyUnlocked) {
+        // A brand-new activation must ALWAYS start in the Learning Center.
+        // Retake activation (course already owned) stays in the Exam Portal.
+        const firstActivation = activation.firstActivation === true;
+        if (firstActivation) {
           try {
             localStorage.setItem("EDSA_LAST_ACTIVATED_COURSE", courseId);
             localStorage.setItem("EDSA_LAST_ACTIVATED_EMAIL", String(state.studentEmail || "").toLowerCase());
