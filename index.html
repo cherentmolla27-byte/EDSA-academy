@@ -107,12 +107,14 @@
     <!-- STEP 2: Payment & Verification -->
     <style id="edsa-inline-learning-style">
 *{box-sizing:border-box}body{margin:0;background:#f5f9ff;color:#0b2145;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.top{background:#061a3b;color:#fff;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}.brand{font-weight:950;letter-spacing:.04em}.brand small{display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em;margin-top:3px}.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:850;cursor:pointer}.blue{background:#1677ff;color:#fff}.light{background:#fff;color:#0b2145;border:1px solid #dbeafe}.wrap{max-width:1150px;margin:auto;padding:25px 5% 60px}.hero{background:linear-gradient(120deg,#061a3b,#0b3f83 60%,#1677ff);color:#fff;border-radius:22px;padding:26px;margin-bottom:16px}.hero .tag{font-size:9px;letter-spacing:.16em;color:#bfdbfe;font-weight:900}.hero h1{font-size:32px;margin:8px 0}.hero p{margin:0;color:#dbeafe;font-size:13px;line-height:1.6}.grid{display:grid;grid-template-columns:1fr;gap:14px}.panel{background:#fff;border:1px solid #dbeafe;border-radius:18px;padding:19px;box-shadow:0 10px 28px rgba(15,66,120,.07)}.courses{display:grid;gap:8px}.course{padding:13px;border:1px solid #e2e8f0;border-radius:12px;cursor:pointer;background:#f8fbff}.course.active{border-color:#1677ff;background:#eff6ff}.course strong{display:block;font-size:12px}.course span{display:block;font-size:9px;color:#64748b;margin-top:3px}.course b{display:block;font-size:9px;color:#1677ff;margin-top:7px}.lesson-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.lesson-head h2{margin:0;font-size:22px}.lesson-head p{margin:5px 0 0;color:#64748b;font-size:11px;line-height:1.5}.bar{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:14px 0 5px}.bar i{display:block;height:100%;width:0;background:#1677ff}.progress-text{font-size:9px;color:#64748b;font-weight:800}.lessons{display:grid;gap:8px;margin-top:18px}.lesson{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer}.lesson.active{border-color:#1677ff;background:#eff6ff}.lesson.done{border-color:#bbf7d0;background:#f0fdf4}.num{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#eff6ff;color:#1677ff;font-weight:900;font-size:10px;flex:none}.done .num{background:#dcfce7;color:#16a34a}.lesson strong{font-size:11px;display:block}.lesson span{font-size:9px;color:#64748b}.check{margin-left:auto;color:#16a34a;font-weight:900}.viewer{margin-top:16px;background:#061a3b;color:#fff;border-radius:17px;padding:24px}.viewer h3{margin:0 0 12px;font-size:25px}.viewer .lesson-copy{color:#dbeafe;font-size:13px;line-height:1.85}.viewer .lesson-copy h4{color:#fff;font-size:16px;margin:22px 0 8px}.viewer .lesson-copy p{margin:0 0 12px}.viewer .lesson-copy ul{margin:8px 0 16px;padding-left:22px}.viewer .lesson-copy li{margin:7px 0}.viewer .example{background:#0b3f83;border:1px solid #3b82f6;border-radius:12px;padding:15px;margin:16px 0}.viewer .example strong{display:block;color:#bfdbfe;margin-bottom:6px}.video{margin-top:20px;background:#020617;border:1px solid #315b91;border-radius:12px;padding:18px;text-align:center}.video b{display:block;color:#60a5fa;font-size:15px}.video span{display:block;color:#94a3b8;font-size:10px;margin-top:5px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.empty{text-align:center;padding:35px;color:#64748b;font-size:12px;background:#f8fbff;border-radius:14px}@media(min-width:800px){.grid{grid-template-columns:300px 1fr}.courses{max-height:70vh;overflow:auto}.wrap{padding-top:30px}}
+.edsa-unified-view{width:100%;box-sizing:border-box;margin:0 auto 18px;border-radius:18px;overflow:hidden}.edsa-unified-view.hidden-section{display:none!important}.edsa-unified-shell{background:#020617;min-height:calc(100vh - 64px);padding:0 0 32px}.edsa-flow-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 5%;background:#061a3b;border-top:1px solid #12345d;border-bottom:1px solid #12345d}.edsa-flow-pill{font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;padding:7px 10px;border:1px solid #1e3a5f;border-radius:999px}.edsa-flow-pill.active{color:#fff;background:#1677ff;border-color:#1677ff}.edsa-unified-content{width:min(1180px,90%);margin:0 auto}.edsa-unified-view .bg-slate-900{background:#07111f!important}.edsa-unified-view .border-slate-800{border-color:#17304f!important}.edsa-unified-view .text-slate-300{color:#cbd5e1!important}.edsa-unified-view .text-slate-400{color:#94a3b8!important}
 </style>
-<div id="learn_shell" style="display:none">
+<div id="learn_shell" class="edsa-unified-shell" style="display:none">
   <div style="background:#061a3b;color:#fff;padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:45">
-    <div><strong>EDSA LEARNING CENTER</strong><small style="display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em">ONE WORKSPACE</small></div>
-    <button type="button" class="btn light" onclick="closeLearningInline()">← Back</button>
+    <div><strong>EDSA DIGITAL SKILLS ACADEMY</strong><small style="display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em">LEARN • EXAM • RESULT • CERTIFICATE — ONE WORKSPACE</small></div>
+    <button type="button" class="btn light" onclick="closeLearningInline()">← Home</button>
   </div>
+  <div class="edsa-flow-bar"><span id="edsaFlowCourse" class="edsa-flow-pill active">Course</span><span id="edsaFlowExam" class="edsa-flow-pill">Exam</span><span id="edsaFlowResult" class="edsa-flow-pill">Result</span><span id="edsaFlowCertificate" class="edsa-flow-pill">Certificate</span></div>
   <main id="learn_app" style="display:none" class="wrap">
 <section class="hero"><div class="tag">STEP 14 — LEARNING PLATFORM</div><h1>Learn. Practice. Get Certified.</h1><p id="learn_welcome">Loading your student account...</p></section>
 <div id="learn_courseHome" class="panel"><h2 style="margin:0 0 6px">Choose a Course</h2><p style="margin:0 0 18px;color:#64748b;font-size:12px">Tap a course to enter it. Your lessons and progress stay inside that course.</p><div id="learn_courseList" class="courses"><div class="course" onclick="learningSelectCourse('smm')"><strong>Social Media Management</strong><span>Social strategy, content, communities and platform management.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('dme')"><strong>Digital Marketing Essentials</strong><span>Digital campaigns, channels, analytics and marketing strategy.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('pbm')"><strong>Project &amp; Business Management</strong><span>Planning, operations, projects, leadership and business decisions.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('gdm')"><strong>Graphic Design for Marketers</strong><span>Visual communication, design principles, branding and marketing graphics.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('fme')"><strong>Financial Management for Entrepreneurs</strong><span>Budgeting, cash flow, financial decisions and entrepreneurial finance.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('dbi')"><strong>Data Analysis &amp; Business Intelligence</strong><span>Data, dashboards, analytics, databases and business intelligence.</span><b>15 lessons • Open →</b></div></div></div>
@@ -994,10 +996,28 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     function showSection(id) {
-      ["stepCatalog", "stepPayment", "stepExam", "stepResult"].forEach(sec => {
-        document.getElementById(sec).classList.add("hidden-section");
+      unifyLearningWorkspaceViews();
+      const viewIds = ["stepCatalog", "stepPayment", "stepExam", "stepResult"];
+      viewIds.forEach(function(sec) {
+        const el = document.getElementById(sec);
+        if (el) el.classList.add("hidden-section");
       });
-      document.getElementById(id).classList.remove("hidden-section");
+
+      if (id === "stepPayment" || id === "stepExam" || id === "stepResult") {
+        const shell = document.getElementById("learn_shell");
+        const app = document.getElementById("learn_app");
+        if (shell) shell.style.display = "block";
+        if (app) app.style.display = "none";
+        const target = document.getElementById(id);
+        if (target) target.classList.remove("hidden-section");
+        updateUnifiedFlow(id === "stepPayment" ? "course" : id === "stepExam" ? "exam" : "result");
+        window.scrollTo({top:0, behavior:"smooth"});
+        return;
+      }
+
+      const target = document.getElementById(id);
+      if (target) target.classList.remove("hidden-section");
+      if (id === "stepCatalog") updateUnifiedFlow("course");
     }
 
     function navToCatalog() {\n      if(document.getElementById("learn_shell")) document.getElementById("learn_shell").style.display="none";
@@ -1498,6 +1518,7 @@ function generate50Questions(courseKey, courseTitle) {
       }
 
       document.getElementById("userStatus").innerText = passed ? "Passed - Certificate Issued" : "Failed - Key Expired";
+      if (passed) updateUnifiedFlow("certificate");
       if (passed) {
         ensureCertificateRecord().then(record => {
           if (state.studentEmail) saveStudentJourneyUpdate("passed", score, {
@@ -2140,19 +2161,20 @@ async function studentRegister(){
  }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
 }
 function openLearningInline(courseId,adminMode){
+  unifyLearningWorkspaceViews();
   window.__EDSA_IN_LEARNING_EXAM=false;
-  closeInlineExam();
-  document.getElementById("stepCatalog").classList.add("hidden-section");
-  document.getElementById("stepPayment").classList.add("hidden-section");
-  document.getElementById("stepExam").classList.add("hidden-section");
-  document.getElementById("stepResult").classList.add("hidden-section");
-  document.getElementById("learn_shell").style.display="block";
+  const shell=document.getElementById("learn_shell");
+  const app=document.getElementById("learn_app");
+  if(shell) shell.style.display="block";
+  if(app) app.style.display="block";
+  ["stepPayment","stepExam","stepResult"].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add("hidden-section");});
   learningState.email=adminMode?"admin":(state.studentEmail||"");
   learningState.name=adminMode?"EDSA Administrator":(state.studentName||"Student");
   learningState.unlocked=learningState.unlocked||{};
   Object.keys(LEARNING_COURSES).forEach(id=>{if(adminMode)learningState.unlocked[id]=true;});
   window.__EDSA_ADMIN_PREVIEW_MODE=!!adminMode;
-  document.getElementById("learn_welcome").textContent=adminMode?"Administrator Preview — all courses and lessons are available.":"Welcome, "+learningState.name+". Your course lessons and exam stay in this one workspace.";
+  document.getElementById("learn_welcome").textContent=adminMode?"Administrator Preview — all courses and lessons are available.":"Welcome, "+learningState.name+". Your course lessons, exam, result and certificate stay in this one workspace.";
+  updateUnifiedFlow("course");
   renderCourses();
   if(courseId){learningState.unlocked[courseId]=true;learningSelectCourse(courseId,0);}
 }
@@ -2167,7 +2189,9 @@ function openInlineExam(courseId){
   if(!state.selectedCourse){showSection("stepCatalog");return;}
   window.__EDSA_IN_LEARNING_EXAM=true;
   const shell=document.getElementById("learn_shell");
-  if(shell) shell.style.display="none";
+  if(shell) shell.style.display="block";
+  const app=document.getElementById("learn_app");
+  if(app) app.style.display="none";
   const back=document.getElementById("learningExamBackBtn");
   if(back) back.classList.remove("hidden");
   document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;
@@ -2184,13 +2208,14 @@ function closeInlineExam(){
       if(el) el.classList.add("hidden-section");
     });
     const shell=document.getElementById("learn_shell");
-    if(shell){
-      shell.style.display="block";
-      renderCourses();
-      if(learningState.courseId){
-        renderCourse();
-        scrollToLesson();
-      }
+    const app=document.getElementById("learn_app");
+    if(shell) shell.style.display="block";
+    if(app) app.style.display="block";
+    updateUnifiedFlow("course");
+    renderCourses();
+    if(learningState.courseId){
+      renderCourse();
+      scrollToLesson();
     }
     return;
   }
@@ -2659,6 +2684,30 @@ function closeInlineExam(){
       renderKeysTable();
     }
 
+    function unifyLearningWorkspaceViews() {
+      const shell = document.getElementById("learn_shell");
+      const holder = document.getElementById("learn_unified_views");
+      if (!shell || !holder || holder.dataset.ready === "1") return;
+      ["stepPayment","stepExam","stepResult"].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.add("edsa-unified-view");
+          holder.appendChild(el);
+        }
+      });
+      holder.dataset.ready = "1";
+    }
+
+    function updateUnifiedFlow(step) {
+      const ids = ["edsaFlowCourse","edsaFlowExam","edsaFlowResult","edsaFlowCertificate"];
+      ids.forEach(function(id){ const el=document.getElementById(id); if(el) el.classList.remove("active"); });
+      if (step === "course") document.getElementById("edsaFlowCourse")?.classList.add("active");
+      if (step === "exam") document.getElementById("edsaFlowExam")?.classList.add("active");
+      if (step === "result") document.getElementById("edsaFlowResult")?.classList.add("active");
+      if (step === "certificate") { document.getElementById("edsaFlowResult")?.classList.add("active"); document.getElementById("edsaFlowCertificate")?.classList.add("active"); }
+    }
+
+    unifyLearningWorkspaceViews();
     initCatalog();
 
     // Replace fallback/generated questions with the validated dedicated 50-question banks.
