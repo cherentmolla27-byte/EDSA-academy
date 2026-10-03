@@ -22,8 +22,6 @@
     if(window.__EDSA_ADMIN_PREVIEW_INITIALIZED)return;
     window.__EDSA_ADMIN_PREVIEW_INITIALIZED=true;
     if(location.pathname==='/edsa-app.html'){
-      // Use click interception as the primary admin route. This does not depend
-      // on wrapping selectCourse before/after the main app script initializes.
       document.addEventListener('click',async function(e){
         const button=e.target&&e.target.closest?e.target.closest('button[onclick^="selectCourse("]'):null;
         if(!button)return;
@@ -43,21 +41,15 @@
           if(state.adminAuthenticated){
             closeAdminModal();
             if(typeof stopTimer==='function')stopTimer();
-            state.selectedCourse=null;
-            if(typeof initCatalog==='function')initCatalog();
-            if(typeof showSection==='function')showSection('stepCatalog');
-            const status=document.getElementById('userStatus');
-            if(status)status.innerText='Admin Preview Mode — Select a Course';
+            // Administrator authentication must open the Learning Center preview,
+            // not leave the administrator on the Exam/Certificate result screen.
+            location.href='/admin-learning.html';
           }
         };
       }
-      const q=new URLSearchParams(location.search).get('course');
-      if(q&&typeof COURSES!=='undefined'&&Array.isArray(COURSES)&&COURSES.some(c=>c.id===q)){
-        setTimeout(async function(){if(await isAdmin())adminOpenCourse(q);},250);
-      }
     }
-    if(!(await isAdmin()))return;
     if(location.pathname==='/learning.html'||location.pathname==='/admin-learning.html'){
+      if(!(await isAdmin()))return;
       try{
         state.email='admin';state.name='EDSA Administrator';
         const q=new URLSearchParams(location.search).get('course');
@@ -73,7 +65,7 @@
           if(typeof renderCourse==='function')renderCourse();
         }else{
           const welcome=document.getElementById('welcome');
-          if(welcome)welcome.textContent='Admin Preview Mode — all courses, lessons and exams are available for testing. Student access and payments are unchanged.';
+          if(welcome)welcome.textContent='Admin Preview Mode — all courses, lessons and exam access are available for testing. Student payments and access rules are unchanged.';
           if(typeof renderCourses==='function')renderCourses();
         }
       }catch(e){console.error('[EDSA] Admin learning preview:',e);}
