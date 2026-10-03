@@ -277,7 +277,7 @@ function nextLesson(){
   renderCourse(); renderCourses();
   if(state.done[state.courseId].completed.length===total){
     // The intended course journey is automatic: finish lesson 15 -> open the exam.
-    setTimeout(()=>{ location.href="/edsa-app.html?"+(window.__EDSA_ADMIN_PREVIEW_MODE?"adminPreview=1&":"")+"course="+encodeURIComponent(state.courseId); },250);
+    setTimeout(()=>{ location.href="/edsa-app.html?"+(window.__EDSA_ADMIN_PREVIEW_MODE?"adminPreview=1&exam=1&":"course="+encodeURIComponent(state.courseId)+"&exam=1"); if(!window.__EDSA_ADMIN_PREVIEW_MODE){ return; } },250);
   }
 }
 function toggleComplete(){
