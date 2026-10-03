@@ -75,6 +75,8 @@
         if(view)view.style.display='grid';
         if(typeof renderCourses==='function')renderCourses();
         if(typeof renderCourse==='function')renderCourse();
+        const examLink=document.querySelector('.top .btn.blue');
+        if(examLink) examLink.setAttribute('href','/edsa-app.html?adminPreview=1&course='+encodeURIComponent(q));
         if(typeof scrollToLesson==='function')scrollToLesson();
       }catch(e){
         console.error('[EDSA] Admin learning preview:',e);
