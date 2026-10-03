@@ -2,9 +2,13 @@
   {
     "code": "EDSA-B6A6952F",
     "scope": "all",
-    "amount": 500,
-    "status": "active",
-    "createdAt": "2026-10-03T10:48:43.646Z"
+    "amount": 400,
+    "status": "used",
+    "createdAt": "2026-10-03T10:48:43.646Z",
+    "usedAt": "2026-10-03T10:54:57.378Z",
+    "usedBy": "Cherent Molla",
+    "usedEmail": "cherentmolla27@gmail.com",
+    "usedCourse": "smm"
   },
   {
     "code": "EDSA-C2C6645E",
