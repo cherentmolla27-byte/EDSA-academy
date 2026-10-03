@@ -2915,7 +2915,7 @@ async function studentLogin(){
  state.studentEmail=j.user.email||email;state.studentName=j.user.name||"Student";closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
  const pendingCourse=window.__EDSA_PENDING_COURSE||"";
  window.__EDSA_PENDING_COURSE="";
- if(pendingCourse) openLearningInline(pendingCourse,false);
+ openLearningInline(pendingCourse,false);
  }catch(e){err.textContent="Could not connect to EDSA."; } finally{btn.disabled=false;btn.textContent="Sign In";}
 }
 async function studentRegister(){
