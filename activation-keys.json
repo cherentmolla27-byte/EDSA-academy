@@ -1,5 +1,12 @@
 [
   {
+    "code": "EDSA-4F26B0D2",
+    "scope": "all",
+    "amount": 500,
+    "status": "active",
+    "createdAt": "2026-10-03T10:18:36.172Z"
+  },
+  {
     "code": "EDSA-DF3B92F8",
     "scope": "all",
     "amount": 400,
