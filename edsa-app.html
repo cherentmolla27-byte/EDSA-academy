@@ -1030,6 +1030,28 @@ function generate50Questions(courseKey, courseTitle) {
       return fetch(url, Object.assign({}, options, { credentials: "include", headers }));
     }
 
+    function launchAdminExamPreview(courseId) {
+      const course = COURSES.find(c => c.id === courseId);
+      if (!course) return;
+      state.selectedCourse = course;
+      state.studentEmail = "admin";
+      state.studentName = "EDSA Administrator";
+      state.accessKey = "EDSA-ADMIN-PREVIEW";
+      state.userAnswers = {};
+      state.currentPage = 1;
+      state.score = 0;
+      window.__EDSA_ADMIN_PREVIEW_MODE = true;
+      window.__EDSA_EXAM_ATTEMPT_RECORDED = true;
+      const nameInput = document.getElementById("studentName");
+      if (nameInput) nameInput.value = state.studentName;
+      document.getElementById("examCourseTitle").innerText = course.title;
+      document.getElementById("userStatus").innerText = "ADMIN PREVIEW: " + course.title;
+      startTimer();
+      renderPage();
+      updateProgress();
+      showSection("stepExam");
+    }
+
     async function selectCourse(courseId) {
       // HARD GATE: no student account = no exam/payment flow.
       try {
@@ -2290,6 +2312,35 @@ function generate50Questions(courseKey, courseTitle) {
         }, 150);
       } catch (e) {
         console.error("[EDSA] Certificate test mode error:", e);
+      }
+    })();
+
+    // Dedicated administrator exam preview. It never creates student attempts,
+    // never charges a key, and never changes student access.
+    (async function handleAdminPreviewMode() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("adminPreview") !== "1") return;
+        const response = await fetch("/api/admin-me", { credentials: "include", cache: "no-store" });
+        const result = await response.json().catch(() => ({}));
+        const role = result && result.user && result.user.role ? result.user.role : result.role;
+        if (!response.ok || !result.ok || role !== "admin") {
+          alert("Administrator sign-in required.");
+          window.location.href = "/admin-dashboard.html";
+          return;
+        }
+        window.__EDSA_ADMIN_PREVIEW_MODE = true;
+        state.studentEmail = "admin";
+        state.studentName = "EDSA Administrator";
+        document.getElementById("userStatus").innerText = "ADMIN PREVIEW";
+        const courseId = params.get("course") || "";
+        if (courseId && COURSES.some(c => c.id === courseId)) {
+          launchAdminExamPreview(courseId);
+        } else {
+          showSection("stepCatalog");
+        }
+      } catch (error) {
+        console.error("[EDSA] Admin exam preview error:", error);
       }
     })();
 
