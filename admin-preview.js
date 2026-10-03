@@ -21,7 +21,7 @@
     }catch(_){return false;}
   }
 
-  async function getLessons(courseId){
+  async function fetchAdminLessons(courseId){
     const r=await fetch('/api/admin-course-content?courseId='+encodeURIComponent(courseId),{credentials:'include',cache:'no-store'});
     const x=await r.json().catch(()=>({}));
     if(!r.ok||!x.ok) throw new Error(x.error||'Admin course preview unavailable');
@@ -62,7 +62,7 @@
 
     if(q && typeof COURSES!=='undefined' && COURSES[q]){
       try{
-        const lessons=await getLessons(q);
+        const lessons=await fetchAdminLessons(q);
         if(typeof LESSON_CACHE!=='undefined') LESSON_CACHE[q]=lessons;
         state.unlocked[q]=true;
         state.courseId=q;
