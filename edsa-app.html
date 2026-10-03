@@ -1194,7 +1194,8 @@ function generate50Questions(courseKey, courseTitle) {
       if (id === "stepCatalog") updateUnifiedFlow("course");
     }
 
-    function navToCatalog() {\n      if(document.getElementById("learn_shell")) document.getElementById("learn_shell").style.display="none";
+    function navToCatalog() {
+      if(document.getElementById("learn_shell")) document.getElementById("learn_shell").style.display="none";
       stopTimer();
       document.getElementById("userStatus").innerText = "Status: Select Exam";
       showSection("stepCatalog");
