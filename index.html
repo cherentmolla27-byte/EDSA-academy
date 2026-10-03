@@ -3047,6 +3047,28 @@ function closeInlineExam(){
   if(shell) shell.style.display="none";
 }
 
+
+
+// Restore a valid student session after refresh/reopen.
+async function restoreStudentSession(){
+  const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||"";
+  if(!token) return;
+  try{
+    const r=await EDSA_API_FETCH("/api/auth-me",{method:"GET",cache:"no-store"});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.ok&&j.user&&j.user.role==="student"){
+      state.studentEmail=j.user.email||"";
+      state.studentName=j.user.name||"Student";
+      const status=document.getElementById("userStatus");
+      if(status) status.innerText="Signed in: "+state.studentName;
+      window.__EDSA_STUDENT_RESTORED=true;
+    }else{
+      sessionStorage.removeItem("EDSA_SESSION_TOKEN");
+      localStorage.removeItem("EDSA_SESSION_TOKEN");
+    }
+  }catch(e){console.warn("[EDSA] Could not restore student session:",e);}
+}
+restoreStudentSession();
 </script>
 <div id="studentAuthModal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:18px">
   <div style="width:min(430px,100%);background:#0f172a;border:1px solid #334155;border-radius:18px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.45)">
