@@ -2912,6 +2912,9 @@ async function studentLogin(){
  const j=await r.json().catch(()=>({})); if(!r.ok||!j.ok||!j.user||j.user.role!=="student"){err.textContent=j.error||"Sign-in failed.";return;}
  if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}
  state.studentEmail=j.user.email||email;state.studentName=j.user.name||"Student";closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
+ const pendingCourse=window.__EDSA_PENDING_COURSE||"";
+ window.__EDSA_PENDING_COURSE="";
+ if(pendingCourse) openLearningInline(pendingCourse,false);
  }catch(e){err.textContent="Could not connect to EDSA."; } finally{btn.disabled=false;btn.textContent="Sign In";}
 }
 async function studentRegister(){
@@ -2920,9 +2923,19 @@ async function studentRegister(){
  if(!name||!email||!password){err.textContent="Complete all fields.";return;} if(password.length<8){err.textContent="Password must be at least 8 characters.";return;} if(password!==confirm){err.textContent="Passwords do not match.";return;}
  btn.disabled=true;btn.textContent="Creating…";
  try{const r=await EDSA_API_FETCH("/api/auth-register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,password}),cache:"no-store"});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||!j.user){err.textContent=j.error||"Registration failed.";return;}if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}state.studentEmail=j.user.email||email;state.studentName=j.user.name||name;closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
+ const pendingCourse=window.__EDSA_PENDING_COURSE||"";
+ window.__EDSA_PENDING_COURSE="";
+ if(pendingCourse) openLearningInline(pendingCourse,false);
  }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
 }
 function openLearningInline(courseId,adminMode){
+  // Public visitors must have a student account before entering the learning platform.
+  // Admin preview is the only intentional bypass.
+  if(!adminMode && !state.studentEmail){
+    window.__EDSA_PENDING_COURSE = courseId || "";
+    showStudentAuth();
+    return;
+  }
   const publicNav=document.querySelector(".edsa-public-nav"); if(publicNav) publicNav.style.display="none";
   unifyLearningWorkspaceViews();
   window.__EDSA_IN_LEARNING_EXAM=false;
@@ -2947,7 +2960,11 @@ function closeLearningInline(){
   if(window.__EDSA_ADMIN_PREVIEW_MODE)window.__EDSA_ADMIN_PREVIEW_MODE=false;
   navToCatalog();
 }
-function openInlinePayment(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse; if(state.selectedCourse){document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;showSection("stepPayment");}}
+function openInlinePayment(courseId){
+  if(!state.studentEmail){ window.__EDSA_PENDING_COURSE=courseId||""; showStudentAuth(); return; }
+  state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse;
+  if(state.selectedCourse){document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;showSection("stepPayment");}
+}
 function openInlineExam(courseId){
   if(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse;}
   if(!state.selectedCourse){showSection("stepCatalog");return;}
