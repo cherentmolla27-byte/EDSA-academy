@@ -199,38 +199,61 @@ async function activateKey(req, res) {
       if (alreadyOwned && lastAttempt && lastAttempt.passed === true) return auth.json(res, 409, { ok: false, error: "You have already passed this course. A new exam attempt is not needed." });
 
       key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
+      // The database is the authoritative source for course ownership and
+      // paid exam entitlements. Never report activation success unless both
+      // records were actually persisted. This prevents a key from appearing
+      // activated while the student remains locked out of the course/exam.
+      if (!db.dbConfigured()) {
+        return auth.json(res, 503, { ok: false, error: "Course access service is temporarily unavailable. Please try again." });
+      }
+
+      let accessRows = [];
+      let entitlementRows = [];
+      try {
+        accessRows = await db.upsert("course_access", {
+          email: normalizedEmail,
+          course_id: courseId,
+          activation_code: code,
+          amount: 400,
+          activated_at: new Date().toISOString()
+        }, "email,course_id");
+
+        entitlementRows = await db.upsert("exam_entitlements", {
+          email: normalizedEmail,
+          course_id: courseId,
+          activation_code: code,
+          status: "available",
+          created_at: new Date().toISOString(),
+          used_at: null
+        }, "activation_code");
+
+        if (!Array.isArray(accessRows) || !accessRows.length ||
+            !Array.isArray(entitlementRows) || !entitlementRows.length) {
+          throw new Error("Activation records were not returned by the database.");
+        }
+      } catch (accessWriteError) {
+        console.error("[EDSA activation access record]", accessWriteError);
+        return auth.json(res, 503, {
+          ok: false,
+          error: "Activation could not be saved. Your key was not consumed. Please try again."
+        });
+      }
+
       try {
         await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 400 ETB key");
-        // Persist course ownership separately from the activation-key registry.
-        // This is the authoritative student/course relationship used by the
-        // Learning Center and Exam Portal after the one-time activation.
-        try {
-          if (db.dbConfigured()) {
-            await db.upsert("course_access", {
-              email: auth.normalizeEmail(s.email),
-              course_id: courseId,
-              activation_code: code,
-              amount: 400,
-              activated_at: new Date().toISOString()
-            }, "email,course_id");
-            // Every successful activation grants exactly one exam attempt.
-            await db.upsert("exam_entitlements", {
-              email: auth.normalizeEmail(s.email),
-              course_id: courseId,
-              activation_code: code,
-              status: "available",
-              created_at: new Date().toISOString(),
-              used_at: null
-            }, "activation_code");
-          }
-        } catch (accessWriteError) {
-          console.error("[EDSA activation access record]", accessWriteError);
-        }
-        return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId });
       } catch (writeError) {
+        // Do not claim success if the key registry cannot be updated.
+        // The DB rows are idempotent by email/course and activation_code, so
+        // retrying the same key will safely reconcile the records.
         if (writeError.status === 409) continue;
-        throw writeError;
+        console.error("[EDSA activation key registry]", writeError);
+        return auth.json(res, 503, {
+          ok: false,
+          error: "Activation could not be finalized. Please try the same key again."
+        });
       }
+
+      return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId });
     }
     return auth.json(res, 409, { ok: false, error: "The activation registry changed repeatedly. Please try again." });
   } catch (e) {
