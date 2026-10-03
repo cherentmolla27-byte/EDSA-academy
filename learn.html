@@ -287,7 +287,7 @@
     <div style="min-width:0"><strong>EDSA DIGITAL SKILLS ACADEMY</strong><small style="display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em">MY LEARNING • EXAM • CERTIFICATE</small></div>
     <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end">
       <span id="studentTopProgress" style="font-size:9px;color:#bfdbfe;font-weight:800">Your Learning Center</span>
-      <button type="button" onclick="window.location.href='/admin-dashboard.html'" style="border:1px solid #334155;background:#0f172a;color:#fbbf24;border-radius:9px;padding:8px 10px;font-size:9px;font-weight:900">⚙ Admin Console</button>
+      <button type="button" onclick="openAdminModal()" style="border:1px solid rgba(250,204,21,.35);background:linear-gradient(135deg,#17120a,#0f172a);color:#fbbf24;border-radius:9px;padding:8px 10px;font-size:9px;font-weight:900;box-shadow:0 6px 18px rgba(0,0,0,.18)">⚙ Admin Console</button>
       <button type="button" class="btn light" onclick="window.location.href='/'">← Home</button>
     </div>
   </div>
@@ -3130,6 +3130,11 @@ restoreStudentSession();
 .edsa-public-home-only,.edsa-public-nav{display:none!important}
 body{background:#f8fafc}
 .edsa-student-topbar{box-shadow:0 8px 28px rgba(2,6,23,.18)}
+#adminModal>div{background:linear-gradient(145deg,#07111f,#020617)!important;border:1px solid rgba(250,204,21,.28)!important;box-shadow:0 35px 100px rgba(0,0,0,.62),0 0 50px rgba(250,204,21,.06)!important;border-radius:24px!important}
+#adminDashboardView .bg-black\/80{background:linear-gradient(145deg,rgba(2,6,23,.96),rgba(15,23,42,.86))!important;border-color:rgba(148,163,184,.14)!important}
+#adminDashboardView h3,#adminDashboardView h4{letter-spacing:.02em}
+#adminDashboardView .text-sky-400{color:#38bdf8!important}
+#adminDashboardView .text-yellow-400{color:#fbbf24!important}
 #learn_courseHome .panel{}
 #learn_courseView{align-items:start}
 #learn_courseView>.panel:first-child{min-width:0}
