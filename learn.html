@@ -317,9 +317,23 @@
 #adminDashboardView .edsa-admin-stat b{display:block;color:#fff;font-size:15px}
 #adminDashboardView .edsa-admin-stat span{color:#bfdbfe;font-size:8px}
 @media(min-width:800px){#learn_courseList{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+.edsa-admin-launcher{position:fixed;right:16px;bottom:16px;z-index:70;border:1px solid rgba(250,204,21,.45);background:linear-gradient(135deg,#111827,#0b2145 55%,#1677ff);color:#fef3c7;border-radius:15px;padding:11px 14px;display:flex;align-items:center;gap:8px;font-size:10px;font-weight:950;box-shadow:0 16px 38px rgba(2,8,23,.32);cursor:pointer;transition:.2s}
+.edsa-admin-launcher:hover{transform:translateY(-2px);box-shadow:0 20px 45px rgba(2,8,23,.42)}
+.edsa-admin-launcher i{color:#facc15}.edsa-admin-launcher small{display:block;color:#bfdbfe;font-size:7px;font-weight:800;margin-top:2px}
+.edsa-payment-drop{display:block;border:1.5px dashed #3b82f6;background:linear-gradient(135deg,#071426,#0b2145);border-radius:15px;padding:15px;text-align:center;cursor:pointer;transition:.2s}
+.edsa-payment-drop:hover{border-color:#60a5fa;background:#0b2447}
+.edsa-payment-drop .icon{width:42px;height:42px;border-radius:12px;background:#1677ff1a;color:#60a5fa;display:grid;place-items:center;margin:0 auto 8px;font-size:17px}
+.edsa-payment-drop b{display:block;color:#fff;font-size:11px}.edsa-payment-drop span{display:block;color:#93c5fd;font-size:9px;margin-top:4px}
+.edsa-payment-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.edsa-receipt-card{margin-top:10px;border:1px solid #315b91;background:#020617;border-radius:15px;padding:10px}
+.edsa-receipt-card img{display:block;width:100%;max-height:280px;object-fit:contain;border-radius:10px;background:#000}
+
 </style>
 </style>
 <div id="learn_shell" class="edsa-unified-shell" style="display:none">
+<button id="edsaAdminLauncher" type="button" class="edsa-admin-launcher" onclick="openAdminModal()" aria-label="Open EDSA Admin Console">
+  <i class="fa-solid fa-shield-halved"></i><span>EDSA ADMIN<small>Secure Console</small></span>
+</button>
   <div class="edsa-student-topbar" style="background:#061a3b;color:#fff;padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:45">
     <div style="min-width:0"><strong>EDSA DIGITAL SKILLS ACADEMY</strong><small style="display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em">MY LEARNING • EXAM • CERTIFICATE</small></div>
     <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end">
@@ -362,7 +376,12 @@
         <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-3">
           <p id="paymentInstructions" class="text-xs text-slate-400">Pay 400 ETB, then upload your transfer screenshot below. Telegram will open your EDSA admin chat with the payment details ready. Attach the screenshot and tap Send for admin confirmation. After approval, the admin gives you a one-time activation key.</p>
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <input id="paymentReceiptFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewPaymentReceipt(this)" class="flex-1 text-xs text-slate-300 file:mr-2 file:rounded-lg file:border-0 file:bg-sky-500 file:px-3 file:py-2 file:text-xs file:font-bold file:text-white">
+            <label class="edsa-payment-drop" for="paymentReceiptFile">
+  <span class="icon"><i class="fa-solid fa-image"></i></span>
+  <b id="paymentFileLabel">Add payment screenshot</b>
+  <span>Tap here to choose a real PNG, JPG or WEBP image • up to 8 MB</span>
+  <input id="paymentReceiptFile" class="edsa-payment-file" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewPaymentReceipt(this)">
+</label>
             <button type="button" id="sendPaymentReceiptBtn" onclick="sendPaymentReceipt()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg inline-flex items-center justify-center gap-2 transition-colors whitespace-nowrap">
               <i class="fa-brands fa-telegram text-base"></i> Send to EDSA on Telegram
             </button>
@@ -459,7 +478,7 @@
           </h3>
           <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <p class="text-xs text-slate-400">Enter administrator PIN code to access key generator.</p>
+        <p class="text-xs text-slate-400">Secure administrator area • activation keys • students • payments • certificates • learning preview.</p>
         
         <div id="lockoutNotice" class="hidden text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-lg font-semibold"></div>
 
@@ -527,7 +546,7 @@
         <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">EDSA Admin Dashboard</h4>
+              <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">EDSA Premium Admin Dashboard</h4>
               <p class="text-[11px] text-slate-400 mt-1">Local operational overview from student profiles, exam activity, keys and certificates.</p>
             </div>
             <button onclick="renderAdminDashboard()" class="text-[10px] text-sky-400 font-bold">Refresh</button>
