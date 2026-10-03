@@ -2300,6 +2300,7 @@ function generate50Questions(courseKey, courseTitle) {
       try {
         const params = new URLSearchParams(window.location.search);
         const courseId = params.get("course");
+        const openExam = params.get("exam") === "1";
         const openAdmin = params.get("admin") === "1";
         const studentEmail = params.get("studentEmail");
         const studentName = params.get("studentName");
@@ -2309,7 +2310,15 @@ function generate50Questions(courseKey, courseTitle) {
         if (courseId) {
           setTimeout(() => {
             if (COURSES.some(c => c.id === courseId)) {
-              selectCourse(courseId);
+              if (openExam) {
+                state.selectedCourse = COURSES.find(c => c.id === courseId);
+                const nameInput = document.getElementById("studentName");
+                if (nameInput) nameInput.value = state.studentName || "";
+                showSection("stepPayment");
+                verifyAndStartExam({ preventDefault: function() {} });
+              } else {
+                selectCourse(courseId);
+              }
             }
           }, 0);
         } else if (openAdmin) {
