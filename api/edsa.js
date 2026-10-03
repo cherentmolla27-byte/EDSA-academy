@@ -272,6 +272,26 @@ async function adminGenerateKey(req, res) {
   }
 }
 
+async function adminCourseContent(req, res) {
+  if (!method(req, res, ["GET"])) return;
+  const session = requireRole(req, "admin");
+  if (!session) return auth.json(res, 401, { ok: false, error: "Admin sign-in required." });
+  if (!db.dbConfigured()) return auth.json(res, 503, { ok: false, error: "Student database is not configured." });
+  try {
+    const courseId = String((req.query && req.query.courseId) || "").trim().toLowerCase();
+    const allowed = ["smm", "dme", "pbm", "gdm", "fme", "dbi"];
+    if (!allowed.includes(courseId)) return auth.json(res, 400, { ok: false, error: "Course is required." });
+    const rows = await db.select("protected_course_lessons", "select=lessons&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
+    const lessons = rows && rows[0] && Array.isArray(rows[0].lessons) ? rows[0].lessons : [];
+    if (!lessons.length) return auth.json(res, 404, { ok: false, error: "Course lessons are unavailable." });
+    res.setHeader("Cache-Control", "no-store, private");
+    return auth.json(res, 200, { ok: true, courseId, lessons });
+  } catch (e) {
+    console.error("[EDSA admin course content]", e);
+    return auth.json(res, e.status || 500, { ok: false, error: "Admin course preview could not be loaded." });
+  }
+}
+
 async function examAccess(req, res) {
   if (!method(req, res, ["GET"])) return;
   const s = requireRole(req, "student");
@@ -607,7 +627,7 @@ async function certificateVerify(req, res) {
 const routes = {
   "auth-login": authLogin, "auth-register": authRegister, "auth-me": authMe, "auth-logout": authLogout,
   "admin-login": adminLogin, "admin-me": adminMe, "activate-key": activateKey, "admin-generate-key": adminGenerateKey,
-  "course-access": courseAccess, "exam-access": examAccess, "student-sync": studentSync, "exam-attempt": examAttempt,
+  "course-access": courseAccess, "exam-access": examAccess, "admin-course-content": adminCourseContent, "student-sync": studentSync, "exam-attempt": examAttempt,
   "admin-dashboard": adminDashboard, "register-certificate": certificateRegister, "verify-certificate": certificateVerify
 };
 
