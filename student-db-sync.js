@@ -16,6 +16,7 @@
     var rf=document.getElementById("edsaRegisterForm");if(rf)rf.addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation();if(typeof window.EDSA_REGISTER==="function")window.EDSA_REGISTER();},true);
     try{if(new URLSearchParams(location.search).get("login")==="1")showLogin();}catch(_){}
     if(location.pathname==="/edsa-app.html"){
+      try{if(new URLSearchParams(location.search).get("adminPreview")==="1")return;}catch(_){}
       var originalVerifyAndStartExam=window.verifyAndStartExam;
       window.verifyAndStartExam=async function(e){try{var courseId=new URLSearchParams(location.search).get("course")||"";if(courseId){var token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||"",headers=token?{"Authorization":"Bearer "+token}:{};var access=await fetch("/api/course-access?courseId="+encodeURIComponent(courseId),{credentials:"include",headers:headers,cache:"no-store"});var result=await access.json().catch(function(){return {};});if(access.ok&&result.ok&&result.unlocked&&typeof originalVerifyAndStartExam==="function")return originalVerifyAndStartExam(e);}}catch(err){console.warn("[EDSA] Existing course access check failed:",err);}return activateAndOpenLearning(e);};
     }
