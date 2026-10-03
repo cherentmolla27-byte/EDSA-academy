@@ -22,6 +22,6 @@
     }
     if(location.pathname==="/learning.html"){var lfScript=document.createElement("script");lfScript.src="/learning-fallback.js?v=15";lfScript.async=false;document.head.appendChild(lfScript);}
   });
-  var ap=document.createElement("script");ap.src="/admin-preview.js?v=5";ap.async=false;document.head.appendChild(ap);
+  var ap=document.createElement("script");ap.src="/admin-preview.js?v=6";ap.async=false;document.head.appendChild(ap);
   var s=document.createElement("script");s.src="/student-db-sync-original.js?v=2";s.async=false;document.head.appendChild(s);
 })();
