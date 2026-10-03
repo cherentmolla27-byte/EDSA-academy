@@ -284,6 +284,9 @@
 .edsa-unified-view{width:100%;box-sizing:border-box;margin:0 auto 18px;border-radius:18px;overflow:hidden}.edsa-unified-view.hidden-section{display:none!important}.edsa-unified-shell{background:#020617;min-height:calc(100vh - 64px);padding:0 0 32px}.edsa-flow-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 5%;background:#061a3b;border-top:1px solid #12345d;border-bottom:1px solid #12345d}.edsa-flow-pill{font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;padding:7px 10px;border:1px solid #1e3a5f;border-radius:999px}.edsa-flow-pill.active{color:#fff;background:#1677ff;border-color:#1677ff}.edsa-unified-content{width:min(1180px,90%);margin:0 auto}.edsa-unified-view .bg-slate-900{background:#07111f!important}.edsa-unified-view .border-slate-800{border-color:#17304f!important}.edsa-unified-view .text-slate-300{color:#cbd5e1!important}.edsa-unified-view .text-slate-400{color:#94a3b8!important}
 </style>
 <div id="learn_shell" class="edsa-unified-shell" style="display:none">
+<button id="edsaAdminLauncher" type="button" class="edsa-admin-launcher" onclick="openAdminModal()" aria-label="Open EDSA Admin Console">
+  <i class="fa-solid fa-shield-halved"></i><span>EDSA ADMIN<small>Secure Console</small></span>
+</button>
   <div style="background:#061a3b;color:#fff;padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:45">
     <div><strong>EDSA DIGITAL SKILLS ACADEMY</strong><small style="display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em">LEARN • EXAM • RESULT • CERTIFICATE — ONE WORKSPACE</small></div>
     <button type="button" class="btn light" onclick="closeLearningInline()">← Home</button>
@@ -319,12 +322,17 @@
         <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 space-y-3">
           <p id="paymentInstructions" class="text-xs text-slate-400">Pay 400 ETB, then upload your transfer screenshot below. Telegram will open your EDSA admin chat with the payment details ready. Attach the screenshot and tap Send for admin confirmation. After approval, the admin gives you a one-time activation key.</p>
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <input id="paymentReceiptFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewPaymentReceipt(this)" class="flex-1 text-xs text-slate-300 file:mr-2 file:rounded-lg file:border-0 file:bg-sky-500 file:px-3 file:py-2 file:text-xs file:font-bold file:text-white">
+            <label class="edsa-payment-drop" for="paymentReceiptFile">
+  <span class="icon"><i class="fa-solid fa-image"></i></span>
+  <b id="paymentFileLabel">Add payment screenshot</b>
+  <span>Tap here to choose a real PNG, JPG or WEBP image • up to 8 MB</span>
+  <input id="paymentReceiptFile" class="edsa-payment-file" type="file" accept="image/png,image/jpeg,image/webp" onchange="previewPaymentReceipt(this)">
+</label>
             <button type="button" id="sendPaymentReceiptBtn" onclick="sendPaymentReceipt()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg inline-flex items-center justify-center gap-2 transition-colors whitespace-nowrap">
               <i class="fa-brands fa-telegram text-base"></i> Send to EDSA on Telegram
             </button>
           </div>
-          <div id="paymentReceiptPreview" style="margin-top:10px;border:1px solid #28476d;background:#020617;border-radius:14px;padding:8px;display:none"><img id="paymentReceiptPreviewImg" alt="Selected payment receipt preview" style="display:block;width:100%;max-height:260px;object-fit:contain;border-radius:9px"></div><p id="paymentReceiptStatus" class="text-[11px] text-slate-500"></p>
+          <div id="paymentReceiptPreview" class="edsa-receipt-card" style="display:none"><img id="paymentReceiptPreviewImg" alt="Selected payment receipt preview"><div id="paymentReceiptPreviewName" style="color:#93c5fd;font-size:9px;margin-top:7px;text-align:center"></div></div><p id="paymentReceiptStatus" class="text-[11px] text-slate-500"></p>
           <p class="text-[10px] text-slate-500">Telegram destination: @Cheru178. Telegram will open with your payment details ready; attach the screenshot and tap Send.</p>
         </div>
       </div>
@@ -415,7 +423,7 @@
           </h3>
           <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <p class="text-xs text-slate-400">Enter administrator PIN code to access key generator.</p>
+        <p class="text-xs text-slate-400">Secure administrator area • activation keys • students • payments • certificates • learning preview.</p>
         
         <div id="lockoutNotice" class="hidden text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-lg font-semibold"></div>
 
@@ -483,7 +491,7 @@
         <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">EDSA Admin Dashboard</h4>
+              <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">EDSA Premium Admin Dashboard</h4>
               <p class="text-[11px] text-slate-400 mt-1">Local operational overview from student profiles, exam activity, keys and certificates.</p>
             </div>
             <button onclick="renderAdminDashboard()" class="text-[10px] text-sky-400 font-bold">Refresh</button>
@@ -2979,14 +2987,25 @@ function closeLearningInline(){
 function previewPaymentReceipt(input){
   const preview=document.getElementById("paymentReceiptPreview");
   const img=document.getElementById("paymentReceiptPreviewImg");
+  const name=document.getElementById("paymentReceiptPreviewName");
+  const label=document.getElementById("paymentFileLabel");
   const status=document.getElementById("paymentReceiptStatus");
   const file=input&&input.files&&input.files[0];
   if(!preview||!img)return;
-  if(!file){preview.style.display="none";img.removeAttribute("src");return;}
-  if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)){preview.style.display="none";img.removeAttribute("src");if(status)status.textContent="Please choose a PNG, JPG or WEBP image.";input.value="";return;}
-  if(file.size>8*1024*1024){preview.style.display="none";img.removeAttribute("src");if(status)status.textContent="Please choose a screenshot under 8 MB.";input.value="";return;}
-  const url=URL.createObjectURL(file); img.onload=()=>URL.revokeObjectURL(url); img.src=url; preview.style.display="block";
-  if(status)status.textContent="Receipt selected — preview shown below. Attach this image in Telegram and tap Send.";
+  if(!file){preview.style.display="none";img.removeAttribute("src");if(name)name.textContent="";if(label)label.textContent="Add payment screenshot";return;}
+  if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)){
+    preview.style.display="none";img.removeAttribute("src");if(status)status.textContent="Please choose a real PNG, JPG or WEBP image.";input.value="";if(label)label.textContent="Add payment screenshot";return;
+  }
+  if(file.size>8*1024*1024){
+    preview.style.display="none";img.removeAttribute("src");if(status)status.textContent="Please choose a screenshot under 8 MB.";input.value="";if(label)label.textContent="Add payment screenshot";return;
+  }
+  const url=URL.createObjectURL(file);
+  img.onload=()=>URL.revokeObjectURL(url);
+  img.src=url;
+  preview.style.display="block";
+  if(name)name.textContent=file.name+" • "+(Math.round(file.size/1024))+" KB";
+  if(label)label.textContent="✓ Payment screenshot selected";
+  if(status)status.textContent="Real image selected. Telegram will open next; attach this same picture and tap Send.";
 }
 function sendPaymentReceipt(){
   if(!state.studentEmail){ showStudentAuth(); return; }
