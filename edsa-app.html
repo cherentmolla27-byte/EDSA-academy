@@ -2344,7 +2344,7 @@ function generate50Questions(courseKey, courseTitle) {
         state.studentEmail = "admin";
         state.studentName = "EDSA Administrator";
         document.getElementById("userStatus").innerText = "ADMIN PREVIEW";
-        const courseId = params.get("course") || "";
+        const courseId = params.get("course") || ""; const examPreview = params.get("exam") === "1"; if(examPreview && courseId && COURSES.some(c => c.id === courseId)){ launchAdminExamPreview(courseId); return; }
         // Admin preview always starts in the Learning Center. The administrator
         // must see the real course/15 lessons first, then can open the exam from
         // the course completion screen. Never drop admin directly into the exam.
