@@ -21,14 +21,14 @@
     const source=await fetch('/learning.html'+location.search,{credentials:'include',cache:'no-store'});
     if(!source.ok) throw new Error('Learning Center unavailable');
     let html=await source.text();
-    const bridge='<script src="/admin-preview.js?v=6">'+'<'+'/script>';
+    const bridge='<script src="/admin-preview.js?v=7">'+'<'+'/script>';
     if(html.includes('</head>')) html=html.replace('</head>',bridge+'\n</head>');
     document.open();
     document.write(html);
     document.close();
   }catch(e){
     console.error('[EDSA] Admin learning preview bootstrap failed:',e);
-    document.body.innerHTML='<main><strong>Admin Preview could not be opened.</strong><p>Please refresh and try again.</p></main>';
+    document.body.innerHTML='<main><strong>Admin Preview could not be opened.</strong><p>'+String(e.message||e)+'</p></main>';
   }
 })();
 </script>
