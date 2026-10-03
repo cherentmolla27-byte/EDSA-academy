@@ -1858,383 +1858,7 @@ function generate50Questions(courseKey, courseTitle) {
             </head>
             <body>
               <img src="${dataUrl}" onload="window.print(); window.close();" />
-            <div id="studentAuthModal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:18px">
-  <div style="width:min(430px,100%);background:#0f172a;border:1px solid #334155;border-radius:18px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.45)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px"><div><b style="font-size:18px">EDSA Student Account</b><div style="font-size:10px;color:#94a3b8;margin-top:3px">Sign in or create your account</div></div><button type="button" onclick="closeStudentAuth()" style="background:none;border:0;color:#94a3b8;font-size:20px">×</button></div>
-    <div id="studentAuthLogin">
-      <input id="studentLoginEmail" type="email" placeholder="Email" autocomplete="email" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
-      <input id="studentLoginPassword" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff">
-      <button type="button" onclick="studentLogin()" id="studentLoginBtn" style="width:100%;margin-top:12px;background:#0ea5e9;border:0;border-radius:10px;padding:12px;font-weight:900;color:#061a3b">Sign In</button>
-      <p id="studentAuthError" style="font-size:10px;color:#fb7185;min-height:15px"></p>
-      <button type="button" onclick="showStudentRegister()" style="background:none;border:0;color:#60a5fa;font-size:10px">Create a new student account</button>
-    </div>
-    <div id="studentAuthRegister" style="display:none">
-      <input id="studentRegisterName" type="text" placeholder="Full name" autocomplete="name" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
-      <input id="studentRegisterEmail" type="email" placeholder="Email" autocomplete="email" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
-      <input id="studentRegisterPassword" type="password" placeholder="Password (8+ characters)" autocomplete="new-password" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
-      <input id="studentRegisterConfirm" type="password" placeholder="Confirm password" autocomplete="new-password" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff">
-      <button type="button" onclick="studentRegister()" id="studentRegisterBtn" style="width:100%;margin-top:12px;background:#0ea5e9;border:0;border-radius:10px;padding:12px;font-weight:900;color:#061a3b">Create Account</button>
-      <p id="studentRegisterError" style="font-size:10px;color:#fb7185;min-height:15px"></p>
-      <button type="button" onclick="showStudentLogin()" style="background:none;border:0;color:#60a5fa;font-size:10px">Back to sign in</button>
-    </div>
-  </div>
-</div><script>
-
-function EDSA_API_FETCH(url, options) {
-  options = options || {};
-  const headers = Object.assign({}, options.headers || {});
-  try { const token = sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN"); if (token) headers.Authorization = "Bearer " + token; } catch (_) {}
-  return fetch(url, Object.assign({}, options, { credentials: "include", headers }));
-}
-const LEARNING_COURSES={
-smm:{title:"Social Media Management",desc:"Social strategy, content, communities and platform management.",lessons:["Digital Social Media Foundations","Audience Research & Buyer Personas","Platform Selection & Strategy","Content Pillars & Planning","Content Calendars","Copywriting for Social Media","Visual Content & Branding","Short-Form Video Strategy","Community Management","Social Media Engagement","Hashtags, Keywords & Discovery","Analytics & Performance Metrics","Social Media Crisis Management","Campaign Planning & Optimization","Professional Social Media Workflow"]},
-dme:{title:"Digital Marketing Essentials",desc:"Digital campaigns, channels, analytics and marketing strategy.",lessons:["Digital Marketing Foundations","Customer Journey & Funnels","Market Research","Digital Marketing Strategy","Search Engine Basics","Content Marketing","Email Marketing","Social Advertising","Paid Search & Display","Landing Pages & Conversion","Analytics & KPIs","Remarketing & Retention","Campaign Budgeting","A/B Testing & Optimization","Integrated Digital Campaigns"]},
-pbm:{title:"Project & Business Management",desc:"Planning, operations, projects, leadership and business decisions.",lessons:["Business Management Foundations","Business Models","Goal Setting & SMART Objectives","Project Life Cycle","Project Scope & Requirements","Work Breakdown Structures","Scheduling & Milestones","Budgeting & Cost Control","Risk Management","Team Leadership","Communication Management","Operations & Process Improvement","Decision Making","Performance Measurement","Project Closeout & Review"]},
-gdm:{title:"Graphic Design for Marketers",desc:"Visual communication, design principles, branding and marketing graphics.",lessons:["Design Foundations","Color Theory","Typography","Layout & Composition","Visual Hierarchy","Brand Identity","Logo & Brand Systems","Social Media Graphics","Marketing Banners","Image Selection & Editing","Canva Workflow","Design for Mobile","Accessibility & Readability","Creative Briefs","Professional Design Review"]},
-fme:{title:"Financial Management for Entrepreneurs",desc:"Budgeting, cash flow, financial decisions and entrepreneurial finance.",lessons:["Finance Foundations","Revenue, Costs & Profit","Business Budgeting","Cash Flow Management","Pricing Decisions","Break-Even Analysis","Financial Statements","Assets & Liabilities","Working Capital","Financial Ratios","Investment Decisions","Risk & Contingency Planning","Record Keeping","Financial Performance Review","Entrepreneurial Finance Strategy"]},
-dbi:{title:"Data Analysis & Business Intelligence",desc:"Data, dashboards, analytics, databases and business intelligence.",lessons:["Data & Business Intelligence Foundations","Data Collection","Data Quality","Data Types & Structures","Spreadsheet Analysis","Descriptive Statistics","Data Visualization","Dashboard Design","KPIs & Business Metrics","Database Concepts","SQL Foundations","Business Reporting","Trend & Pattern Analysis","Decision-Making with Data","BI Project Workflow"]}
-};
-;
-const DBI_VIDEOS={"0":{"id":"T5pRlIbr6gg","title":"Data Analytics Full Course for Beginners","url":"https://www.youtube.com/watch?v=T5pRlIbr6gg","note":"Lesson 1 video: introduction to data analytics, business data and the analytics workflow."},"4":{"id":"rWBZ8_b2Qn0","title":"Excel Data Analysis Tutorial","url":"https://www.youtube.com/watch?v=rWBZ8_b2Qn0","note":"Lesson 5 video: practical spreadsheet analysis and common Excel data-analysis techniques."},"9":{"id":"qw1g3pD3Y3Y","title":"SQL Tutorial for Beginners","url":"https://www.youtube.com/watch?v=qw1g3pD3Y3Y","note":"Lesson 10 video: SQL basics, queries, filtering, grouping and database concepts."},"14":{"id":"yZvFH7B0Xq0","title":"Business Intelligence and Data Analytics","url":"https://www.youtube.com/watch?v=yZvFH7B0Xq0","note":"Lesson 15 video: connecting analytics, dashboards and business decision-making."}};
-;
-
-const DME_VIDEOS={
-  0:{id:"mZm8hksRaIA",title:"Digital Marketing Foundations — Full Introduction",url:"https://www.youtube.com/watch?v=mZm8hksRaIA",note:"Lesson 1 video: a broad introduction to digital marketing concepts and channels."},
-  4:{id:"h8g3h1Z0q7k",title:"SEO Basics for Beginners",url:"https://www.youtube.com/watch?v=h8g3h1Z0q7k",note:"Lesson 5 video: an introductory look at search engine optimization."},
-  9:{id:"RkiX6zcjJBk",title:"Email Marketing Tutorial",url:"https://www.youtube.com/watch?v=RkiX6zcjJBk",note:"Lesson 10 video: email marketing, campaigns, automation and testing."},
-  14:{id:"tCL1Xuo06qw",title:"Complete Email Marketing & Digital Marketing Tutorial",url:"https://www.youtube.com/watch?v=tCL1Xuo06qw",note:"Lesson 15 bonus video: a practical marketing tutorial with email, automation and analytics examples."}
-};
-const VIDEO_LESSONS={smm:{
-  0:{id:"mZm8hksRaIA",title:"Social Media Marketing Full Course 2025 | Beginner to Advance Guide",url:"https://www.youtube.com/watch?v=mZm8hksRaIA",note:"Lesson 1 video: a broad beginner-to-advanced introduction to social media marketing and the social media manager role."},
-  4:{id:"sTSTTRFhmis",title:"How To Create A Content Calendar For Social Media (+ Free Tools)",url:"https://www.youtube.com/watch?v=sTSTTRFhmis",note:"Lesson 5 video: practical step-by-step content calendar planning."},
-  9:{id:"kCy2adkj4HM",title:"8 Social Media Engagement Hacks, Strategies, and Tips",url:"https://www.youtube.com/watch?v=kCy2adkj4HM",note:"Lesson 10 video: practical methods for improving social media engagement and interaction."},
-  14:{id:"-kv3KbTtr4U",title:"Social Media Management Workflow",url:"https://www.youtube.com/watch?v=-kv3KbTtr4U",note:"Lesson 15 video: a real social media management workflow from content creation through scheduling and reporting."}
-}};
-function getVideo(courseId,index){
-  if(courseId==="smm") return VIDEO_LESSONS.smm[index]||null;
-  if(courseId==="dme") return DME_VIDEOS[index]||null;
-  if(courseId==="pbm") return PBM_VIDEOS[index]||null;
-  if(courseId==="gdm") return GDM_VIDEOS[index]||null;
-  if(courseId==="fme") return FME_VIDEOS[index]||null;
-  if(courseId==="dbi") return DBI_VIDEOS[index]||null;
-  return VIDEO_LESSONS[index]||null;
-}
-const PBM_VIDEOS={
-0:{id:"7UJBRFGLhJE",title:"Project Management Full Course | Project Management Tutorial For Beginners | Simplilearn",url:"https://www.youtube.com/watch?v=7UJBRFGLhJE",note:"Lesson 1 video: a complete beginner-friendly introduction to project management."},
-4:{id:"VUUa5iU3Gwk",title:"What is Project Scope Management - Concept, Processes, Tools, Techniques & Examples",url:"https://www.youtube.com/watch?v=VUUa5iU3Gwk",note:"Lesson 5 video: project scope, requirements, WBS and scope control."},
-9:{id:"XCXjH1KQoFU",title:"How to Delegate Effectively for Leadership Growth",url:"https://www.youtube.com/watch?v=XCXjH1KQoFU",note:"Lesson 10 video: practical delegation and leadership guidance."},
-14:{id:"aakuB-BtdlQ",title:"How and Why to Close a Project",url:"https://www.youtube.com/watch?v=aakuB-BtdlQ",note:"Lesson 15 video: project closure, approvals, documentation and lessons learned."}
-};
-let learningState={email:"",name:"",courseId:"",lesson:0,done:{},unlocked:{}};
-function EDSA_AUTH_HEADERS(){const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||"";return token?{"Authorization":"Bearer "+token}:{}}
-async function checkCourseAccess(id){
-  if(!learningState.email) return false;
-  if(learningState.unlocked[id]===true) return true;
-  try{
-    const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id),{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
-    const x=await r.json().catch(()=>({}));
-    learningState.unlocked[id]=!!(r.ok&&x.ok&&x.unlocked);
-    return learningState.unlocked[id];
-  }catch(_){learningState.unlocked[id]=false;return false;}
-}
-function key(){return "EDSA_LEARNING_"+learningState.email.toLowerCase()}
-function loadLearningProgress(){try{learningState.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){learningState.done={}}}
-function saveLearningProgress(){localStorage.setItem(key(),JSON.stringify(learningState.done))}
-async function boot(){
-  // Dedicated administrator preview mode. This is intentionally handled inside
-  // the Learning Center so the student authentication boot never runs in the
-  // same page/learningState as an administrator preview.
-  const adminPreview=new URLSearchParams(location.search).get("adminPreview")==="1";
-  if(adminPreview){
-    try{
-      const ar=await fetch("/api/admin-me",{credentials:"include",cache:"no-store"});
-      const ax=await ar.json().catch(()=>({}));
-      const role=ax&&ax.user&&ax.user.role ? ax.user.role : (ax&&ax.role ? ax.role : "");
-      if(ar.ok && ax.ok && role==="admin"){
-        window.__EDSA_ADMIN_PREVIEW_MODE=true;
-        learningState.email="admin";
-        learningState.name="EDSA Administrator";
-        learningState.unlocked={};
-        Object.keys(LEARNING_COURSES).forEach(id=>learningState.unlocked[id]=true);
-        document.getElementById("learn_welcome").textContent="Administrator Preview — all courses and lessons are available without affecting student access, payments, or attempts.";
-        renderCourses();
-        const q=new URLSearchParams(location.search).get("course");
-        if(LEARNING_COURSES[q]){
-          const lessons=await loadLessons(q);
-          learningState.courseId=q;
-          const requested=Number(new URLSearchParams(location.search).get("lesson"));
-          learningState.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),Math.max(0,lessons.length-1)):0;
-          document.getElementById("learn_courseHome").style.display="none";
-          document.getElementById("learn_courseView").style.display="grid";
-          renderCourses();
-          renderCourse();
-          scrollToLesson();
-        }
-        return;
-      }
-      location.href="/";
-      return;
-    }catch(e){
-      console.error("EDSA admin preview boot error:",e);
-      document.getElementById("learn_welcome").textContent="Administrator Preview could not be loaded.";
-      return;
-    }
-  }
-
-  // Normal student boot.
-  learningState.courseId="";
-  renderCourses();
-  document.getElementById("learn_courseHome").style.display="";
-  document.getElementById("learn_courseView").style.display="none";
-  const q=new URLSearchParams(location.search).get("course");
-  try{
-    const r=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
-    const x=await r.json().catch(()=>({}));
-    if(r.ok&&x.ok&&x.authenticated&&x.user){
-      learningState.email=x.user.email||"";
-      learningState.name=x.user.name||"Student";
-      loadLearningProgress();
-      await Promise.all(Object.keys(LEARNING_COURSES).map(id=>checkCourseAccess(id)));
-      document.getElementById("learn_welcome").textContent="Welcome, "+learningState.name+". Activate a course once, then all 15 lessons stay free. You may take the exam whenever you are ready.";
-      renderCourses();
-      if(LEARNING_COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); learningSelectCourse(q,Number.isFinite(qi)?qi:0); }
-      return;
-    }
-  }catch(e){}
-  document.getElementById("learn_welcome").textContent="Sign in, activate a course with 400 ETB, then study all 15 lessons for free and take the exam when ready.";
-}
-function courseCard(id,c){const d=learningState.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100),open=learningState.unlocked[id]===true;return `<div class="course ${learningState.courseId===id?"active":""}" onclick="learningSelectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">${open?"Open →":"🔒 Unlock with 400 ETB"}</span><strong>${c.title}</strong><span>${c.desc}</span><b>${open?pct+"% complete • "+(d.completed||[]).length+"/"+c.lessons.length+" lessons • Course access stays free after payment":"15 full lessons + videos • One exam attempt included with activation"}</b></div>`}
-function renderCourses(){
-  const home=document.getElementById("learn_courseList");
-  const inside=document.getElementById("learn_courseListInside");
-  const html=Object.entries(LEARNING_COURSES).map(([id,c])=>courseCard(id,c)).join("");
-  if(home) home.innerHTML=html;
-  if(inside) inside.innerHTML=html;
-}
-function openExamWorkspace(){ openInlineExam(learningState.courseId||""); }
-function closeExamWorkspace(){ closeInlineExam(); }
-function goToExamPortal(){ openInlineExam(learningState.courseId||""); }
-function showCourseHome(){
-  learningState.courseId="";
-  learningState.lesson=0;
-  document.getElementById("learn_courseHome").style.display="";
-  document.getElementById("learn_courseView").style.display="none";
-  renderCourses();
-  history.replaceState(null,"","#learning");
-}
-async function learningSelectCourse(id,lessonIndex=0){
-  if(!LEARNING_COURSES[id]) return;
-  try{
-    const unlocked=await checkCourseAccess(id);
-    if(!unlocked){
-      const name=LEARNING_COURSES[id].title;
-      alert(name+" is locked. Pay 400 ETB and receive an activation key. Once activated, all 15 lessons stay unlocked for you.");
-      openInlinePayment(id);
-      return;
-    }
-    const lessons=await loadLessons(id);
-    if(!Array.isArray(lessons)||!lessons.length) return;
-    learningState.courseId=id;
-    const requested=Number(lessonIndex);
-    learningState.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),lessons.length-1):0;
-    if(learningState.email) loadLearningProgress();
-    const home=document.getElementById("learn_courseHome");
-    const view=document.getElementById("learn_courseView");
-    if(home) home.style.display="none";
-    if(view) view.style.display="grid";
-    renderCourses();
-    renderCourse();
-    history.replaceState(null,"","#learning");
-    scrollToLesson();
-  }catch(err){
-    console.error("EDSA course open error:",err);
-    const view=document.getElementById("learn_courseView");
-    const area=document.getElementById("learn_learningArea");
-    if(view) view.style.display="grid";
-    if(area) area.innerHTML='<div class="empty">This course could not be opened. Please refresh the page and try again.</div>';
-  }
-}
-
-;
-const GDM_VIDEOS={"0":{"id":"BLhoWAALKt0","title":"Canva Tutorial for Beginners — Full Step-by-Step Guide","url":"https://www.youtube.com/watch?v=BLhoWAALKt0","note":"Lesson 1 video: a practical beginner walkthrough of Canva and its core design workflow."},"4":{"id":"7iY4QFqTlpE","title":"What's Color Theory | Graphic Design Basic — Canva","url":"https://www.youtube.com/watch?v=7iY4QFqTlpE","note":"Lesson 5 video: color theory, color combinations, palettes and how color communicates."},"9":{"id":"MELKuexR3sQ","title":"Beginning Graphic Design: Images — LearnFree","url":"https://www.youtube.com/watch?v=MELKuexR3sQ","note":"Lesson 10 video: choosing quality images and basic cropping, resizing and image adjustments."},"14":{"id":"sByzHoiYFX0","title":"Beginning Graphic Design: Typography — LearnFree","url":"https://www.youtube.com/watch?v=sByzHoiYFX0","note":"Lesson 15 video: typography, font selection, hierarchy, spacing and combining type."}};
-;
-const FME_VIDEOS={"0":{"id":"Fi1wkUczuyk","title":"Financial Statements: All the Basics in 8 Minutes","url":"https://www.youtube.com/watch?v=Fi1wkUczuyk","note":"Lesson 1 video: a clear introduction to the income statement, balance sheet and cash-flow statement."},"4":{"id":"6m38N7zk5Ow","title":"How to Price Your Product as a Business Owner","url":"https://www.youtube.com/watch?v=6m38N7zk5Ow","note":"Lesson 5 video: practical product-pricing steps and pricing strategy."},"9":{"id":"3W_LwpeG8c8","title":"Financial Ratios: How to Analyze Financial Statements","url":"https://www.youtube.com/watch?v=3W_LwpeG8c8","note":"Lesson 10 video: profitability, liquidity, efficiency and leverage ratio analysis."},"14":{"id":"xSNbs74JWrI","title":"Cash Flow Planning for Small Business Owners","url":"https://www.youtube.com/watch?v=xSNbs74JWrI","note":"Lesson 15 video: practical cash-flow planning, forecasting and financial stability."}};
-const LESSON_CACHE={};
-async function loadLessons(id){
-  if(LESSON_CACHE[id]) return LESSON_CACHE[id];
-  if(window.__EDSA_ADMIN_PREVIEW_MODE){
-    const ar=await fetch("/api/admin-course-content?courseId="+encodeURIComponent(id),{credentials:"include",cache:"no-store"});
-    const ax=await ar.json().catch(()=>({}));
-    if(!ar.ok||!ax.ok||!Array.isArray(ax.lessons)) throw new Error(ax.error||"Admin course lessons unavailable");
-    LESSON_CACHE[id]=ax.lessons;
-    return LESSON_CACHE[id];
-  }
-  const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id)+"&include=lessons",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
-  const x=await r.json().catch(()=>({}));
-  if(!r.ok||!x.ok||!Array.isArray(x.lessons)) throw new Error(x.error||"Course lessons unavailable");
-  LESSON_CACHE[id]=x.lessons;
-  return LESSON_CACHE[id];
-}
-function getLessons(id){return LESSON_CACHE[id]||[];}
-
-function renderCourse(){
-  if(!learningState.unlocked[learningState.courseId]){
-    document.getElementById("learn_learningArea").innerHTML="<div class=\"empty\"><strong>Course locked</strong><br><br>Pay 400 ETB and activate your first exam attempt. After activation, all 15 lessons and videos stay unlocked for you.</div>";
-    return;
-  }
-  const c=LEARNING_COURSES[learningState.courseId], lessons=getLessons(learningState.courseId);
-  if(!Array.isArray(lessons)||!lessons.length){
-    document.getElementById("learn_learningArea").innerHTML="<div class=\"empty\"><strong>Lesson content is loading.</strong><br><br>Please wait a moment and try again.</div>";
-    return;
-  }
-  const d=learningState.done[learningState.courseId]||{completed:[]};
-  const completed=d.completed||[];
-  const pct=Math.round(completed.length/lessons.length*100);
-  const l=lessons[learningState.lesson]||lessons[0];
-  const video=getVideo(learningState.courseId,learningState.lesson);
-  const sections=l.sections.map(s=>"<h4>"+learningEscapeHtml(s[0])+"</h4><p>"+learningEscapeHtml(s[1])+"</p>").join("");
-  const isDone=completed.includes(learningState.lesson);
-  const videoHtml=video
-    ? (video.id
-      ? '<div class="video"><b>🎥 '+learningEscapeHtml(video.title)+'</b><iframe title="'+learningEscapeHtml(video.title)+'" src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(video.id)+'?rel=0" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe><span>'+learningEscapeHtml(video.note)+'</span></div>'
-      : '<div class="video"><b>🎥 '+learningEscapeHtml(video.title)+'</b><span>'+learningEscapeHtml(video.note)+'</span><a class="btn blue" style="display:inline-block;margin-top:12px;text-decoration:none" target="_blank" rel="noopener" href="'+video.url+'">Watch Lesson Video on YouTube ↗</a></div>')
-    : '';
-  document.getElementById("learn_learningArea").innerHTML=
-    '<div class="lesson-head"><div><div style="font-size:9px;color:#1677ff;font-weight:900;letter-spacing:.12em">LESSON '+(learningState.lesson+1)+' OF '+lessons.length+'</div><h2>'+learningEscapeHtml(l.title)+'</h2><p>'+learningEscapeHtml(l.intro)+'</p></div></div>'+
-    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
-    '<div id="lessonStart" class="viewer"><h3>'+learningEscapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+learningEscapeHtml(l.example)+'</div></div>'+videoHtml+
-    '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>'+
-    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===learningState.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+learningEscapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>'+(completed.length===lessons.length?'<div class="panel" style="margin-top:18px;border-color:#86efac;background:#f0fdf4"><strong style="color:#166534">🎓 All 15 lessons completed!</strong><p style="font-size:11px;color:#166534;margin:6px 0 12px">You can take the exam now, or return to any lesson for review. Your course access remains free after activation.</p><button type="button" class="btn blue" onclick="openExamWorkspace()">📝 Take Exam Now</button></div>':'')+
-    '</div></div>';
-}
-function scrollToLesson(){
-  requestAnimationFrame(()=>{
-    const target=document.getElementById("lessonStart")||document.querySelector(".viewer");
-    if(!target)return;
-    const top=target.getBoundingClientRect().top+window.scrollY-82;
-    window.scrollTo({top:Math.max(0,top),behavior:"smooth"});
-  });
-}
-function openLesson(i){
-  const lessons=getLessons(learningState.courseId);
-  if(i<0||i>=lessons.length)return;
-  learningState.lesson=i;
-  history.replaceState(null,"","#learning");
-  renderCourse();
-  scrollToLesson();
-}
-function prevLesson(){if(learningState.lesson>0)openLesson(learningState.lesson-1)}
-function nextLesson(){
-  const total=getLessons(learningState.courseId).length;
-  const d=learningState.done[learningState.courseId]||{completed:[]};
-  d.completed=d.completed||[];
-  if(!d.completed.includes(learningState.lesson)) d.completed.push(learningState.lesson);
-  learningState.done[learningState.courseId]=d; saveLearningProgress();
-  if(learningState.lesson<total-1){ openLesson(learningState.lesson+1); return; }
-  renderCourse(); renderCourses();
-  if(learningState.done[learningState.courseId].completed.length===total){
-    // The intended course journey is automatic: finish lesson 15 -> open the exam.
-    setTimeout(()=>{ openExamWorkspace(); },250);
-  }
-}
-function toggleComplete(){
-  const d=learningState.done[learningState.courseId]||{completed:[]};
-  d.completed=d.completed||[];
-  const n=d.completed.indexOf(learningState.lesson);
-  if(n>=0)d.completed.splice(n,1);else d.completed.push(learningState.lesson);
-  learningState.done[learningState.courseId]=d; saveLearningProgress(); renderCourse(); renderCourses();
-}
-function learningEscapeHtml(v){
-  return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-}
-document.addEventListener("DOMContentLoaded",boot);
-
-function showStudentAuth(){document.getElementById("studentAuthModal").style.display="flex";showStudentLogin();}
-function closeStudentAuth(){document.getElementById("studentAuthModal").style.display="none";}
-function showStudentLogin(){document.getElementById("studentAuthLogin").style.display="block";document.getElementById("studentAuthRegister").style.display="none";document.getElementById("studentAuthError").textContent="";}
-function showStudentRegister(){document.getElementById("studentAuthLogin").style.display="none";document.getElementById("studentAuthRegister").style.display="block";document.getElementById("studentRegisterError").textContent="";}
-async function studentLogin(){
- const email=document.getElementById("studentLoginEmail").value.trim(), password=document.getElementById("studentLoginPassword").value;
- const err=document.getElementById("studentAuthError"),btn=document.getElementById("studentLoginBtn"); err.textContent="";
- if(!email||!password){err.textContent="Enter your email and password.";return;}
- btn.disabled=true;btn.textContent="Signing in…";
- try{const r=await EDSA_API_FETCH("/api/auth-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password}),cache:"no-store"});
- const j=await r.json().catch(()=>({})); if(!r.ok||!j.ok||!j.user||j.user.role!=="student"){err.textContent=j.error||"Sign-in failed.";return;}
- if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}
- state.studentEmail=j.user.email||email;state.studentName=j.user.name||"Student";closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
- }catch(e){err.textContent="Could not connect to EDSA."; } finally{btn.disabled=false;btn.textContent="Sign In";}
-}
-async function studentRegister(){
- const name=document.getElementById("studentRegisterName").value.trim(),email=document.getElementById("studentRegisterEmail").value.trim(),password=document.getElementById("studentRegisterPassword").value,confirm=document.getElementById("studentRegisterConfirm").value;
- const err=document.getElementById("studentRegisterError"),btn=document.getElementById("studentRegisterBtn");err.textContent="";
- if(!name||!email||!password){err.textContent="Complete all fields.";return;} if(password.length<8){err.textContent="Password must be at least 8 characters.";return;} if(password!==confirm){err.textContent="Passwords do not match.";return;}
- btn.disabled=true;btn.textContent="Creating…";
- try{const r=await EDSA_API_FETCH("/api/auth-register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,password}),cache:"no-store"});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||!j.user){err.textContent=j.error||"Registration failed.";return;}if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}state.studentEmail=j.user.email||email;state.studentName=j.user.name||name;closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
- }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
-}
-function openLearningInline(courseId,adminMode){
-  unifyLearningWorkspaceViews();
-  window.__EDSA_IN_LEARNING_EXAM=false;
-  const shell=document.getElementById("learn_shell");
-  const app=document.getElementById("learn_app");
-  if(shell) shell.style.display="block";
-  if(app) app.style.display="block";
-  ["stepPayment","stepExam","stepResult"].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add("hidden-section");});
-  learningState.email=adminMode?"admin":(state.studentEmail||"");
-  learningState.name=adminMode?"EDSA Administrator":(state.studentName||"Student");
-  learningState.unlocked=learningState.unlocked||{};
-  Object.keys(LEARNING_COURSES).forEach(id=>{if(adminMode)learningState.unlocked[id]=true;});
-  window.__EDSA_ADMIN_PREVIEW_MODE=!!adminMode;
-  document.getElementById("learn_welcome").textContent=adminMode?"Administrator Preview — all courses and lessons are available.":"Welcome, "+learningState.name+". Your course lessons, exam, result and certificate stay in this one workspace.";
-  updateUnifiedFlow("course");
-  renderCourses();
-  if(courseId){learningState.unlocked[courseId]=true;learningSelectCourse(courseId,0);}
-}
-function closeLearningInline(){
-  document.getElementById("learn_shell").style.display="none";
-  if(window.__EDSA_ADMIN_PREVIEW_MODE)window.__EDSA_ADMIN_PREVIEW_MODE=false;
-  navToCatalog();
-}
-function openInlinePayment(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse; if(state.selectedCourse){document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;showSection("stepPayment");}}
-function openInlineExam(courseId){
-  if(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse;}
-  if(!state.selectedCourse){showSection("stepCatalog");return;}
-  window.__EDSA_IN_LEARNING_EXAM=true;
-  const shell=document.getElementById("learn_shell");
-  if(shell) shell.style.display="block";
-  const app=document.getElementById("learn_app");
-  if(app) app.style.display="none";
-  const back=document.getElementById("learningExamBackBtn");
-  if(back) back.classList.remove("hidden");
-  document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;
-  verifyAndStartExam({preventDefault:function(){}});
-}
-function closeInlineExam(){
-  stopTimer();
-  const back=document.getElementById("learningExamBackBtn");
-  if(back) back.classList.add("hidden");
-  if(window.__EDSA_IN_LEARNING_EXAM){
-    window.__EDSA_IN_LEARNING_EXAM=false;
-    ["stepCatalog","stepPayment","stepExam","stepResult"].forEach(function(id){
-      const el=document.getElementById(id);
-      if(el) el.classList.add("hidden-section");
-    });
-    const shell=document.getElementById("learn_shell");
-    const app=document.getElementById("learn_app");
-    if(shell) shell.style.display="block";
-    if(app) app.style.display="block";
-    updateUnifiedFlow("course");
-    renderCourses();
-    if(learningState.courseId){
-      renderCourse();
-      scrollToLesson();
-    }
-    return;
-  }
-  const shell=document.getElementById("learn_shell");
-  if(shell) shell.style.display="none";
-}
-</body>
+            </body>
         </html>
         `);
         printWindow.document.close();
@@ -2844,6 +2468,382 @@ function closeInlineExam(){
         console.error("EDSA direct launch error:", e);
       }
     })();
-  </script>
+  function EDSA_API_FETCH(url, options) {
+  options = options || {};
+  const headers = Object.assign({}, options.headers || {});
+  try { const token = sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN"); if (token) headers.Authorization = "Bearer " + token; } catch (_) {}
+  return fetch(url, Object.assign({}, options, { credentials: "include", headers }));
+}
+const LEARNING_COURSES={
+smm:{title:"Social Media Management",desc:"Social strategy, content, communities and platform management.",lessons:["Digital Social Media Foundations","Audience Research & Buyer Personas","Platform Selection & Strategy","Content Pillars & Planning","Content Calendars","Copywriting for Social Media","Visual Content & Branding","Short-Form Video Strategy","Community Management","Social Media Engagement","Hashtags, Keywords & Discovery","Analytics & Performance Metrics","Social Media Crisis Management","Campaign Planning & Optimization","Professional Social Media Workflow"]},
+dme:{title:"Digital Marketing Essentials",desc:"Digital campaigns, channels, analytics and marketing strategy.",lessons:["Digital Marketing Foundations","Customer Journey & Funnels","Market Research","Digital Marketing Strategy","Search Engine Basics","Content Marketing","Email Marketing","Social Advertising","Paid Search & Display","Landing Pages & Conversion","Analytics & KPIs","Remarketing & Retention","Campaign Budgeting","A/B Testing & Optimization","Integrated Digital Campaigns"]},
+pbm:{title:"Project & Business Management",desc:"Planning, operations, projects, leadership and business decisions.",lessons:["Business Management Foundations","Business Models","Goal Setting & SMART Objectives","Project Life Cycle","Project Scope & Requirements","Work Breakdown Structures","Scheduling & Milestones","Budgeting & Cost Control","Risk Management","Team Leadership","Communication Management","Operations & Process Improvement","Decision Making","Performance Measurement","Project Closeout & Review"]},
+gdm:{title:"Graphic Design for Marketers",desc:"Visual communication, design principles, branding and marketing graphics.",lessons:["Design Foundations","Color Theory","Typography","Layout & Composition","Visual Hierarchy","Brand Identity","Logo & Brand Systems","Social Media Graphics","Marketing Banners","Image Selection & Editing","Canva Workflow","Design for Mobile","Accessibility & Readability","Creative Briefs","Professional Design Review"]},
+fme:{title:"Financial Management for Entrepreneurs",desc:"Budgeting, cash flow, financial decisions and entrepreneurial finance.",lessons:["Finance Foundations","Revenue, Costs & Profit","Business Budgeting","Cash Flow Management","Pricing Decisions","Break-Even Analysis","Financial Statements","Assets & Liabilities","Working Capital","Financial Ratios","Investment Decisions","Risk & Contingency Planning","Record Keeping","Financial Performance Review","Entrepreneurial Finance Strategy"]},
+dbi:{title:"Data Analysis & Business Intelligence",desc:"Data, dashboards, analytics, databases and business intelligence.",lessons:["Data & Business Intelligence Foundations","Data Collection","Data Quality","Data Types & Structures","Spreadsheet Analysis","Descriptive Statistics","Data Visualization","Dashboard Design","KPIs & Business Metrics","Database Concepts","SQL Foundations","Business Reporting","Trend & Pattern Analysis","Decision-Making with Data","BI Project Workflow"]}
+};
+;
+const DBI_VIDEOS={"0":{"id":"T5pRlIbr6gg","title":"Data Analytics Full Course for Beginners","url":"https://www.youtube.com/watch?v=T5pRlIbr6gg","note":"Lesson 1 video: introduction to data analytics, business data and the analytics workflow."},"4":{"id":"rWBZ8_b2Qn0","title":"Excel Data Analysis Tutorial","url":"https://www.youtube.com/watch?v=rWBZ8_b2Qn0","note":"Lesson 5 video: practical spreadsheet analysis and common Excel data-analysis techniques."},"9":{"id":"qw1g3pD3Y3Y","title":"SQL Tutorial for Beginners","url":"https://www.youtube.com/watch?v=qw1g3pD3Y3Y","note":"Lesson 10 video: SQL basics, queries, filtering, grouping and database concepts."},"14":{"id":"yZvFH7B0Xq0","title":"Business Intelligence and Data Analytics","url":"https://www.youtube.com/watch?v=yZvFH7B0Xq0","note":"Lesson 15 video: connecting analytics, dashboards and business decision-making."}};
+;
+
+const DME_VIDEOS={
+  0:{id:"mZm8hksRaIA",title:"Digital Marketing Foundations — Full Introduction",url:"https://www.youtube.com/watch?v=mZm8hksRaIA",note:"Lesson 1 video: a broad introduction to digital marketing concepts and channels."},
+  4:{id:"h8g3h1Z0q7k",title:"SEO Basics for Beginners",url:"https://www.youtube.com/watch?v=h8g3h1Z0q7k",note:"Lesson 5 video: an introductory look at search engine optimization."},
+  9:{id:"RkiX6zcjJBk",title:"Email Marketing Tutorial",url:"https://www.youtube.com/watch?v=RkiX6zcjJBk",note:"Lesson 10 video: email marketing, campaigns, automation and testing."},
+  14:{id:"tCL1Xuo06qw",title:"Complete Email Marketing & Digital Marketing Tutorial",url:"https://www.youtube.com/watch?v=tCL1Xuo06qw",note:"Lesson 15 bonus video: a practical marketing tutorial with email, automation and analytics examples."}
+};
+const VIDEO_LESSONS={smm:{
+  0:{id:"mZm8hksRaIA",title:"Social Media Marketing Full Course 2025 | Beginner to Advance Guide",url:"https://www.youtube.com/watch?v=mZm8hksRaIA",note:"Lesson 1 video: a broad beginner-to-advanced introduction to social media marketing and the social media manager role."},
+  4:{id:"sTSTTRFhmis",title:"How To Create A Content Calendar For Social Media (+ Free Tools)",url:"https://www.youtube.com/watch?v=sTSTTRFhmis",note:"Lesson 5 video: practical step-by-step content calendar planning."},
+  9:{id:"kCy2adkj4HM",title:"8 Social Media Engagement Hacks, Strategies, and Tips",url:"https://www.youtube.com/watch?v=kCy2adkj4HM",note:"Lesson 10 video: practical methods for improving social media engagement and interaction."},
+  14:{id:"-kv3KbTtr4U",title:"Social Media Management Workflow",url:"https://www.youtube.com/watch?v=-kv3KbTtr4U",note:"Lesson 15 video: a real social media management workflow from content creation through scheduling and reporting."}
+}};
+function getVideo(courseId,index){
+  if(courseId==="smm") return VIDEO_LESSONS.smm[index]||null;
+  if(courseId==="dme") return DME_VIDEOS[index]||null;
+  if(courseId==="pbm") return PBM_VIDEOS[index]||null;
+  if(courseId==="gdm") return GDM_VIDEOS[index]||null;
+  if(courseId==="fme") return FME_VIDEOS[index]||null;
+  if(courseId==="dbi") return DBI_VIDEOS[index]||null;
+  return VIDEO_LESSONS[index]||null;
+}
+const PBM_VIDEOS={
+0:{id:"7UJBRFGLhJE",title:"Project Management Full Course | Project Management Tutorial For Beginners | Simplilearn",url:"https://www.youtube.com/watch?v=7UJBRFGLhJE",note:"Lesson 1 video: a complete beginner-friendly introduction to project management."},
+4:{id:"VUUa5iU3Gwk",title:"What is Project Scope Management - Concept, Processes, Tools, Techniques & Examples",url:"https://www.youtube.com/watch?v=VUUa5iU3Gwk",note:"Lesson 5 video: project scope, requirements, WBS and scope control."},
+9:{id:"XCXjH1KQoFU",title:"How to Delegate Effectively for Leadership Growth",url:"https://www.youtube.com/watch?v=XCXjH1KQoFU",note:"Lesson 10 video: practical delegation and leadership guidance."},
+14:{id:"aakuB-BtdlQ",title:"How and Why to Close a Project",url:"https://www.youtube.com/watch?v=aakuB-BtdlQ",note:"Lesson 15 video: project closure, approvals, documentation and lessons learned."}
+};
+let learningState={email:"",name:"",courseId:"",lesson:0,done:{},unlocked:{}};
+function EDSA_AUTH_HEADERS(){const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||"";return token?{"Authorization":"Bearer "+token}:{}}
+async function checkCourseAccess(id){
+  if(!learningState.email) return false;
+  if(learningState.unlocked[id]===true) return true;
+  try{
+    const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id),{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
+    const x=await r.json().catch(()=>({}));
+    learningState.unlocked[id]=!!(r.ok&&x.ok&&x.unlocked);
+    return learningState.unlocked[id];
+  }catch(_){learningState.unlocked[id]=false;return false;}
+}
+function key(){return "EDSA_LEARNING_"+learningState.email.toLowerCase()}
+function loadLearningProgress(){try{learningState.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){learningState.done={}}}
+function saveLearningProgress(){localStorage.setItem(key(),JSON.stringify(learningState.done))}
+async function boot(){
+  // Dedicated administrator preview mode. This is intentionally handled inside
+  // the Learning Center so the student authentication boot never runs in the
+  // same page/learningState as an administrator preview.
+  const adminPreview=new URLSearchParams(location.search).get("adminPreview")==="1";
+  if(adminPreview){
+    try{
+      const ar=await fetch("/api/admin-me",{credentials:"include",cache:"no-store"});
+      const ax=await ar.json().catch(()=>({}));
+      const role=ax&&ax.user&&ax.user.role ? ax.user.role : (ax&&ax.role ? ax.role : "");
+      if(ar.ok && ax.ok && role==="admin"){
+        window.__EDSA_ADMIN_PREVIEW_MODE=true;
+        learningState.email="admin";
+        learningState.name="EDSA Administrator";
+        learningState.unlocked={};
+        Object.keys(LEARNING_COURSES).forEach(id=>learningState.unlocked[id]=true);
+        document.getElementById("learn_welcome").textContent="Administrator Preview — all courses and lessons are available without affecting student access, payments, or attempts.";
+        renderCourses();
+        const q=new URLSearchParams(location.search).get("course");
+        if(LEARNING_COURSES[q]){
+          const lessons=await loadLessons(q);
+          learningState.courseId=q;
+          const requested=Number(new URLSearchParams(location.search).get("lesson"));
+          learningState.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),Math.max(0,lessons.length-1)):0;
+          document.getElementById("learn_courseHome").style.display="none";
+          document.getElementById("learn_courseView").style.display="grid";
+          renderCourses();
+          renderCourse();
+          scrollToLesson();
+        }
+        return;
+      }
+      location.href="/";
+      return;
+    }catch(e){
+      console.error("EDSA admin preview boot error:",e);
+      document.getElementById("learn_welcome").textContent="Administrator Preview could not be loaded.";
+      return;
+    }
+  }
+
+  // Normal student boot.
+  learningState.courseId="";
+  renderCourses();
+  document.getElementById("learn_courseHome").style.display="";
+  document.getElementById("learn_courseView").style.display="none";
+  const q=new URLSearchParams(location.search).get("course");
+  try{
+    const r=await EDSA_API_FETCH("/api/auth-me",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
+    const x=await r.json().catch(()=>({}));
+    if(r.ok&&x.ok&&x.authenticated&&x.user){
+      learningState.email=x.user.email||"";
+      learningState.name=x.user.name||"Student";
+      loadLearningProgress();
+      await Promise.all(Object.keys(LEARNING_COURSES).map(id=>checkCourseAccess(id)));
+      document.getElementById("learn_welcome").textContent="Welcome, "+learningState.name+". Activate a course once, then all 15 lessons stay free. You may take the exam whenever you are ready.";
+      renderCourses();
+      if(LEARNING_COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); learningSelectCourse(q,Number.isFinite(qi)?qi:0); }
+      return;
+    }
+  }catch(e){}
+  document.getElementById("learn_welcome").textContent="Sign in, activate a course with 400 ETB, then study all 15 lessons for free and take the exam when ready.";
+}
+function courseCard(id,c){const d=learningState.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100),open=learningState.unlocked[id]===true;return `<div class="course ${learningState.courseId===id?"active":""}" onclick="learningSelectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">${open?"Open →":"🔒 Unlock with 400 ETB"}</span><strong>${c.title}</strong><span>${c.desc}</span><b>${open?pct+"% complete • "+(d.completed||[]).length+"/"+c.lessons.length+" lessons • Course access stays free after payment":"15 full lessons + videos • One exam attempt included with activation"}</b></div>`}
+function renderCourses(){
+  const home=document.getElementById("learn_courseList");
+  const inside=document.getElementById("learn_courseListInside");
+  const html=Object.entries(LEARNING_COURSES).map(([id,c])=>courseCard(id,c)).join("");
+  if(home) home.innerHTML=html;
+  if(inside) inside.innerHTML=html;
+}
+function openExamWorkspace(){ openInlineExam(learningState.courseId||""); }
+function closeExamWorkspace(){ closeInlineExam(); }
+function goToExamPortal(){ openInlineExam(learningState.courseId||""); }
+function showCourseHome(){
+  learningState.courseId="";
+  learningState.lesson=0;
+  document.getElementById("learn_courseHome").style.display="";
+  document.getElementById("learn_courseView").style.display="none";
+  renderCourses();
+  history.replaceState(null,"","#learning");
+}
+async function learningSelectCourse(id,lessonIndex=0){
+  if(!LEARNING_COURSES[id]) return;
+  try{
+    const unlocked=await checkCourseAccess(id);
+    if(!unlocked){
+      const name=LEARNING_COURSES[id].title;
+      alert(name+" is locked. Pay 400 ETB and receive an activation key. Once activated, all 15 lessons stay unlocked for you.");
+      openInlinePayment(id);
+      return;
+    }
+    const lessons=await loadLessons(id);
+    if(!Array.isArray(lessons)||!lessons.length) return;
+    learningState.courseId=id;
+    const requested=Number(lessonIndex);
+    learningState.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),lessons.length-1):0;
+    if(learningState.email) loadLearningProgress();
+    const home=document.getElementById("learn_courseHome");
+    const view=document.getElementById("learn_courseView");
+    if(home) home.style.display="none";
+    if(view) view.style.display="grid";
+    renderCourses();
+    renderCourse();
+    history.replaceState(null,"","#learning");
+    scrollToLesson();
+  }catch(err){
+    console.error("EDSA course open error:",err);
+    const view=document.getElementById("learn_courseView");
+    const area=document.getElementById("learn_learningArea");
+    if(view) view.style.display="grid";
+    if(area) area.innerHTML='<div class="empty">This course could not be opened. Please refresh the page and try again.</div>';
+  }
+}
+
+;
+const GDM_VIDEOS={"0":{"id":"BLhoWAALKt0","title":"Canva Tutorial for Beginners — Full Step-by-Step Guide","url":"https://www.youtube.com/watch?v=BLhoWAALKt0","note":"Lesson 1 video: a practical beginner walkthrough of Canva and its core design workflow."},"4":{"id":"7iY4QFqTlpE","title":"What's Color Theory | Graphic Design Basic — Canva","url":"https://www.youtube.com/watch?v=7iY4QFqTlpE","note":"Lesson 5 video: color theory, color combinations, palettes and how color communicates."},"9":{"id":"MELKuexR3sQ","title":"Beginning Graphic Design: Images — LearnFree","url":"https://www.youtube.com/watch?v=MELKuexR3sQ","note":"Lesson 10 video: choosing quality images and basic cropping, resizing and image adjustments."},"14":{"id":"sByzHoiYFX0","title":"Beginning Graphic Design: Typography — LearnFree","url":"https://www.youtube.com/watch?v=sByzHoiYFX0","note":"Lesson 15 video: typography, font selection, hierarchy, spacing and combining type."}};
+;
+const FME_VIDEOS={"0":{"id":"Fi1wkUczuyk","title":"Financial Statements: All the Basics in 8 Minutes","url":"https://www.youtube.com/watch?v=Fi1wkUczuyk","note":"Lesson 1 video: a clear introduction to the income statement, balance sheet and cash-flow statement."},"4":{"id":"6m38N7zk5Ow","title":"How to Price Your Product as a Business Owner","url":"https://www.youtube.com/watch?v=6m38N7zk5Ow","note":"Lesson 5 video: practical product-pricing steps and pricing strategy."},"9":{"id":"3W_LwpeG8c8","title":"Financial Ratios: How to Analyze Financial Statements","url":"https://www.youtube.com/watch?v=3W_LwpeG8c8","note":"Lesson 10 video: profitability, liquidity, efficiency and leverage ratio analysis."},"14":{"id":"xSNbs74JWrI","title":"Cash Flow Planning for Small Business Owners","url":"https://www.youtube.com/watch?v=xSNbs74JWrI","note":"Lesson 15 video: practical cash-flow planning, forecasting and financial stability."}};
+const LESSON_CACHE={};
+async function loadLessons(id){
+  if(LESSON_CACHE[id]) return LESSON_CACHE[id];
+  if(window.__EDSA_ADMIN_PREVIEW_MODE){
+    const ar=await fetch("/api/admin-course-content?courseId="+encodeURIComponent(id),{credentials:"include",cache:"no-store"});
+    const ax=await ar.json().catch(()=>({}));
+    if(!ar.ok||!ax.ok||!Array.isArray(ax.lessons)) throw new Error(ax.error||"Admin course lessons unavailable");
+    LESSON_CACHE[id]=ax.lessons;
+    return LESSON_CACHE[id];
+  }
+  const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id)+"&include=lessons",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
+  const x=await r.json().catch(()=>({}));
+  if(!r.ok||!x.ok||!Array.isArray(x.lessons)) throw new Error(x.error||"Course lessons unavailable");
+  LESSON_CACHE[id]=x.lessons;
+  return LESSON_CACHE[id];
+}
+function getLessons(id){return LESSON_CACHE[id]||[];}
+
+function renderCourse(){
+  if(!learningState.unlocked[learningState.courseId]){
+    document.getElementById("learn_learningArea").innerHTML="<div class=\"empty\"><strong>Course locked</strong><br><br>Pay 400 ETB and activate your first exam attempt. After activation, all 15 lessons and videos stay unlocked for you.</div>";
+    return;
+  }
+  const c=LEARNING_COURSES[learningState.courseId], lessons=getLessons(learningState.courseId);
+  if(!Array.isArray(lessons)||!lessons.length){
+    document.getElementById("learn_learningArea").innerHTML="<div class=\"empty\"><strong>Lesson content is loading.</strong><br><br>Please wait a moment and try again.</div>";
+    return;
+  }
+  const d=learningState.done[learningState.courseId]||{completed:[]};
+  const completed=d.completed||[];
+  const pct=Math.round(completed.length/lessons.length*100);
+  const l=lessons[learningState.lesson]||lessons[0];
+  const video=getVideo(learningState.courseId,learningState.lesson);
+  const sections=l.sections.map(s=>"<h4>"+learningEscapeHtml(s[0])+"</h4><p>"+learningEscapeHtml(s[1])+"</p>").join("");
+  const isDone=completed.includes(learningState.lesson);
+  const videoHtml=video
+    ? (video.id
+      ? '<div class="video"><b>🎥 '+learningEscapeHtml(video.title)+'</b><iframe title="'+learningEscapeHtml(video.title)+'" src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(video.id)+'?rel=0" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:14px" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe><span>'+learningEscapeHtml(video.note)+'</span></div>'
+      : '<div class="video"><b>🎥 '+learningEscapeHtml(video.title)+'</b><span>'+learningEscapeHtml(video.note)+'</span><a class="btn blue" style="display:inline-block;margin-top:12px;text-decoration:none" target="_blank" rel="noopener" href="'+video.url+'">Watch Lesson Video on YouTube ↗</a></div>')
+    : '';
+  document.getElementById("learn_learningArea").innerHTML=
+    '<div class="lesson-head"><div><div style="font-size:9px;color:#1677ff;font-weight:900;letter-spacing:.12em">LESSON '+(learningState.lesson+1)+' OF '+lessons.length+'</div><h2>'+learningEscapeHtml(l.title)+'</h2><p>'+learningEscapeHtml(l.intro)+'</p></div></div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
+    '<div id="lessonStart" class="viewer"><h3>'+learningEscapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+learningEscapeHtml(l.example)+'</div></div>'+videoHtml+
+    '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>'+
+    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===learningState.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+learningEscapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>'+(completed.length===lessons.length?'<div class="panel" style="margin-top:18px;border-color:#86efac;background:#f0fdf4"><strong style="color:#166534">🎓 All 15 lessons completed!</strong><p style="font-size:11px;color:#166534;margin:6px 0 12px">You can take the exam now, or return to any lesson for review. Your course access remains free after activation.</p><button type="button" class="btn blue" onclick="openExamWorkspace()">📝 Take Exam Now</button></div>':'')+
+    '</div></div>';
+}
+function scrollToLesson(){
+  requestAnimationFrame(()=>{
+    const target=document.getElementById("lessonStart")||document.querySelector(".viewer");
+    if(!target)return;
+    const top=target.getBoundingClientRect().top+window.scrollY-82;
+    window.scrollTo({top:Math.max(0,top),behavior:"smooth"});
+  });
+}
+function openLesson(i){
+  const lessons=getLessons(learningState.courseId);
+  if(i<0||i>=lessons.length)return;
+  learningState.lesson=i;
+  history.replaceState(null,"","#learning");
+  renderCourse();
+  scrollToLesson();
+}
+function prevLesson(){if(learningState.lesson>0)openLesson(learningState.lesson-1)}
+function nextLesson(){
+  const total=getLessons(learningState.courseId).length;
+  const d=learningState.done[learningState.courseId]||{completed:[]};
+  d.completed=d.completed||[];
+  if(!d.completed.includes(learningState.lesson)) d.completed.push(learningState.lesson);
+  learningState.done[learningState.courseId]=d; saveLearningProgress();
+  if(learningState.lesson<total-1){ openLesson(learningState.lesson+1); return; }
+  renderCourse(); renderCourses();
+  if(learningState.done[learningState.courseId].completed.length===total){
+    // The intended course journey is automatic: finish lesson 15 -> open the exam.
+    setTimeout(()=>{ openExamWorkspace(); },250);
+  }
+}
+function toggleComplete(){
+  const d=learningState.done[learningState.courseId]||{completed:[]};
+  d.completed=d.completed||[];
+  const n=d.completed.indexOf(learningState.lesson);
+  if(n>=0)d.completed.splice(n,1);else d.completed.push(learningState.lesson);
+  learningState.done[learningState.courseId]=d; saveLearningProgress(); renderCourse(); renderCourses();
+}
+function learningEscapeHtml(v){
+  return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+document.addEventListener("DOMContentLoaded",boot);
+
+function showStudentAuth(){document.getElementById("studentAuthModal").style.display="flex";showStudentLogin();}
+function closeStudentAuth(){document.getElementById("studentAuthModal").style.display="none";}
+function showStudentLogin(){document.getElementById("studentAuthLogin").style.display="block";document.getElementById("studentAuthRegister").style.display="none";document.getElementById("studentAuthError").textContent="";}
+function showStudentRegister(){document.getElementById("studentAuthLogin").style.display="none";document.getElementById("studentAuthRegister").style.display="block";document.getElementById("studentRegisterError").textContent="";}
+async function studentLogin(){
+ const email=document.getElementById("studentLoginEmail").value.trim(), password=document.getElementById("studentLoginPassword").value;
+ const err=document.getElementById("studentAuthError"),btn=document.getElementById("studentLoginBtn"); err.textContent="";
+ if(!email||!password){err.textContent="Enter your email and password.";return;}
+ btn.disabled=true;btn.textContent="Signing in…";
+ try{const r=await EDSA_API_FETCH("/api/auth-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password}),cache:"no-store"});
+ const j=await r.json().catch(()=>({})); if(!r.ok||!j.ok||!j.user||j.user.role!=="student"){err.textContent=j.error||"Sign-in failed.";return;}
+ if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}
+ state.studentEmail=j.user.email||email;state.studentName=j.user.name||"Student";closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
+ }catch(e){err.textContent="Could not connect to EDSA."; } finally{btn.disabled=false;btn.textContent="Sign In";}
+}
+async function studentRegister(){
+ const name=document.getElementById("studentRegisterName").value.trim(),email=document.getElementById("studentRegisterEmail").value.trim(),password=document.getElementById("studentRegisterPassword").value,confirm=document.getElementById("studentRegisterConfirm").value;
+ const err=document.getElementById("studentRegisterError"),btn=document.getElementById("studentRegisterBtn");err.textContent="";
+ if(!name||!email||!password){err.textContent="Complete all fields.";return;} if(password.length<8){err.textContent="Password must be at least 8 characters.";return;} if(password!==confirm){err.textContent="Passwords do not match.";return;}
+ btn.disabled=true;btn.textContent="Creating…";
+ try{const r=await EDSA_API_FETCH("/api/auth-register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,password}),cache:"no-store"});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||!j.user){err.textContent=j.error||"Registration failed.";return;}if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}state.studentEmail=j.user.email||email;state.studentName=j.user.name||name;closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
+ }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
+}
+function openLearningInline(courseId,adminMode){
+  unifyLearningWorkspaceViews();
+  window.__EDSA_IN_LEARNING_EXAM=false;
+  const shell=document.getElementById("learn_shell");
+  const app=document.getElementById("learn_app");
+  if(shell) shell.style.display="block";
+  if(app) app.style.display="block";
+  ["stepPayment","stepExam","stepResult"].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add("hidden-section");});
+  learningState.email=adminMode?"admin":(state.studentEmail||"");
+  learningState.name=adminMode?"EDSA Administrator":(state.studentName||"Student");
+  learningState.unlocked=learningState.unlocked||{};
+  Object.keys(LEARNING_COURSES).forEach(id=>{if(adminMode)learningState.unlocked[id]=true;});
+  window.__EDSA_ADMIN_PREVIEW_MODE=!!adminMode;
+  document.getElementById("learn_welcome").textContent=adminMode?"Administrator Preview — all courses and lessons are available.":"Welcome, "+learningState.name+". Your course lessons, exam, result and certificate stay in this one workspace.";
+  updateUnifiedFlow("course");
+  renderCourses();
+  if(courseId){learningState.unlocked[courseId]=true;learningSelectCourse(courseId,0);}
+}
+function closeLearningInline(){
+  document.getElementById("learn_shell").style.display="none";
+  if(window.__EDSA_ADMIN_PREVIEW_MODE)window.__EDSA_ADMIN_PREVIEW_MODE=false;
+  navToCatalog();
+}
+function openInlinePayment(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse; if(state.selectedCourse){document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;showSection("stepPayment");}}
+function openInlineExam(courseId){
+  if(courseId){state.selectedCourse=COURSES.find(c=>c.id===courseId)||state.selectedCourse;}
+  if(!state.selectedCourse){showSection("stepCatalog");return;}
+  window.__EDSA_IN_LEARNING_EXAM=true;
+  const shell=document.getElementById("learn_shell");
+  if(shell) shell.style.display="block";
+  const app=document.getElementById("learn_app");
+  if(app) app.style.display="none";
+  const back=document.getElementById("learningExamBackBtn");
+  if(back) back.classList.remove("hidden");
+  document.getElementById("selectedCourseTitle").innerText="Selected: "+state.selectedCourse.title;
+  verifyAndStartExam({preventDefault:function(){}});
+}
+function closeInlineExam(){
+  stopTimer();
+  const back=document.getElementById("learningExamBackBtn");
+  if(back) back.classList.add("hidden");
+  if(window.__EDSA_IN_LEARNING_EXAM){
+    window.__EDSA_IN_LEARNING_EXAM=false;
+    ["stepCatalog","stepPayment","stepExam","stepResult"].forEach(function(id){
+      const el=document.getElementById(id);
+      if(el) el.classList.add("hidden-section");
+    });
+    const shell=document.getElementById("learn_shell");
+    const app=document.getElementById("learn_app");
+    if(shell) shell.style.display="block";
+    if(app) app.style.display="block";
+    updateUnifiedFlow("course");
+    renderCourses();
+    if(learningState.courseId){
+      renderCourse();
+      scrollToLesson();
+    }
+    return;
+  }
+  const shell=document.getElementById("learn_shell");
+  if(shell) shell.style.display="none";
+}
+
+</script>
+<div id="studentAuthModal" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:18px">
+  <div style="width:min(430px,100%);background:#0f172a;border:1px solid #334155;border-radius:18px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.45)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px"><div><b style="font-size:18px">EDSA Student Account</b><div style="font-size:10px;color:#94a3b8;margin-top:3px">Sign in or create your account</div></div><button type="button" onclick="closeStudentAuth()" style="background:none;border:0;color:#94a3b8;font-size:20px">×</button></div>
+    <div id="studentAuthLogin">
+      <input id="studentLoginEmail" type="email" placeholder="Email" autocomplete="email" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
+      <input id="studentLoginPassword" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff">
+      <button type="button" onclick="studentLogin()" id="studentLoginBtn" style="width:100%;margin-top:12px;background:#0ea5e9;border:0;border-radius:10px;padding:12px;font-weight:900;color:#061a3b">Sign In</button>
+      <p id="studentAuthError" style="font-size:10px;color:#fb7185;min-height:15px"></p>
+      <button type="button" onclick="showStudentRegister()" style="background:none;border:0;color:#60a5fa;font-size:10px">Create a new student account</button>
+    </div>
+    <div id="studentAuthRegister" style="display:none">
+      <input id="studentRegisterName" type="text" placeholder="Full name" autocomplete="name" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
+      <input id="studentRegisterEmail" type="email" placeholder="Email" autocomplete="email" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
+      <input id="studentRegisterPassword" type="password" placeholder="Password (8+ characters)" autocomplete="new-password" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff;margin-bottom:9px">
+      <input id="studentRegisterConfirm" type="password" placeholder="Confirm password" autocomplete="new-password" style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:10px;padding:12px;color:#fff">
+      <button type="button" onclick="studentRegister()" id="studentRegisterBtn" style="width:100%;margin-top:12px;background:#0ea5e9;border:0;border-radius:10px;padding:12px;font-weight:900;color:#061a3b">Create Account</button>
+      <p id="studentRegisterError" style="font-size:10px;color:#fb7185;min-height:15px"></p>
+      <button type="button" onclick="showStudentLogin()" style="background:none;border:0;color:#60a5fa;font-size:10px">Back to sign in</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
