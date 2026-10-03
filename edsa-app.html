@@ -2953,7 +2953,7 @@ function openLearningInline(courseId,adminMode){
   document.getElementById("learn_welcome").textContent=adminMode?"Administrator Preview — all courses and lessons are available.":"Welcome, "+learningState.name+". Your course lessons, exam, result and certificate stay in this one workspace.";
   updateUnifiedFlow("course");
   renderCourses();
-  if(courseId){learningState.unlocked[courseId]=true;learningSelectCourse(courseId,0);}
+  if(courseId){learningSelectCourse(courseId,0);}
 }
 function closeLearningInline(){
   const publicNav=document.querySelector(".edsa-public-nav"); if(publicNav) publicNav.style.display="";
