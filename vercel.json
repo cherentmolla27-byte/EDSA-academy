@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/", "destination": "/home.html" },
     { "source": "/verify", "destination": "/verify.html" },
     { "source": "/api/auth-login", "destination": "/api/edsa?action=auth-login" },
     { "source": "/api/auth-register", "destination": "/api/edsa?action=auth-register" },
