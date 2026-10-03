@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EDSA Admin Learning Preview</title>
-  <style>body{margin:0;background:#061a3b;color:#fff;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}main{text-align:center;padding:30px}p{color:#bfdbfe;font-size:14px}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSA Admin Learning Preview</title>
+<style>body{margin:0;background:#061a3b;color:#fff;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}main{text-align:center;padding:30px}p{color:#bfdbfe;font-size:14px}</style>
 </head>
 <body>
-<main><strong>Loading EDSA Admin Learning Preview…</strong><p>Opening the real Learning Center in isolated admin-preview mode.</p></main>
+<main><strong>Loading EDSA Admin Learning Preview…</strong><p>Opening the Learning Center in isolated administrator preview mode.</p></main>
 <script>
 (async function(){
   try{
@@ -21,7 +21,7 @@
     const source=await fetch('/learning.html'+location.search,{credentials:'include',cache:'no-store'});
     if(!source.ok) throw new Error('Learning Center unavailable');
     let html=await source.text();
-    const bridge='<script src="/admin-preview.js?v=4">'+'<'+'/script>';
+    const bridge='<script src="/admin-preview.js?v=6">'+'<'+'/script>';
     if(html.includes('</head>')) html=html.replace('</head>',bridge+'\n</head>');
     document.open();
     document.write(html);
