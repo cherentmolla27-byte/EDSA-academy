@@ -156,68 +156,52 @@ async function activateKey(req, res) {
   if (!s) return auth.json(res, 401, { ok: false, error: "Student sign-in required." });
   try {
     const code = String((req.body || {}).code || "").trim().toUpperCase();
-    const courseId = String((req.body || {}).courseId || "").trim();
+    const courseId = String((req.body || {}).courseId || "").trim().toLowerCase();
     if (!/^EDSA-[A-F0-9]{8}$/.test(code)) return auth.json(res, 400, { ok: false, error: "Invalid activation key." });
+
     for (let attempt = 0; attempt < 3; attempt++) {
       const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
       const key = keys.find(k => k.code === code);
       if (!key) return auth.json(res, 404, { ok: false, error: "Invalid activation key." });
       if (key.status !== "active") return auth.json(res, 409, { ok: false, error: "This activation key has already been used." });
-      // Accept numeric/string 400 values and migrate any legacy active 500-ETB key
-      // so keys issued before the price change do not become unusable.
-      const keyAmount = Number(key.amount);
-      if (keyAmount === 500) {
-        key.amount = 400;
-      } else if (keyAmount !== 400) {
-        return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 400 ETB fee." });
-      }
-      if (!courseId || (String(key.scope || "").toLowerCase() !== courseId && String(key.scope || "").toLowerCase() !== "all")) return auth.json(res, 409, { ok: false, error: "This 400 ETB key is for a different course." });
 
-      // First activation owns the course and includes the first exam attempt.
-      // A second key is only valid after a recorded failed attempt; it never
-      // removes or re-locks the student's lessons.
+      const keyAmount = Number(key.amount);
+      if (keyAmount !== 400 && keyAmount !== 500) return auth.json(res, 409, { ok: false, error: "This activation key is not valid for the current 400 ETB exam fee." });
+      if (!courseId || (String(key.scope || "").toLowerCase() !== courseId && String(key.scope || "").toLowerCase() !== "all")) {
+        return auth.json(res, 409, { ok: false, error: "This activation key is for a different course." });
+      }
+
       const normalizedEmail = auth.normalizeEmail(s.email);
-      let alreadyOwned = false;
       let lastAttempt = null;
       try {
         if (db.dbConfigured()) {
-          const accessRows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(normalizedEmail) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
-          alreadyOwned = Array.isArray(accessRows) && accessRows.length > 0;
-          if (alreadyOwned) {
-            const students = await db.select("students", "select=id&email=eq." + encodeURIComponent(normalizedEmail) + "&limit=1");
-            const studentId = students[0]?.id;
-            if (studentId) {
-              const attempts = await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent(studentId) + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1");
-              lastAttempt = attempts[0] || null;
-            }
+          const students = await db.select("students", "select=id&email=eq." + encodeURIComponent(normalizedEmail) + "&limit=1");
+          const studentId = students[0]?.id;
+          if (studentId) {
+            const attempts = await db.select("exam_attempts", "select=id,score,passed,created_at&student_id=eq." + encodeURIComponent(studentId) + "&course_id=eq." + encodeURIComponent(courseId) + "&order=created_at.desc&limit=1");
+            lastAttempt = attempts[0] || null;
           }
         }
-      } catch (ownershipError) {
-        console.error("[EDSA activation ownership check]", ownershipError);
+      } catch (attemptReadError) {
+        console.error("[EDSA activation attempt check]", attemptReadError);
       }
-      if (alreadyOwned && !lastAttempt) return auth.json(res, 409, { ok: false, error: "Your first exam attempt is already included. Complete the lessons and take that exam before buying another attempt." });
-      if (alreadyOwned && lastAttempt && lastAttempt.passed === true) return auth.json(res, 409, { ok: false, error: "You have already passed this course. A new exam attempt is not needed." });
 
-      key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
-      // The database is the authoritative source for course ownership and
-      // paid exam entitlements. Never report activation success unless both
-      // records were actually persisted. This prevents a key from appearing
-      // activated while the student remains locked out of the course/exam.
+      if (lastAttempt && lastAttempt.passed === true) {
+        return auth.json(res, 409, { ok: false, error: "You have already passed this course. A new exam payment is not needed." });
+      }
+
       if (!db.dbConfigured()) {
-        return auth.json(res, 503, { ok: false, error: "Course access service is temporarily unavailable. Please try again." });
+        return auth.json(res, 503, { ok: false, error: "Exam payment service is temporarily unavailable. Please try again." });
       }
 
-      let accessRows = [];
+      key.status = "used";
+      key.usedAt = new Date().toISOString();
+      key.usedBy = s.name || "Student";
+      key.usedEmail = s.email;
+      key.usedCourse = courseId;
+
       let entitlementRows = [];
       try {
-        accessRows = await db.upsert("course_access", {
-          email: normalizedEmail,
-          course_id: courseId,
-          activation_code: code,
-          amount: 400,
-          activated_at: new Date().toISOString()
-        }, "email,course_id");
-
         entitlementRows = await db.upsert("exam_entitlements", {
           email: normalizedEmail,
           course_id: courseId,
@@ -227,38 +211,39 @@ async function activateKey(req, res) {
           used_at: null
         }, "activation_code");
 
-        if (!Array.isArray(accessRows) || !accessRows.length ||
-            !Array.isArray(entitlementRows) || !entitlementRows.length) {
-          throw new Error("Activation records were not returned by the database.");
+        if (!Array.isArray(entitlementRows) || !entitlementRows.length) {
+          throw new Error("Exam entitlement was not returned by the database.");
         }
-      } catch (accessWriteError) {
-        console.error("[EDSA activation access record]", accessWriteError);
+      } catch (writeError) {
+        console.error("[EDSA activation exam entitlement]", writeError);
         return auth.json(res, 503, {
           ok: false,
-          error: "Activation could not be saved. Your key was not consumed. Please try again."
+          error: "Exam payment could not be activated. Your key was not consumed. Please try again."
         });
       }
 
       try {
-        await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 400 ETB key");
+        await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 400 ETB exam key");
       } catch (writeError) {
-        // Do not claim success if the key registry cannot be updated.
-        // The DB rows are idempotent by email/course and activation_code, so
-        // retrying the same key will safely reconcile the records.
         if (writeError.status === 409) continue;
         console.error("[EDSA activation key registry]", writeError);
-        return auth.json(res, 503, {
-          ok: false,
-          error: "Activation could not be finalized. Please try the same key again."
-        });
+        return auth.json(res, 503, { ok: false, error: "Exam payment could not be finalized. Please try the same key again." });
       }
 
-      return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId });
+      return auth.json(res, 200, {
+        ok: true,
+        activated: true,
+        firstActivation: !lastAttempt,
+        amount: 400,
+        courseId,
+        freeLessons: true,
+        examAttempt: "available"
+      });
     }
     return auth.json(res, 409, { ok: false, error: "The activation registry changed repeatedly. Please try again." });
   } catch (e) {
     console.error("[EDSA activate key]", e);
-    return auth.json(res, e.status || 500, { ok: false, error: "Activation could not be completed. Please try again." });
+    return auth.json(res, e.status || 500, { ok: false, error: "Exam activation could not be completed. Please try again." });
   }
 }
 
@@ -343,37 +328,27 @@ async function courseAccess(req, res) {
   try {
     const courseId = String((req.query && req.query.courseId) || "").trim().toLowerCase();
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
-    const email = auth.normalizeEmail(s.email);
-    let unlocked = false;
-    try {
-      if (db.dbConfigured()) {
-        const rows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(email) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
-        unlocked = Array.isArray(rows) && rows.length > 0;
-      }
-    } catch (accessReadError) {
-      console.error("[EDSA course access db]", accessReadError);
+
+    // Learning is free for every signed-in student. Payment/activation is
+    // enforced only when starting/submitting an exam attempt.
+    if (String((req.query && req.query.include) || "") !== "lessons") {
+      return auth.json(res, 200, { ok: true, unlocked: true, freeLessons: true, courseId });
     }
-    if (!unlocked) {
-      const { data: keys } = await readJsonFile("activation-keys.json", []);
-      unlocked = keys.some(k => {
-        if (String(k.status || "").toLowerCase() !== "used") return false;
-        if (auth.normalizeEmail(k.usedEmail) !== email) return false;
-        const usedCourse = String(k.usedCourse || "").trim().toLowerCase();
-        const scope = String(k.scope || "").trim().toLowerCase();
-        return usedCourse === courseId && (scope === courseId || scope === "all");
-      });
-    }
-    if (!unlocked) return auth.json(res, 200, { ok: true, unlocked: false, courseId });
-    if (String((req.query && req.query.include) || "") !== "lessons") return auth.json(res, 200, { ok: true, unlocked: true, courseId });
+
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
-      headers: { cookie: String(req.headers.cookie || ""), authorization: String(req.headers.authorization || ""), accept: "application/json" }, cache: "no-store"
+      headers: {
+        cookie: String(req.headers.cookie || ""),
+        authorization: String(req.headers.authorization || ""),
+        accept: "application/json"
+      },
+      cache: "no-store"
     });
-    const body = await r.json().catch(() => ({ ok: false, error: "Invalid protected course response." }));
+    const body = await r.json().catch(() => ({ ok: false, error: "Invalid course response." }));
     res.setHeader("Cache-Control", "no-store, private");
-    return auth.json(res, r.status, { ...body, unlocked: true });
+    return auth.json(res, r.status, { ...body, unlocked: true, freeLessons: true });
   } catch (e) {
     console.error("[EDSA course access]", e);
-    return auth.json(res, e.status || 500, { ok: false, error: "Course access could not be checked." });
+    return auth.json(res, e.status || 500, { ok: false, error: "Course lessons could not be loaded." });
   }
 }
 
@@ -457,26 +432,7 @@ async function examAttempt(req, res) {
     const completedAt = body.completedAt ? new Date(body.completedAt).toISOString() : new Date().toISOString();
     if (!courseId || score == null || score < 0 || score > 100) return auth.json(res, 400, { ok: false, error: "Valid course and score are required." });
     const email = auth.normalizeEmail(session.email);
-    let hasCourseAccess = false;
-    try {
-      if (db.dbConfigured()) {
-        const rows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(email) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
-        hasCourseAccess = Array.isArray(rows) && rows.length > 0;
-      }
-    } catch (accessReadError) {
-      console.error("[EDSA exam access db]", accessReadError);
-    }
-    if (!hasCourseAccess) {
-      const { data: keys } = await readJsonFile("activation-keys.json", []);
-      hasCourseAccess = keys.some(k => {
-        if (String(k.status || "").toLowerCase() !== "used") return false;
-        if (auth.normalizeEmail(k.usedEmail) !== email) return false;
-        const usedCourse = String(k.usedCourse || "").trim().toLowerCase();
-        const scope = String(k.scope || "").trim().toLowerCase();
-        return usedCourse === courseId && (scope === courseId || scope === "all");
-      });
-    }
-    if (!hasCourseAccess) return auth.json(res, 403, { ok: false, error: "This course exam requires an active course access. Please activate this course first." });
+    // Lessons are free; the paid entitlement below is the only exam gate.
     // Validate the submitted result before consuming the paid attempt.
     if (passed && score < 80) return auth.json(res, 400, { ok: false, error: "A passing result requires at least 80%." });
     if (!passed && score >= 80) return auth.json(res, 400, { ok: false, error: "Result status does not match the score." });
