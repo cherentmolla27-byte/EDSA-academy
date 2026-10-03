@@ -74,12 +74,9 @@
       </div>
     </div>
     <div class="flex items-center gap-2 sm:gap-3">
-      <button onclick="openLearningInline('')" class="text-xs bg-sky-600 hover:bg-sky-500 px-3 py-1.5 rounded-full text-white font-semibold transition-colors">
-        <i class="fa-solid fa-book-open mr-1"></i> Learning Center
-      </button>
-      <button onclick="openAdminModal()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300 font-medium transition-colors">
-        <i class="fa-solid fa-lock text-sky-400 mr-1"></i> Admin Panel
-      </button>
+      <button onclick="showStudentAuth()" class="text-xs bg-sky-600 hover:bg-sky-500 px-3 py-1.5 rounded-full text-white font-semibold transition-colors"><i class="fa-solid fa-user mr-1"></i> Student Sign In</button>
+      <button onclick="openLearningInline('')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300 font-semibold transition-colors"><i class="fa-solid fa-book-open mr-1"></i> Courses</button>
+      <button onclick="openAdminModal()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300 font-medium transition-colors"><i class="fa-solid fa-lock text-sky-400 mr-1"></i> Admin</button>
       <span id="userStatus" class="text-xs bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300 font-medium hidden sm:inline-block">
         Status: Select Exam
       </span>
@@ -92,23 +89,29 @@
     <!-- STEP 1: Hero & Course Catalog -->
     <section id="stepCatalog" class="space-y-6">
       
-      <!-- Animated Hero Banner -->
-      <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-950/40 p-6 sm:p-8 rounded-2xl border border-sky-500/30 hero-glow text-center relative overflow-hidden">
-        <div class="inline-block p-3 rounded-2xl bg-sky-500/10 border border-sky-500/20 mb-3 float-anim">
-          <i class="fa-solid fa-award text-sky-400 text-3xl"></i>
+      <!-- EDSA HOME HERO -->
+      <div class="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-7 sm:p-10 rounded-3xl border border-sky-500/30 shadow-2xl">
+        <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-sky-500/10 blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-blue-600/10 blur-3xl"></div>
+        <div class="relative max-w-3xl mx-auto text-center">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 text-[10px] font-black uppercase tracking-[0.18em] mb-5"><i class="fa-solid fa-graduation-cap"></i> Ethiopian Digital Skills Academy</div>
+          <h2 class="text-3xl sm:text-5xl font-black text-white leading-tight mb-4">Learn Digital Skills.<br><span class="text-sky-400">Prove What You Know.</span></h2>
+          <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-7">Build practical digital skills through structured 15-lesson courses, test your knowledge with a 50-question professional exam, and earn a verified EDSA certificate when you pass.</p>
+          <div class="flex flex-wrap justify-center gap-3 mt-7">
+            <button type="button" onclick="openLearningInline('')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-6 py-3 rounded-xl transition-colors"><i class="fa-solid fa-book-open mr-2"></i>Explore Courses</button>
+            <button type="button" onclick="showStudentAuth()" class="bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold px-6 py-3 rounded-xl transition-colors"><i class="fa-solid fa-right-to-bracket mr-2"></i>Student Sign In</button>
+          </div>
+          <div class="grid grid-cols-3 gap-2 sm:gap-4 mt-8 max-w-xl mx-auto">
+            <div class="bg-black/20 border border-white/10 rounded-xl p-3"><div class="text-lg font-black text-white">15</div><div class="text-[9px] text-slate-400 uppercase tracking-wider">Lessons / Course</div></div>
+            <div class="bg-black/20 border border-white/10 rounded-xl p-3"><div class="text-lg font-black text-white">50</div><div class="text-[9px] text-slate-400 uppercase tracking-wider">Exam Questions</div></div>
+            <div class="bg-black/20 border border-white/10 rounded-xl p-3"><div class="text-lg font-black text-white">80%</div><div class="text-[9px] text-slate-400 uppercase tracking-wider">Pass Mark</div></div>
+          </div>
         </div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Learn • Practice • Get Certified</h2>
-        <p class="text-slate-300 text-sm max-w-xl mx-auto leading-relaxed">
-          Welcome to <span class="text-sky-400 font-bold">EDSA Academy</span>. Learn through 15-lesson professional courses, take the exam, and earn your verified digital certificate. Exam fee: <span class="text-sky-400 font-bold">400 ETB per attempt</span>.
-        </p>
-        <div class="flex flex-wrap justify-center gap-3 mt-5">
-          <button onclick="openLearningInline('')" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-5 py-2.5 rounded-xl transition-colors">
-            <i class="fa-solid fa-graduation-cap mr-2"></i>Explore Courses & Lessons
-          </button>
-          <button onclick="document.getElementById('courseList')?.scrollIntoView({behavior:'smooth'})" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-5 py-2.5 rounded-xl transition-colors">
-            <i class="fa-solid fa-pen-to-square mr-2"></i>View Exams
-          </button>
-        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="w-9 h-9 rounded-lg bg-sky-500/10 text-sky-400 grid place-items-center mb-3"><i class="fa-solid fa-laptop-code"></i></div><h3 class="font-bold text-white text-sm">Practical Learning</h3><p class="text-xs text-slate-400 mt-1 leading-5">Study structured lessons built around real digital and business skills.</p></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="w-9 h-9 rounded-lg bg-sky-500/10 text-sky-400 grid place-items-center mb-3"><i class="fa-solid fa-clipboard-check"></i></div><h3 class="font-bold text-white text-sm">Professional Exam</h3><p class="text-xs text-slate-400 mt-1 leading-5">Complete a 50-question assessment with an 80% passing threshold.</p></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="w-9 h-9 rounded-lg bg-sky-500/10 text-sky-400 grid place-items-center mb-3"><i class="fa-solid fa-certificate"></i></div><h3 class="font-bold text-white text-sm">Verified Certificate</h3><p class="text-xs text-slate-400 mt-1 leading-5">Successful exam attempts lead to your EDSA digital certificate and verification.</p></div>
       </div>
 
       <!-- Course Cards -->
