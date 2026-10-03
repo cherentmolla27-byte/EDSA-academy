@@ -304,7 +304,7 @@
 
       <div class="bg-black/80 p-5 rounded-xl border border-slate-800 mb-6 text-sm text-slate-300 space-y-3">
         <p class="font-bold text-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-receipt text-sky-400"></i> Exam attempt: <span class="text-sky-400">400 ETB</span>
+          <i class="fa-solid fa-receipt text-sky-400"></i> Course + first exam attempt: <span class="text-sky-400">400 ETB</span>
         </p>
         <div class="space-y-1 font-mono text-xs">
           <p>• Telebirr: <span class="text-sky-400 font-bold">0996173649</span></p>
@@ -333,7 +333,7 @@
           <input type="text" id="accessKey" required placeholder="e.g. EDSA-8A2F9B" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white uppercase focus:outline-none focus:border-sky-500">
         </div>
         <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-lg transition-colors shadow-lg">
-          Verify Key & Launch Exam Attempt
+          Verify Key & Continue
         </button>
       </form>
     </section>
@@ -2894,6 +2894,13 @@ function toggleComplete(){
   const n=d.completed.indexOf(learningState.lesson);
   if(n>=0)d.completed.splice(n,1);else d.completed.push(learningState.lesson);
   learningState.done[learningState.courseId]=d; saveLearningProgress(); renderCourse(); renderCourses();
+  // Completing the final lesson is the hand-off into the exam journey.
+  // If an exam entitlement is available, the exam opens automatically;
+  // if the student previously failed, the existing exam-access check sends
+  // them to the 400 ETB retake payment instead. Course access is never removed.
+  if(n<0 && d.completed.length===getLessons(learningState.courseId).length){
+    setTimeout(()=>{ openExamWorkspace(); },250);
+  }
 }
 function learningEscapeHtml(v){
   return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -2926,7 +2933,7 @@ async function studentRegister(){
  try{const r=await EDSA_API_FETCH("/api/auth-register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,password}),cache:"no-store"});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||!j.user){err.textContent=j.error||"Registration failed.";return;}if(j.sessionToken){sessionStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);localStorage.setItem("EDSA_SESSION_TOKEN",j.sessionToken);}state.studentEmail=j.user.email||email;state.studentName=j.user.name||name;closeStudentAuth();document.getElementById("userStatus").innerText="Signed in: "+state.studentName;
  const pendingCourse=window.__EDSA_PENDING_COURSE||"";
  window.__EDSA_PENDING_COURSE="";
- if(pendingCourse) openLearningInline(pendingCourse,false);
+ openLearningInline(pendingCourse,false);
  }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
 }
 function openLearningInline(courseId,adminMode){
