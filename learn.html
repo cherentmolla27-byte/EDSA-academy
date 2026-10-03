@@ -283,15 +283,22 @@
 .edsa-unified-view{width:100%;box-sizing:border-box;margin:0 auto 18px;border-radius:18px;overflow:hidden}.edsa-unified-view.hidden-section{display:none!important}.edsa-unified-shell{background:#020617;min-height:calc(100vh - 64px);padding:0 0 32px}.edsa-flow-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 5%;background:#061a3b;border-top:1px solid #12345d;border-bottom:1px solid #12345d}.edsa-flow-pill{font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;padding:7px 10px;border:1px solid #1e3a5f;border-radius:999px}.edsa-flow-pill.active{color:#fff;background:#1677ff;border-color:#1677ff}.edsa-unified-content{width:min(1180px,90%);margin:0 auto}.edsa-unified-view .bg-slate-900{background:#07111f!important}.edsa-unified-view .border-slate-800{border-color:#17304f!important}.edsa-unified-view .text-slate-300{color:#cbd5e1!important}.edsa-unified-view .text-slate-400{color:#94a3b8!important}
 </style>
 <div id="learn_shell" class="edsa-unified-shell" style="display:none">
-  <div style="background:#061a3b;color:#fff;padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:45">
-    <div><strong>EDSA DIGITAL SKILLS ACADEMY</strong><small style="display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em">LEARN • EXAM • RESULT • CERTIFICATE — ONE WORKSPACE</small></div>
-    <button type="button" class="btn light" onclick="closeLearningInline()">← Home</button>
+  <div class="edsa-student-topbar" style="background:#061a3b;color:#fff;padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:45">
+    <div style="min-width:0"><strong>EDSA DIGITAL SKILLS ACADEMY</strong><small style="display:block;color:#93c5fd;font-size:8px;letter-spacing:.15em">MY LEARNING • EXAM • CERTIFICATE</small></div>
+    <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end">
+      <span id="studentTopProgress" style="font-size:9px;color:#bfdbfe;font-weight:800">Your Learning Center</span>
+      <button type="button" onclick="window.location.href='/admin-dashboard.html'" style="border:1px solid #334155;background:#0f172a;color:#fbbf24;border-radius:9px;padding:8px 10px;font-size:9px;font-weight:900">⚙ Admin Console</button>
+      <button type="button" class="btn light" onclick="window.location.href='/'">← Home</button>
+    </div>
   </div>
   <div class="edsa-flow-bar"><span id="edsaFlowCourse" class="edsa-flow-pill active">Course</span><span id="edsaFlowExam" class="edsa-flow-pill">Exam</span><span id="edsaFlowResult" class="edsa-flow-pill">Result</span><span id="edsaFlowCertificate" class="edsa-flow-pill">Certificate</span></div>
   <main id="learn_app" style="display:none" class="wrap">
 <section class="hero"><div class="tag">STEP 14 — LEARNING PLATFORM</div><h1>Learn. Practice. Get Certified.</h1><p id="learn_welcome">Loading your student account...</p></section>
 <div id="learn_courseHome" class="panel"><h2 style="margin:0 0 6px">Choose a Course</h2><p style="margin:0 0 18px;color:#64748b;font-size:12px">Tap a course to enter it. Your lessons and progress stay inside that course.</p><div id="learn_courseList" class="courses"><div class="course" onclick="learningSelectCourse('smm')"><strong>Social Media Management</strong><span>Social strategy, content, communities and platform management.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('dme')"><strong>Digital Marketing Essentials</strong><span>Digital campaigns, channels, analytics and marketing strategy.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('pbm')"><strong>Project &amp; Business Management</strong><span>Planning, operations, projects, leadership and business decisions.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('gdm')"><strong>Graphic Design for Marketers</strong><span>Visual communication, design principles, branding and marketing graphics.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('fme')"><strong>Financial Management for Entrepreneurs</strong><span>Budgeting, cash flow, financial decisions and entrepreneurial finance.</span><b>15 lessons • Open →</b></div><div class="course" onclick="learningSelectCourse('dbi')"><strong>Data Analysis &amp; Business Intelligence</strong><span>Data, dashboards, analytics, databases and business intelligence.</span><b>15 lessons • Open →</b></div></div></div>
-<div id="learn_courseView" class="grid" style="display:none"><aside class="panel"><button class="btn light" style="margin-bottom:14px" onclick="showCourseHome()">← All Courses</button><div id="learn_courseListInside" class="courses"></div></aside><section class="panel"><div id="learn_learningArea"></div></section></div>
+<div id="learn_courseView" class="grid" style="display:none;grid-template-columns:minmax(0,1fr) 300px">
+  <section class="panel" style="order:1"><div id="learn_learningArea"></div></section>
+  <aside class="panel" style="order:2"><button class="btn light" style="margin-bottom:14px;width:100%" onclick="showCourseHome()">← All Courses</button><div id="learn_courseListInside" class="courses"></div></aside>
+</div>
 </main>
   <div id="learn_unified_views" class="edsa-unified-content"></div>
 </div>
@@ -2751,9 +2758,20 @@ async function boot(){
       learningState.name=x.user.name||"Student";
       loadLearningProgress();
       await Promise.all(Object.keys(LEARNING_COURSES).map(id=>checkCourseAccess(id)));
-      document.getElementById("learn_welcome").textContent="Welcome, "+learningState.name+". Activate a course once, then all 15 lessons stay free. You may take the exam whenever you are ready.";
+      document.getElementById("learn_welcome").textContent="Welcome, "+learningState.name+". Your active course is the first thing you see. Complete every lesson and EDSA moves you straight into the exam.";
       renderCourses();
-      if(LEARNING_COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); learningSelectCourse(q,Number.isFinite(qi)?qi:0); }
+      const pendingCourse=localStorage.getItem("EDSA_PENDING_COURSE")||"";
+      localStorage.removeItem("EDSA_PENDING_COURSE");
+      const launchCourse=LEARNING_COURSES[pendingCourse]?pendingCourse:(LEARNING_COURSES[q]?q:"");
+      if(launchCourse) {
+        const qi=Number(new URLSearchParams(location.search).get("lesson"));
+        await learningSelectCourse(launchCourse,Number.isFinite(qi)?qi:0);
+      } else {
+        const home=document.getElementById("learn_courseHome");
+        const view=document.getElementById("learn_courseView");
+        if(home) home.style.display="";
+        if(view) view.style.display="none";
+      }
       return;
     }
   }catch(e){}
@@ -2856,11 +2874,12 @@ function renderCourse(){
       : '<div class="video"><b>🎥 '+learningEscapeHtml(video.title)+'</b><span>'+learningEscapeHtml(video.note)+'</span><a class="btn blue" style="display:inline-block;margin-top:12px;text-decoration:none" target="_blank" rel="noopener" href="'+video.url+'">Watch Lesson Video on YouTube ↗</a></div>')
     : '';
   document.getElementById("learn_learningArea").innerHTML=
+    '<div style="background:linear-gradient(135deg,#061a3b,#0b3f83);color:#fff;border-radius:16px;padding:18px;margin-bottom:16px"><div style="font-size:9px;color:#bfdbfe;font-weight:900;letter-spacing:.13em">YOUR ACTIVE PROGRAM</div><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap"><div><h2 style="margin:5px 0 3px;font-size:24px">'+learningEscapeHtml(c.title)+'</h2><p style="margin:0;color:#dbeafe;font-size:11px">'+learningEscapeHtml(c.desc)+'</p></div><div style="font-size:12px;font-weight:900;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);padding:8px 10px;border-radius:10px">'+completed.length+'/'+lessons.length+' complete</div></div><div style="height:7px;background:rgba(255,255,255,.16);border-radius:99px;margin-top:14px;overflow:hidden"><i style="display:block;height:100%;width:'+pct+'%;background:#fbbf24;border-radius:99px"></i></div></div>'+
     '<div class="lesson-head"><div><div style="font-size:9px;color:#1677ff;font-weight:900;letter-spacing:.12em">LESSON '+(learningState.lesson+1)+' OF '+lessons.length+'</div><h2>'+learningEscapeHtml(l.title)+'</h2><p>'+learningEscapeHtml(l.intro)+'</p></div></div>'+
-    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed • Course access stays free</div>'+
     '<div id="lessonStart" class="viewer"><h3>'+learningEscapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+learningEscapeHtml(l.example)+'</div></div>'+videoHtml+
-    '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>'+
-    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===learningState.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+learningEscapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>'+(completed.length===lessons.length?'<div class="panel" style="margin-top:18px;border-color:#86efac;background:#f0fdf4"><strong style="color:#166534">🎓 All 15 lessons completed!</strong><p style="font-size:11px;color:#166534;margin:6px 0 12px">You can take the exam now, or return to any lesson for review. Your course access remains free after activation.</p><button type="button" class="btn blue" onclick="openExamWorkspace()">📝 Take Exam Now</button></div>':'')+
+    '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete →")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>'+
+    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===learningState.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+learningEscapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>'+(completed.length===lessons.length?'<div class="panel" style="margin-top:18px;border-color:#86efac;background:#f0fdf4"><strong style="color:#166534">🎓 Course complete — exam next</strong><p style="font-size:11px;color:#166534;margin:6px 0 12px">Your lessons stay free. EDSA will open the exam automatically. If you already failed an earlier attempt, only the new exam attempt requires 400 ETB.</p></div>':'')+
     '</div></div>';
 }
 function scrollToLesson(){
@@ -2896,16 +2915,29 @@ function nextLesson(){
 function toggleComplete(){
   const d=learningState.done[learningState.courseId]||{completed:[]};
   d.completed=d.completed||[];
-  const n=d.completed.indexOf(learningState.lesson);
-  if(n>=0)d.completed.splice(n,1);else d.completed.push(learningState.lesson);
-  learningState.done[learningState.courseId]=d; saveLearningProgress(); renderCourse(); renderCourses();
-  // Completing the final lesson is the hand-off into the exam journey.
-  // If an exam entitlement is available, the exam opens automatically;
-  // if the student previously failed, the existing exam-access check sends
-  // them to the 400 ETB retake payment instead. Course access is never removed.
-  if(n<0 && d.completed.length===getLessons(learningState.courseId).length){
-    setTimeout(()=>{ openExamWorkspace(); },250);
+  const current=learningState.lesson;
+  const n=d.completed.indexOf(current);
+  if(n>=0){
+    d.completed.splice(n,1);
+    learningState.done[learningState.courseId]=d; saveLearningProgress(); renderCourse(); renderCourses();
+    return;
   }
+  d.completed.push(current);
+  learningState.done[learningState.courseId]=d; saveLearningProgress(); renderCourses();
+  const total=getLessons(learningState.courseId).length;
+  if(d.completed.length===total){
+    renderCourse();
+    // Final lesson -> exam. If this student already failed, the exam-access
+    // check automatically routes them to the 400 ETB retake payment. Their
+    // course and every lesson remain unlocked.
+    setTimeout(()=>{ openExamWorkspace(); },350);
+    return;
+  }
+  // Normal lesson completion -> immediately bring the next lesson into view.
+  // This keeps the learner focused on the course instead of making them hunt
+  // through the lesson list.
+  learningState.lesson=Math.min(current+1,total-1);
+  renderCourse(); renderCourses(); scrollToLesson();
 }
 function learningEscapeHtml(v){
   return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -3094,9 +3126,24 @@ restoreStudentSession();
   </div>
 </div>
 
-<style id="edsa-learning-page-style">.edsa-public-home-only,.edsa-public-nav{display:none!important}body{background:#f8fafc}</style>
+<style id="edsa-learning-page-style">
+.edsa-public-home-only,.edsa-public-nav{display:none!important}
+body{background:#f8fafc}
+.edsa-student-topbar{box-shadow:0 8px 28px rgba(2,6,23,.18)}
+#learn_courseHome .panel{}
+#learn_courseView{align-items:start}
+#learn_courseView>.panel:first-child{min-width:0}
+#learn_courseListInside{position:sticky;top:92px}
+@media(max-width:799px){
+  #learn_courseView{display:block!important}
+  #learn_courseView>section{margin-bottom:14px}
+  #learn_courseListInside{position:static}
+  .edsa-student-topbar{padding:10px 4%}
+  .edsa-student-topbar strong{font-size:12px}
+}
+</style>
 <script>
-document.addEventListener("DOMContentLoaded",function(){setTimeout(async function(){const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||"";if(!token){showStudentAuth();return;}try{const r=await EDSA_API_FETCH("/api/auth-me",{method:"GET",cache:"no-store"});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok||!j.user||j.user.role!=="student"){sessionStorage.removeItem("EDSA_SESSION_TOKEN");localStorage.removeItem("EDSA_SESSION_TOKEN");showStudentAuth();return;}state.studentEmail=j.user.email||"";state.studentName=j.user.name||"Student";const pending=localStorage.getItem("EDSA_PENDING_COURSE")||"";localStorage.removeItem("EDSA_PENDING_COURSE");openLearningInline(pending,false);}catch(e){showStudentAuth();}},150);});
+/* Dedicated student route: boot() above owns authentication and course launch. */
 </script>
 </body>
 </html>
