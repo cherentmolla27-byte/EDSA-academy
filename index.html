@@ -59,7 +59,25 @@
     }
     .float-anim { animation: float 3s ease-in-out infinite; }
   </style>
-<script src="/student-db-sync.js"></script>\n</head>
+<script src="/student-db-sync.js"></script>\n<style id="edsa-landing-style">
+.edsa-landing{background:#f8fbff;color:#0b2145;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.edsa-nav{background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid #e8eef7;position:sticky;top:0;z-index:50}
+.edsa-nav-inner{max-width:1180px;margin:auto;padding:14px 5%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.edsa-logo{display:flex;align-items:center;gap:10px;font-weight:950;color:#082b5f}.edsa-logo-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#0b63ce,#19a7ff);display:grid;place-items:center;color:white;box-shadow:0 8px 20px rgba(11,99,206,.22)}.edsa-logo small{display:block;font-size:8px;letter-spacing:.15em;color:#6b7f99;margin-top:2px}
+.edsa-navlinks{display:none;gap:24px;align-items:center}.edsa-navlinks button{border:0;background:none;color:#4a607a;font-size:12px;font-weight:800;cursor:pointer}.edsa-navlinks button:hover{color:#0969d8}
+.edsa-nav-actions{display:flex;gap:8px}.edsa-land-btn{border:0;border-radius:10px;padding:10px 15px;font-size:11px;font-weight:900;cursor:pointer}.edsa-land-primary{background:#0969d8;color:#fff;box-shadow:0 8px 20px rgba(9,105,216,.18)}.edsa-land-secondary{background:#eff6ff;color:#0755ad;border:1px solid #dbeafe}
+.edsa-hero{max-width:1180px;margin:0 auto;padding:42px 5% 58px;display:grid;grid-template-columns:1fr;gap:35px;align-items:center}.edsa-hero-copy .eyebrow{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:#eaf4ff;color:#0969d8;font-size:9px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}.edsa-hero h1{font-size:clamp(38px,5vw,68px);line-height:1.03;letter-spacing:-.045em;margin:18px 0 18px;color:#082b5f}.edsa-hero h1 span{color:#0969d8}.edsa-hero-copy>p{font-size:15px;line-height:1.8;color:#62748c;max-width:590px;margin:0}.edsa-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}.edsa-trust{display:flex;flex-wrap:wrap;gap:18px;margin-top:23px;color:#667b94;font-size:10px;font-weight:800}.edsa-trust i{color:#159447;margin-right:5px}
+.edsa-hero-visual{position:relative}.edsa-photo-frame{position:relative;overflow:hidden;border-radius:28px;box-shadow:0 30px 70px rgba(14,57,105,.18);min-height:390px;background:#dcecff}.edsa-photo-frame img{width:100%;height:100%;min-height:390px;object-fit:cover;display:block}.edsa-photo-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(5,30,65,.5))}.edsa-floating-card{position:absolute;background:#fff;border:1px solid #e7eef7;border-radius:16px;box-shadow:0 18px 45px rgba(15,55,100,.16);padding:13px 15px}.edsa-float-top{top:22px;left:-18px}.edsa-float-bottom{bottom:22px;right:-18px}.edsa-floating-card b{display:block;color:#082b5f;font-size:12px}.edsa-floating-card span{display:block;color:#73859a;font-size:9px;margin-top:3px}.edsa-check{color:#159447;margin-right:5px}
+.edsa-stats{max-width:1050px;margin:-5px auto 0;padding:0 5%;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.edsa-stat{background:#fff;border:1px solid #e4edf8;border-radius:16px;padding:18px;text-align:center;box-shadow:0 10px 30px rgba(15,55,100,.05)}.edsa-stat strong{display:block;font-size:24px;color:#082b5f}.edsa-stat span{font-size:9px;color:#71839a;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.edsa-section{max-width:1180px;margin:0 auto;padding:75px 5%}.edsa-section-head{text-align:center;max-width:690px;margin:0 auto 32px}.edsa-section-head .eyebrow{color:#0969d8;font-size:9px;font-weight:950;letter-spacing:.15em;text-transform:uppercase}.edsa-section-head h2{font-size:34px;letter-spacing:-.03em;color:#082b5f;margin:9px 0}.edsa-section-head p{font-size:12px;line-height:1.7;color:#71839a}
+.edsa-course-grid{display:grid;grid-template-columns:1fr;gap:13px}.edsa-course-card{background:#fff;border:1px solid #e3ecf7;border-radius:18px;padding:20px;transition:.2s;box-shadow:0 10px 25px rgba(15,55,100,.04)}.edsa-course-card:hover{transform:translateY(-3px);box-shadow:0 18px 35px rgba(15,55,100,.09);border-color:#bfdbfe}.edsa-course-icon{width:43px;height:43px;border-radius:13px;background:#eaf4ff;color:#0969d8;display:grid;place-items:center;font-size:17px;margin-bottom:14px}.edsa-course-card h3{margin:0;color:#082b5f;font-size:14px}.edsa-course-card p{font-size:10px;line-height:1.7;color:#73859a;margin:7px 0 14px}.edsa-course-card button{border:0;background:#f0f7ff;color:#0969d8;border-radius:9px;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
+.edsa-steps{background:#eef6ff}.edsa-step-grid{display:grid;grid-template-columns:1fr;gap:14px}.edsa-step{background:#fff;border-radius:17px;padding:20px;border:1px solid #dceafb}.edsa-step-num{font-size:10px;color:#0969d8;font-weight:950}.edsa-step h3{font-size:14px;color:#082b5f;margin:7px 0}.edsa-step p{font-size:10px;line-height:1.7;color:#71839a;margin:0}
+.edsa-why-grid{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}.edsa-why-copy h2{font-size:34px;color:#082b5f;letter-spacing:-.03em;margin:9px 0 13px}.edsa-benefit{display:flex;gap:12px;margin:15px 0}.edsa-benefit i{width:34px;height:34px;border-radius:10px;background:#eaf8f0;color:#159447;display:grid;place-items:center;flex:none}.edsa-benefit b{display:block;font-size:12px;color:#082b5f}.edsa-benefit span{display:block;font-size:10px;color:#71839a;margin-top:3px;line-height:1.5}.edsa-cert{background:linear-gradient(135deg,#06285a,#0b63ce);border-radius:25px;padding:28px;color:#fff;min-height:250px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 25px 55px rgba(6,40,90,.2)}.edsa-cert .mini{font-size:8px;letter-spacing:.15em;color:#9dcbff;font-weight:900}.edsa-cert h3{font-size:26px;margin:8px 0}.edsa-cert p{font-size:10px;color:#d9ebff;line-height:1.7;max-width:400px}.edsa-cert-badge{align-self:flex-end;width:62px;height:62px;border:1px solid rgba(255,255,255,.3);border-radius:50%;display:grid;place-items:center;font-size:25px}
+.edsa-testimonials{display:grid;grid-template-columns:1fr;gap:13px}.edsa-testimonial{background:#fff;border:1px solid #e3ecf7;border-radius:17px;padding:20px}.edsa-stars{color:#f4ad24;font-size:10px;letter-spacing:2px}.edsa-testimonial p{font-size:11px;line-height:1.7;color:#64778f}.edsa-person{font-size:10px;font-weight:900;color:#082b5f}
+.edsa-faq{max-width:800px;margin:auto}.edsa-faq details{background:#fff;border:1px solid #e3ecf7;border-radius:13px;padding:14px 16px;margin:9px 0}.edsa-faq summary{cursor:pointer;font-size:11px;font-weight:900;color:#082b5f}.edsa-faq p{font-size:10px;color:#71839a;line-height:1.7;margin:10px 0 0}
+.edsa-footer{background:#061a3b;color:#fff;padding:38px 5%}.edsa-footer-inner{max-width:1180px;margin:auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px}.edsa-footer p{font-size:9px;color:#91a9c5;max-width:400px;line-height:1.7}.edsa-footer small{color:#7188a5;font-size:8px}
+@media(min-width:800px){.edsa-navlinks{display:flex}.edsa-hero{grid-template-columns:1.02fr .98fr;padding-top:65px}.edsa-stats{grid-template-columns:repeat(4,1fr)}.edsa-course-grid{grid-template-columns:repeat(3,1fr)}.edsa-step-grid{grid-template-columns:repeat(3,1fr)}.edsa-why-grid{grid-template-columns:1fr 1fr}.edsa-testimonials{grid-template-columns:repeat(3,1fr)}}
+</style></head>
 <body class="bg-black text-slate-100 min-h-screen font-sans flex flex-col justify-between">
 
   <!-- Header -->
@@ -89,31 +107,70 @@
     <!-- STEP 1: Hero & Course Catalog -->
     <section id="stepCatalog" class="space-y-6">
       
-      <!-- EDSA HOME HERO -->
-      <div class="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-7 sm:p-10 rounded-3xl border border-sky-500/30 shadow-2xl">
-        <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-sky-500/10 blur-3xl"></div>
-        <div class="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-blue-600/10 blur-3xl"></div>
-        <div class="relative max-w-3xl mx-auto text-center">
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 text-[10px] font-black uppercase tracking-[0.18em] mb-5"><i class="fa-solid fa-graduation-cap"></i> Ethiopian Digital Skills Academy</div>
-          <h2 class="text-3xl sm:text-5xl font-black text-white leading-tight mb-4">Learn Digital Skills.<br><span class="text-sky-400">Prove What You Know.</span></h2>
-          <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-7">Build practical digital skills through structured 15-lesson courses, test your knowledge with a 50-question professional exam, and earn a verified EDSA certificate when you pass.</p>
-          <div class="flex flex-wrap justify-center gap-3 mt-7">
-            <button type="button" onclick="openLearningInline('')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-6 py-3 rounded-xl transition-colors"><i class="fa-solid fa-book-open mr-2"></i>Explore Courses</button>
-            <button type="button" onclick="showStudentAuth()" class="bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold px-6 py-3 rounded-xl transition-colors"><i class="fa-solid fa-right-to-bracket mr-2"></i>Student Sign In</button>
-          </div>
-          <div class="grid grid-cols-3 gap-2 sm:gap-4 mt-8 max-w-xl mx-auto">
-            <div class="bg-black/20 border border-white/10 rounded-xl p-3"><div class="text-lg font-black text-white">15</div><div class="text-[9px] text-slate-400 uppercase tracking-wider">Lessons / Course</div></div>
-            <div class="bg-black/20 border border-white/10 rounded-xl p-3"><div class="text-lg font-black text-white">50</div><div class="text-[9px] text-slate-400 uppercase tracking-wider">Exam Questions</div></div>
-            <div class="bg-black/20 border border-white/10 rounded-xl p-3"><div class="text-lg font-black text-white">80%</div><div class="text-[9px] text-slate-400 uppercase tracking-wider">Pass Mark</div></div>
+      <div class="edsa-landing">
+        <div class="edsa-nav">
+          <div class="edsa-nav-inner">
+            <div class="edsa-logo"><div class="edsa-logo-mark"><i class="fa-solid fa-graduation-cap"></i></div><div>EDSA<small>ETHIOPIAN DIGITAL SKILLS ACADEMY</small></div></div>
+            <div class="edsa-navlinks">
+              <button onclick="document.getElementById('edsaHomeCourses')?.scrollIntoView({behavior:'smooth'})">Courses</button>
+              <button onclick="document.getElementById('edsaHow')?.scrollIntoView({behavior:'smooth'})">How It Works</button>
+              <button onclick="document.getElementById('edsaWhy')?.scrollIntoView({behavior:'smooth'})">Why EDSA</button>
+              <button onclick="document.getElementById('edsaFaq')?.scrollIntoView({behavior:'smooth'})">FAQ</button>
+            </div>
+            <div class="edsa-nav-actions"><button class="edsa-land-btn edsa-land-secondary" onclick="showStudentAuth()">Sign In</button><button class="edsa-land-btn edsa-land-primary" onclick="openLearningInline('')">Start Learning</button></div>
           </div>
         </div>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="w-9 h-9 rounded-lg bg-sky-500/10 text-sky-400 grid place-items-center mb-3"><i class="fa-solid fa-laptop-code"></i></div><h3 class="font-bold text-white text-sm">Practical Learning</h3><p class="text-xs text-slate-400 mt-1 leading-5">Study structured lessons built around real digital and business skills.</p></div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="w-9 h-9 rounded-lg bg-sky-500/10 text-sky-400 grid place-items-center mb-3"><i class="fa-solid fa-clipboard-check"></i></div><h3 class="font-bold text-white text-sm">Professional Exam</h3><p class="text-xs text-slate-400 mt-1 leading-5">Complete a 50-question assessment with an 80% passing threshold.</p></div>
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="w-9 h-9 rounded-lg bg-sky-500/10 text-sky-400 grid place-items-center mb-3"><i class="fa-solid fa-certificate"></i></div><h3 class="font-bold text-white text-sm">Verified Certificate</h3><p class="text-xs text-slate-400 mt-1 leading-5">Successful exam attempts lead to your EDSA digital certificate and verification.</p></div>
-      </div>
+        <section class="edsa-hero">
+          <div class="edsa-hero-copy">
+            <div class="eyebrow"><i class="fa-solid fa-sparkles"></i> Learn • Practice • Get Certified</div>
+            <h1>Build the skills to <span>move forward.</span></h1>
+            <p>Learn practical digital and business skills through structured courses created for the modern Ethiopian learner. Study at your pace, take your professional exam, and earn an EDSA verified certificate.</p>
+            <div class="edsa-hero-actions"><button class="edsa-land-btn edsa-land-primary" style="padding:13px 19px" onclick="openLearningInline('')">Explore Courses <i class="fa-solid fa-arrow-right ml-1"></i></button><button class="edsa-land-btn edsa-land-secondary" style="padding:13px 19px" onclick="showStudentAuth()">Create Student Account</button></div>
+            <div class="edsa-trust"><span><i class="fa-solid fa-circle-check"></i>15 lessons per course</span><span><i class="fa-solid fa-circle-check"></i>50-question exam</span><span><i class="fa-solid fa-circle-check"></i>80% pass mark</span></div>
+          </div>
+          <div class="edsa-hero-visual">
+            <div class="edsa-photo-frame"><img src="https://images.unsplash.com/photo-1758611974982-ca55f12b3378?auto=format&fit=crop&fm=jpg&q=82&w=1400" alt="Young woman learning with a laptop"><div class="edsa-photo-overlay"></div></div>
+            <div class="edsa-floating-card edsa-float-top"><b><i class="fa-solid fa-circle-check edsa-check"></i>Learn anywhere</b><span>Mobile-friendly learning experience</span></div>
+            <div class="edsa-floating-card edsa-float-bottom"><b><i class="fa-solid fa-certificate edsa-check"></i>Get Certified</b><span>Verified EDSA certificate</span></div>
+          </div>
+        </section>
+        <div class="edsa-stats"><div class="edsa-stat"><strong>15</strong><span>Lessons / Course</span></div><div class="edsa-stat"><strong>50</strong><span>Exam Questions</span></div><div class="edsa-stat"><strong>80%</strong><span>Pass Mark</span></div><div class="edsa-stat"><strong>1</strong><span>Certificate Path</span></div></div>
 
+        <section class="edsa-section" id="edsaHomeCourses">
+          <div class="edsa-section-head"><div class="eyebrow">Explore the Academy</div><h2>Learn skills that matter.</h2><p>Choose a professional track, work through the lessons, and prepare yourself for certification.</p></div>
+          <div class="edsa-course-grid">
+            <div class="edsa-course-card"><div class="edsa-course-icon"><i class="fa-solid fa-share-nodes"></i></div><h3>Social Media Management</h3><p>Build practical skills for content, community, strategy, analytics and social growth.</p><button onclick="openLearningInline('smm')">View Course <i class="fa-solid fa-arrow-right"></i></button></div>
+            <div class="edsa-course-card"><div class="edsa-course-icon"><i class="fa-solid fa-bullhorn"></i></div><h3>Digital Marketing Essentials</h3><p>Learn campaigns, funnels, content strategy, targeting, analytics and digital growth.</p><button onclick="openLearningInline('dme')">View Course <i class="fa-solid fa-arrow-right"></i></button></div>
+            <div class="edsa-course-card"><div class="edsa-course-icon"><i class="fa-solid fa-diagram-project"></i></div><h3>Project & Business Management</h3><p>Understand planning, execution, organization, leadership and business operations.</p><button onclick="openLearningInline('pbm')">View Course <i class="fa-solid fa-arrow-right"></i></button></div>
+            <div class="edsa-course-card"><div class="edsa-course-icon"><i class="fa-solid fa-pen-nib"></i></div><h3>Graphic Design for Marketers</h3><p>Create stronger visual communication and marketing assets with practical design skills.</p><button onclick="openLearningInline('gdm')">View Course <i class="fa-solid fa-arrow-right"></i></button></div>
+            <div class="edsa-course-card"><div class="edsa-course-icon"><i class="fa-solid fa-chart-line"></i></div><h3>Financial Management for Entrepreneurs</h3><p>Build financial awareness around planning, budgeting, cash flow and business decisions.</p><button onclick="openLearningInline('fme')">View Course <i class="fa-solid fa-arrow-right"></i></button></div>
+            <div class="edsa-course-card"><div class="edsa-course-icon"><i class="fa-solid fa-database"></i></div><h3>Data Analysis & Business Intelligence</h3><p>Develop practical data thinking for business reporting, analysis and decision-making.</p><button onclick="openLearningInline('dbi')">View Course <i class="fa-solid fa-arrow-right"></i></button></div>
+          </div>
+        </section>
+
+        <section class="edsa-section edsa-steps" id="edsaHow">
+          <div class="edsa-section-head"><div class="eyebrow">How EDSA Works</div><h2>From learning to certification.</h2><p>A simple path designed to keep your learning and assessment connected.</p></div>
+          <div class="edsa-step-grid"><div class="edsa-step"><div class="edsa-step-num">01 — CHOOSE</div><h3>Choose your course</h3><p>Explore the professional tracks and select the skill you want to build.</p></div><div class="edsa-step"><div class="edsa-step-num">02 — LEARN</div><h3>Complete the lessons</h3><p>Study the structured 15-lesson curriculum and learn at your own pace.</p></div><div class="edsa-step"><div class="edsa-step-num">03 — CERTIFY</div><h3>Take the exam</h3><p>Complete the professional assessment and earn your certificate when you reach the passing mark.</p></div></div>
+        </section>
+
+        <section class="edsa-section" id="edsaWhy">
+          <div class="edsa-why-grid"><div class="edsa-why-copy"><div class="eyebrow">Why Choose EDSA</div><h2>Built for practical digital growth.</h2><div class="edsa-benefit"><i class="fa-solid fa-laptop-code"></i><div><b>Practical learning</b><span>Lessons focus on useful skills you can apply to work, business and digital projects.</span></div></div><div class="edsa-benefit"><i class="fa-solid fa-clock"></i><div><b>Learn at your pace</b><span>Access your unlocked lessons and return to them for review whenever you need.</span></div></div><div class="edsa-benefit"><i class="fa-solid fa-shield-halved"></i><div><b>Connected certification</b><span>Your course, exam result and certificate are part of the same learning journey.</span></div></div></div>
+            <div class="edsa-cert"><div><div class="mini">EDSA DIGITAL CERTIFICATE</div><h3>Show what you know.</h3><p>Pass your professional exam and receive a digital certificate with verification support.</p></div><div class="edsa-cert-badge"><i class="fa-solid fa-certificate"></i></div></div>
+          </div>
+        </section>
+
+        <section class="edsa-section" style="background:#f8fbff">
+          <div class="edsa-section-head"><div class="eyebrow">Learner Experience</div><h2>Learning that feels clear and focused.</h2></div>
+          <div class="edsa-testimonials"><div class="edsa-testimonial"><div class="edsa-stars">★★★★★</div><p>“The course structure makes it easier to follow one lesson at a time and keep moving.”</p><div class="edsa-person">EDSA Learner</div></div><div class="edsa-testimonial"><div class="edsa-stars">★★★★★</div><p>“I like having the lessons, exam and certificate connected in one place.”</p><div class="edsa-person">EDSA Learner</div></div><div class="edsa-testimonial"><div class="edsa-stars">★★★★★</div><p>“It gives me a clear path from learning a skill to proving what I learned.”</p><div class="edsa-person">EDSA Learner</div></div></div>
+        </section>
+
+        <section class="edsa-section" id="edsaFaq">
+          <div class="edsa-section-head"><div class="eyebrow">FAQ</div><h2>Questions, answered.</h2></div>
+          <div class="edsa-faq"><details><summary>How many lessons are in a course?</summary><p>Each professional course is structured around 15 lessons.</p></details><details><summary>How does certification work?</summary><p>After your course access is activated, you can study the lessons and take the connected professional exam. A score of 80% or higher qualifies for the certificate.</p></details><details><summary>What happens if I do not pass?</summary><p>Your exam attempt is recorded and the retake flow can be used according to the current EDSA payment and entitlement rules.</p></details><details><summary>Can I study from my phone?</summary><p>Yes. The EDSA learning interface is designed to work across modern mobile and desktop screens.</p></details></div>
+        </section>
+
+        <footer class="edsa-footer"><div class="edsa-footer-inner"><div><div class="edsa-logo" style="color:#fff"><div class="edsa-logo-mark"><i class="fa-solid fa-graduation-cap"></i></div><div>EDSA<small style="color:#91a9c5">ETHIOPIAN DIGITAL SKILLS ACADEMY</small></div></div><p>Master the Digital Frontier. Learn practical digital skills, prepare for professional assessment and build your next opportunity.</p></div><div><button class="edsa-land-btn edsa-land-primary" onclick="openLearningInline('')">Start Learning <i class="fa-solid fa-arrow-right"></i></button></div><div style="width:100%;border-top:1px solid #17385f;padding-top:15px"><small>© 2026 Ethiopian Digital Skills Academy. All rights reserved.</small></div></div></footer>
+      </div>
       <!-- Course Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="courseList"></div>
     </section>
