@@ -506,6 +506,102 @@ async function examAttempt(req, res) {
   }
 }
 
+async function paymentReceipt(req, res) {
+  if (!method(req, res, ["POST"])) return;
+  const s = requireRole(req, "student");
+  if (!s) return auth.json(res, 401, { ok: false, error: "Student sign-in required." });
+
+  const botToken = String(process.env.EDSA_TELEGRAM_BOT_TOKEN || "").trim();
+  const chatId = String(process.env.EDSA_TELEGRAM_CHAT_ID || "").trim();
+  if (!botToken || !chatId) {
+    return auth.json(res, 503, {
+      ok: false,
+      error: "Automatic Telegram receipt delivery is not configured yet."
+    });
+  }
+
+  try {
+    const body = req.body || {};
+    const courseId = cleanText(body.courseId, 100).toLowerCase();
+    const courseTitle = cleanText(body.courseTitle, 200) || courseId || "EDSA Course";
+    const amount = Number(body.amount || 400);
+    const imageData = String(body.imageData || "");
+    const note = cleanText(body.note, 500);
+
+    if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
+    if (amount !== 400) return auth.json(res, 400, { ok: false, error: "Payment amount must be 400 ETB." });
+    if (!/^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/i.test(imageData)) {
+      return auth.json(res, 400, { ok: false, error: "Please upload a valid payment screenshot." });
+    }
+
+    const base64 = imageData.split(",")[1] || "";
+    const bytes = Buffer.from(base64, "base64");
+    if (!bytes.length || bytes.length > 3_500_000) {
+      return auth.json(res, 413, { ok: false, error: "Screenshot is too large. Please use an image under 3.5 MB." });
+    }
+
+    const mime = (imageData.match(/^data:(image\/[^;]+);/i) || [])[1] || "image/jpeg";
+    const ext = mime.includes("png") ? "png" : mime.includes("webp") ? "webp" : "jpg";
+    const caption = [
+      "🧾 EDSA PAYMENT RECEIPT",
+      "",
+      "Student: " + (s.name || "EDSA Student"),
+      "Email: " + s.email,
+      "Course: " + courseTitle,
+      "Amount: 400 ETB",
+      "Type: " + (note || "Course + first exam attempt"),
+      "",
+      "Status: PENDING ADMIN CONFIRMATION"
+    ].join("\n");
+
+    const form = new FormData();
+    form.append("chat_id", chatId);
+    form.append("caption", caption);
+    form.append("photo", new Blob([bytes], { type: mime }), "edsa-payment-" + Date.now() + "." + ext);
+
+    const tg = await fetch("https://api.telegram.org/bot" + botToken + "/sendPhoto", {
+      method: "POST",
+      body: form
+    });
+    const tgBody = await tg.json().catch(() => ({}));
+    if (!tg.ok || !tgBody.ok) {
+      console.error("[EDSA Telegram receipt]", tgBody);
+      return auth.json(res, 502, { ok: false, error: "Telegram could not receive the payment receipt." });
+    }
+
+    let paymentId = null;
+    try {
+      if (db.dbConfigured()) {
+        const rows = await db.insert("payments", {
+          student_id: null,
+          student_email: auth.normalizeEmail(s.email),
+          student_name: cleanText(s.name, 120) || "EDSA Student",
+          course_id: courseId,
+          course_title: courseTitle,
+          amount: 400,
+          currency: "ETB",
+          status: "pending",
+          payment_reference: "telegram:" + String(tgBody.result?.message_id || "")
+        });
+        paymentId = Array.isArray(rows) ? rows[0]?.id || null : rows?.id || null;
+      }
+    } catch (dbError) {
+      console.error("[EDSA payment receipt db]", dbError);
+    }
+
+    return auth.json(res, 200, {
+      ok: true,
+      sent: true,
+      paymentId,
+      telegramMessageId: tgBody.result?.message_id || null,
+      status: "pending"
+    });
+  } catch (e) {
+    console.error("[EDSA payment receipt]", e);
+    return auth.json(res, 500, { ok: false, error: "Payment receipt could not be sent." });
+  }
+}
+
 async function adminDashboard(req, res) {
   if (!method(req, res, ["GET"])) return;
   const session = requireRole(req, "admin");
@@ -608,7 +704,7 @@ const routes = {
   "auth-login": authLogin, "auth-register": authRegister, "auth-me": authMe, "auth-logout": authLogout,
   "admin-login": adminLogin, "admin-me": adminMe, "activate-key": activateKey, "admin-generate-key": adminGenerateKey,
   "course-access": courseAccess, "exam-access": examAccess, "student-sync": studentSync, "exam-attempt": examAttempt,
-  "admin-dashboard": adminDashboard, "register-certificate": certificateRegister, "verify-certificate": certificateVerify
+  "admin-dashboard": adminDashboard, "payment-receipt": paymentReceipt, "register-certificate": certificateRegister, "verify-certificate": certificateVerify
 };
 
 module.exports = async function handler(req, res) {
