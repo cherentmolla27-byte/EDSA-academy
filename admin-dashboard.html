@@ -12,7 +12,7 @@
 <div class="flex gap-2">
 <button id="refreshBtn" class="px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm">Refresh</button>
 <button id="logoutBtn" class="px-4 py-2 rounded-lg bg-rose-900/60 font-bold text-sm">Logout</button>
-<button id="academyBtn" class="px-4 py-2 rounded-lg bg-slate-800 font-bold text-sm">Academy</button>
+<button id="academyBtn" class="px-4 py-2 rounded-lg bg-slate-800 font-bold text-sm">Learning Preview</button><button id="examPreviewBtn" class="px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-bold text-sm">Exam Preview</button>
 </div></header>
 
 <section id="login" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6">
@@ -183,7 +183,8 @@ $("loginBtn").addEventListener("click",login);
 $("pin").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
 $("logoutBtn").addEventListener("click",logout);
 $("refreshBtn").addEventListener("click",()=>loadDashboard());
-$("academyBtn").addEventListener("click",()=>location.href="/edsa-app.html");
+$("academyBtn").addEventListener("click",()=>location.href="/learning.html?adminPreview=1");
+$("examPreviewBtn").addEventListener("click",()=>location.href="/edsa-app.html?adminPreview=1");
 $("generateKeyBtn").addEventListener("click",async()=>{
  const btn=$("generateKeyBtn"), box=$("keyResult");
  const scope=$("keyScope").value, count=Math.min(Math.max(Number($("keyCount").value)||1,1),20);
