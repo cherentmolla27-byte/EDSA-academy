@@ -253,7 +253,7 @@ function openLesson(i){
   const lessons=getLessons(state.courseId);
   if(i<0||i>=lessons.length)return;
   state.lesson=i;
-  history.replaceState(null,"","/learning.html?course="+encodeURIComponent(state.courseId)+"&lesson="+state.lesson);
+  history.replaceState(null,"","/learning.html?"+(window.__EDSA_ADMIN_PREVIEW_MODE?"adminPreview=1&":"")+"course="+encodeURIComponent(state.courseId)+"&lesson="+state.lesson);
   renderCourse();
   scrollToLesson();
 }
