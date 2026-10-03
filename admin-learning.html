@@ -3,32 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
 <title>EDSA Admin Learning Preview</title>
-<style>body{margin:0;background:#061a3b;color:#fff;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}main{text-align:center;padding:30px}p{color:#bfdbfe;font-size:14px}</style>
+<style>
+body{margin:0;background:#061a3b;color:#fff;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}
+main{text-align:center;padding:30px}p{color:#bfdbfe;font-size:14px}
+</style>
 </head>
 <body>
-<main><strong>Loading EDSA Admin Learning Preview…</strong><p>Opening the Learning Center in isolated administrator preview mode.</p></main>
+<main><strong>Opening EDSA Administrator Preview…</strong><p>Verifying administrator access.</p></main>
 <script>
 (async function(){
   try{
-    const auth=await fetch('/api/admin-me',{credentials:'include',cache:'no-store'});
-    const a=await auth.json().catch(()=>({}));
-    const role=a&&a.user&&a.user.role ? a.user.role : (a&&a.role ? a.role : '');
-    if(!auth.ok||!a.ok||role!=='admin'){
+    const r=await fetch('/api/admin-me',{credentials:'include',cache:'no-store'});
+    const x=await r.json().catch(()=>({}));
+    const role=x&&x.user&&x.user.role ? x.user.role : (x&&x.role ? x.role : '');
+    if(!r.ok || !x.ok || role!=='admin'){
       location.href='/';
       return;
     }
-    const source=await fetch('/learning.html'+location.search,{credentials:'include',cache:'no-store'});
-    if(!source.ok) throw new Error('Learning Center unavailable');
-    let html=await source.text();
-    const bridge='<script>window.__EDSA_ADMIN_PREVIEW_BOOT=true;<\\/script><script src="/admin-preview.js?v=8">'+'<'+'/script>';
-    if(html.includes('</head>')) html=html.replace('</head>',bridge+'\n</head>');
-    document.open();
-    document.write(html);
-    document.close();
+    const p=new URLSearchParams(location.search);
+    p.set('adminPreview','1');
+    location.replace('/learning.html?'+p.toString());
   }catch(e){
-    console.error('[EDSA] Admin learning preview bootstrap failed:',e);
-    document.body.innerHTML='<main><strong>Admin Preview could not be opened.</strong><p>'+String(e.message||e)+'</p></main>';
+    document.body.innerHTML='<main><strong>Administrator Preview could not be opened.</strong><p>'+String(e.message||e)+'</p></main>';
   }
 })();
 </script>
