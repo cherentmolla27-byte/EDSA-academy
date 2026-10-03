@@ -184,7 +184,7 @@ $("pin").addEventListener("keydown",e=>{if(e.key==="Enter")login();});
 $("logoutBtn").addEventListener("click",logout);
 $("refreshBtn").addEventListener("click",()=>loadDashboard());
 $("academyBtn").addEventListener("click",()=>location.href="/learning.html?adminPreview=1");
-$("examPreviewBtn").addEventListener("click",()=>location.href="/edsa-app.html?adminPreview=1");
+$("examPreviewBtn").addEventListener("click",()=>location.href="/learning.html?adminPreview=1");
 $("generateKeyBtn").addEventListener("click",async()=>{
  const btn=$("generateKeyBtn"), box=$("keyResult");
  const scope=$("keyScope").value, count=Math.min(Math.max(Number($("keyCount").value)||1,1),20);
