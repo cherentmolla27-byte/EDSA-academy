@@ -78,7 +78,47 @@ function key(){return "EDSA_LEARNING_"+state.email.toLowerCase()}
 function load(){try{state.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){state.done={}}}
 function save(){localStorage.setItem(key(),JSON.stringify(state.done))}
 async function boot(){
-  // Keep the course catalog visible while authentication loads.
+  // Dedicated administrator preview mode. This is intentionally handled inside
+  // the Learning Center so the student authentication boot never runs in the
+  // same page/state as an administrator preview.
+  const adminPreview=new URLSearchParams(location.search).get("adminPreview")==="1";
+  if(adminPreview){
+    try{
+      const ar=await fetch("/api/admin-me",{credentials:"include",cache:"no-store"});
+      const ax=await ar.json().catch(()=>({}));
+      const role=ax&&ax.user&&ax.user.role ? ax.user.role : (ax&&ax.role ? ax.role : "");
+      if(ar.ok && ax.ok && role==="admin"){
+        window.__EDSA_ADMIN_PREVIEW_MODE=true;
+        state.email="admin";
+        state.name="EDSA Administrator";
+        state.unlocked={};
+        Object.keys(COURSES).forEach(id=>state.unlocked[id]=true);
+        document.getElementById("welcome").textContent="Administrator Preview — all courses and lessons are available without affecting student access, payments, or attempts.";
+        renderCourses();
+        const q=new URLSearchParams(location.search).get("course");
+        if(COURSES[q]){
+          const lessons=await loadLessons(q);
+          state.courseId=q;
+          const requested=Number(new URLSearchParams(location.search).get("lesson"));
+          state.lesson=Number.isFinite(requested)?Math.min(Math.max(0,requested),Math.max(0,lessons.length-1)):0;
+          document.getElementById("courseHome").style.display="none";
+          document.getElementById("courseView").style.display="grid";
+          renderCourses();
+          renderCourse();
+          scrollToLesson();
+        }
+        return;
+      }
+      location.href="/";
+      return;
+    }catch(e){
+      console.error("EDSA admin preview boot error:",e);
+      document.getElementById("welcome").textContent="Administrator Preview could not be loaded.";
+      return;
+    }
+  }
+
+  // Normal student boot.
   state.courseId="";
   renderCourses();
   document.getElementById("courseHome").style.display="";
@@ -156,6 +196,13 @@ const FME_VIDEOS={"0":{"id":"Fi1wkUczuyk","title":"Financial Statements: All the
 const LESSON_CACHE={};
 async function loadLessons(id){
   if(LESSON_CACHE[id]) return LESSON_CACHE[id];
+  if(window.__EDSA_ADMIN_PREVIEW_MODE){
+    const ar=await fetch("/api/admin-course-content?courseId="+encodeURIComponent(id),{credentials:"include",cache:"no-store"});
+    const ax=await ar.json().catch(()=>({}));
+    if(!ar.ok||!ax.ok||!Array.isArray(ax.lessons)) throw new Error(ax.error||"Admin course lessons unavailable");
+    LESSON_CACHE[id]=ax.lessons;
+    return LESSON_CACHE[id];
+  }
   const r=await fetch("/api/course-access?courseId="+encodeURIComponent(id)+"&include=lessons",{credentials:"include",headers:EDSA_AUTH_HEADERS(),cache:"no-store"});
   const x=await r.json().catch(()=>({}));
   if(!r.ok||!x.ok||!Array.isArray(x.lessons)) throw new Error(x.error||"Course lessons unavailable");
