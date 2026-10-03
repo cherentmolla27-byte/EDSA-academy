@@ -1053,6 +1053,16 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     async function selectCourse(courseId) {
+      // Administrator preview is a completely separate flow: never send the
+      // administrator through student auth/payment. Selecting a course opens
+      // the real Learning Center first, then lesson 15 opens this exam portal.
+      if (window.__EDSA_ADMIN_PREVIEW_MODE) {
+        if (COURSES.some(function(c){ return c.id === courseId; })) {
+          window.location.href = "/learning.html?adminPreview=1&course=" + encodeURIComponent(courseId) + "&lesson=0";
+        }
+        return;
+      }
+
       // HARD GATE: no student account = no exam/payment flow.
       try {
         const response = await EDSA_API_FETCH("/api/auth-me", {
@@ -1923,7 +1933,8 @@ function generate50Questions(courseKey, courseTitle) {
         const response = await EDSA_API_FETCH("/api/admin-me", { cache: "no-store" });
         const result = await response.json().catch(() => ({}));
 
-        if (response.ok && result.ok && result.user && result.user.role === "admin") {
+        const adminRole = result && result.user && result.user.role ? result.user.role : (result && result.role ? result.role : "");
+        if (response.ok && result.ok && adminRole === "admin") {
           state.adminAuthenticated = true;
           document.getElementById("adminAuthView").classList.add("hidden");
           document.getElementById("adminDashboardView").classList.remove("hidden");
@@ -2350,6 +2361,9 @@ function generate50Questions(courseKey, courseTitle) {
     (function handleDirectLaunch() {
       try {
         const params = new URLSearchParams(window.location.search);
+        // Admin preview has its own boot sequence above. Do not let the normal
+        // student direct-launch handler call selectCourse and overwrite it.
+        if (params.get("adminPreview") === "1") return;
         const courseId = params.get("course");
         const openExam = params.get("exam") === "1";
         const openAdmin = params.get("admin") === "1";
