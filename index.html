@@ -1263,7 +1263,7 @@ function generate50Questions(courseKey, courseTitle) {
       showSection("stepExam");
     }
 
-    async async function selectCourse(courseId) {
+    async function selectCourse(courseId) {
       // Administrator preview is a completely separate flow: never send the
       // administrator through student auth/payment. Selecting a course opens
       // the real Learning Center first, then lesson 15 opens this exam portal.
@@ -1345,7 +1345,7 @@ function generate50Questions(courseKey, courseTitle) {
       showSection("stepPayment");
     }
 
-    async async function verifyAndStartExam(e) {
+    async function verifyAndStartExam(e) {
       e.preventDefault();
 
       // Exams require an authenticated student account.
@@ -2048,7 +2048,7 @@ function generate50Questions(courseKey, courseTitle) {
       });
     }
 
-    async async function ensureCertificateRecord() {
+    async function ensureCertificateRecord() {
       if (!state.certificateId) state.certificateId = "EDSA-" + new Date().getFullYear() + "-" + String(Date.now()).slice(-6);
       if (!state.certificateIssueDate) state.certificateIssueDate = new Date().toISOString().slice(0, 10);
       const record = {
@@ -2137,7 +2137,7 @@ function generate50Questions(courseKey, courseTitle) {
       }
     }
 
-    async async function openAdminModal() {
+    async function openAdminModal() {
       document.getElementById("adminModal").classList.remove("hidden");
       checkLockoutState();
 
@@ -2171,7 +2171,7 @@ function generate50Questions(courseKey, courseTitle) {
       document.getElementById("adminModal").classList.add("hidden");
     }
 
-    async async function authenticateAdmin() {
+    async function authenticateAdmin() {
       if (checkLockoutState()) return;
 
       const pinInput = document.getElementById("adminPinInput");
@@ -2272,7 +2272,7 @@ function generate50Questions(courseKey, courseTitle) {
       return Number.isNaN(d.getTime()) ? String(value || "Date not set") : d.toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
     }
 
-    async async function downloadCertificateRegistry() {
+    async function downloadCertificateRegistry() {
       const local = getLocalCertificateRecords();
       let registry = {};
       try {
@@ -2399,7 +2399,7 @@ function generate50Questions(courseKey, courseTitle) {
       renderAdminDashboard();
     }
 
-    async async function generateKeys() {
+    async function generateKeys() {
       const scope = document.getElementById("keyCourseScope").value;
       const count = Math.min(Math.max(parseInt(document.getElementById("keyCount").value) || 1, 1), 20);
       try {
@@ -2564,7 +2564,7 @@ function generate50Questions(courseKey, courseTitle) {
 
     // Dedicated administrator exam preview. It never creates student attempts,
     // never charges a key, and never changes student access.
-    (async async function handleAdminPreviewMode() {
+    (async function handleAdminPreviewMode() {
       try {
         const params = new URLSearchParams(window.location.search);
         if (params.get("adminPreview") !== "1") return;
@@ -2677,7 +2677,7 @@ const PBM_VIDEOS={
 };
 let learningState={email:"",name:"",courseId:"",lesson:0,done:{},unlocked:{}};
 function EDSA_AUTH_HEADERS(){const token=sessionStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||localStorage.getItem("EDSA_SESSION_TOKEN")||"";return token?{"Authorization":"Bearer "+token}:{}}
-async async function checkCourseAccess(id){
+async function checkCourseAccess(id){
   if(!learningState.email) return false;
   if(learningState.unlocked[id]===true) return true;
   try{
@@ -2690,7 +2690,7 @@ async async function checkCourseAccess(id){
 function key(){return "EDSA_LEARNING_"+learningState.email.toLowerCase()}
 function loadLearningProgress(){try{learningState.done=JSON.parse(localStorage.getItem(key())||"{}")}catch(_){learningState.done={}}}
 function saveLearningProgress(){localStorage.setItem(key(),JSON.stringify(learningState.done))}
-async async function boot(){
+async function boot(){
   // Dedicated administrator preview mode. This is intentionally handled inside
   // the Learning Center so the student authentication boot never runs in the
   // same page/learningState as an administrator preview.
@@ -2772,7 +2772,7 @@ function showCourseHome(){
   renderCourses();
   history.replaceState(null,"","#learning");
 }
-async async function learningSelectCourse(id,lessonIndex=0){
+async function learningSelectCourse(id,lessonIndex=0){
   if(!LEARNING_COURSES[id]) return;
   try{
     const unlocked=await checkCourseAccess(id);
@@ -2810,7 +2810,7 @@ const GDM_VIDEOS={"0":{"id":"BLhoWAALKt0","title":"Canva Tutorial for Beginners 
 ;
 const FME_VIDEOS={"0":{"id":"Fi1wkUczuyk","title":"Financial Statements: All the Basics in 8 Minutes","url":"https://www.youtube.com/watch?v=Fi1wkUczuyk","note":"Lesson 1 video: a clear introduction to the income statement, balance sheet and cash-flow statement."},"4":{"id":"6m38N7zk5Ow","title":"How to Price Your Product as a Business Owner","url":"https://www.youtube.com/watch?v=6m38N7zk5Ow","note":"Lesson 5 video: practical product-pricing steps and pricing strategy."},"9":{"id":"3W_LwpeG8c8","title":"Financial Ratios: How to Analyze Financial Statements","url":"https://www.youtube.com/watch?v=3W_LwpeG8c8","note":"Lesson 10 video: profitability, liquidity, efficiency and leverage ratio analysis."},"14":{"id":"xSNbs74JWrI","title":"Cash Flow Planning for Small Business Owners","url":"https://www.youtube.com/watch?v=xSNbs74JWrI","note":"Lesson 15 video: practical cash-flow planning, forecasting and financial stability."}};
 const LESSON_CACHE={};
-async async function loadLessons(id){
+async function loadLessons(id){
   if(LESSON_CACHE[id]) return LESSON_CACHE[id];
   if(window.__EDSA_ADMIN_PREVIEW_MODE){
     const ar=await fetch("/api/admin-course-content?courseId="+encodeURIComponent(id),{credentials:"include",cache:"no-store"});
@@ -2903,7 +2903,7 @@ function showStudentAuth(){document.getElementById("studentAuthModal").style.dis
 function closeStudentAuth(){document.getElementById("studentAuthModal").style.display="none";}
 function showStudentLogin(){document.getElementById("studentAuthLogin").style.display="block";document.getElementById("studentAuthRegister").style.display="none";document.getElementById("studentAuthError").textContent="";}
 function showStudentRegister(){document.getElementById("studentAuthLogin").style.display="none";document.getElementById("studentAuthRegister").style.display="block";document.getElementById("studentRegisterError").textContent="";}
-async async function studentLogin(){
+async function studentLogin(){
  const email=document.getElementById("studentLoginEmail").value.trim(), password=document.getElementById("studentLoginPassword").value;
  const err=document.getElementById("studentAuthError"),btn=document.getElementById("studentLoginBtn"); err.textContent="";
  if(!email||!password){err.textContent="Enter your email and password.";return;}
@@ -2917,7 +2917,7 @@ async async function studentLogin(){
  if(pendingCourse) openLearningInline(pendingCourse,false);
  }catch(e){err.textContent="Could not connect to EDSA."; } finally{btn.disabled=false;btn.textContent="Sign In";}
 }
-async async function studentRegister(){
+async function studentRegister(){
  const name=document.getElementById("studentRegisterName").value.trim(),email=document.getElementById("studentRegisterEmail").value.trim(),password=document.getElementById("studentRegisterPassword").value,confirm=document.getElementById("studentRegisterConfirm").value;
  const err=document.getElementById("studentRegisterError"),btn=document.getElementById("studentRegisterBtn");err.textContent="";
  if(!name||!email||!password){err.textContent="Complete all fields.";return;} if(password.length<8){err.textContent="Password must be at least 8 characters.";return;} if(password!==confirm){err.textContent="Passwords do not match.";return;}
