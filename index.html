@@ -2923,6 +2923,7 @@ async function studentRegister(){
  }catch(e){err.textContent="Could not connect to EDSA.";}finally{btn.disabled=false;btn.textContent="Create Account";}
 }
 function openLearningInline(courseId,adminMode){
+  const publicNav=document.querySelector(".edsa-public-nav"); if(publicNav) publicNav.style.display="none";
   unifyLearningWorkspaceViews();
   window.__EDSA_IN_LEARNING_EXAM=false;
   const shell=document.getElementById("learn_shell");
@@ -2941,6 +2942,7 @@ function openLearningInline(courseId,adminMode){
   if(courseId){learningState.unlocked[courseId]=true;learningSelectCourse(courseId,0);}
 }
 function closeLearningInline(){
+  const publicNav=document.querySelector(".edsa-public-nav"); if(publicNav) publicNav.style.display="";
   document.getElementById("learn_shell").style.display="none";
   if(window.__EDSA_ADMIN_PREVIEW_MODE)window.__EDSA_ADMIN_PREVIEW_MODE=false;
   navToCatalog();
