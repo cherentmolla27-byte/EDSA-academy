@@ -231,112 +231,61 @@
       <div id="adminDashboardView" class="space-y-6 hidden">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
           <div>
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-key text-sky-400"></i> Key Generator (400 ETB)
-            </h3>
-            <p class="text-[11px] text-slate-400">Generate activation keys to send to students on Telegram</p><div class="mt-3"><button type="button" onclick="window.location.href='/learning.html?adminPreview=1'" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-3 rounded-lg text-xs">Open Full Learning Preview</button></div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-sky-400"></i>
+              <h3 class="text-lg font-bold text-white">EDSA Premium Admin</h3>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Secure universal exam-key control center</p>
           </div>
           <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
-        <div class="bg-black/80 p-4 rounded-xl border border-slate-800 space-y-4">
-          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Generate New Key</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] text-slate-400 mb-1">Course Scope</label>
-              <select id="keyCourseScope" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
-                <option value="ALL">ANY COURSE (Universal Key)</option>
-                <option value="smm">Social Media Management</option>
-                <option value="dme">Digital Marketing Essentials</option>
-                <option value="pbm">Project & Business Management</option>
-                <option value="gdm">Graphic Design for Marketers</option>
-                <option value="fme">Financial Management</option>
-                <option value="dbi">Data Analysis & BI</option>
-              </select>
+        <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950/40 p-5 rounded-2xl border border-sky-500/30 shadow-xl">
+          <div class="flex items-start gap-3 mb-5">
+            <div class="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
+              <i class="fa-solid fa-key text-sky-400 text-lg"></i>
             </div>
             <div>
-              <label class="block text-[11px] text-slate-400 mb-1">Quantity</label>
-              <input type="number" id="keyCount" value="1" min="1" max="20" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
+              <h4 class="text-sm font-extrabold text-white">Universal Exam Key</h4>
+              <p class="text-[11px] text-slate-400 mt-1">One key works for any EDSA course, but only one student and one exam attempt.</p>
             </div>
           </div>
-          <button onclick="generateKeys()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-lg text-xs transition-colors">
-            Generate Key(s)
+
+          <div class="bg-black/50 border border-slate-800 rounded-xl p-4 mb-4">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Fee</span>
+              <span class="text-lg font-black text-sky-400">400 ETB</span>
+            </div>
+            <div class="flex justify-between items-center mt-3">
+              <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Scope</span>
+              <span class="text-xs font-bold text-emerald-400">ALL COURSES</span>
+            </div>
+            <div class="flex justify-between items-center mt-3">
+              <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Usage</span>
+              <span class="text-xs font-bold text-amber-400">ONE TIME ONLY</span>
+            </div>
+          </div>
+
+          <button type="button" onclick="generateKeys()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-lg">
+            <i class="fa-solid fa-bolt mr-1"></i> Generate Universal Key
           </button>
-        </div>
 
-        <div class="bg-black/80 p-4 rounded-xl border border-yellow-700/30 space-y-4">
-          <div class="flex justify-between items-start gap-3">
-            <div>
-              <h4 class="text-xs font-bold text-yellow-400 uppercase tracking-wider">Certificate Registry</h4>
-              <p class="text-[11px] text-slate-400 mt-1">Certificates created on this device can be prepared for the public EDSA registry.</p>
+          <div id="generatedUniversalKey" class="hidden mt-4 bg-black/70 border border-emerald-500/30 rounded-xl p-4">
+            <div class="text-[10px] uppercase tracking-wider font-bold text-emerald-400 mb-2">New One-Time Key</div>
+            <div class="flex items-center gap-2">
+              <code id="generatedUniversalKeyCode" class="flex-1 text-center text-lg font-black tracking-widest text-white bg-slate-950 rounded-lg px-3 py-3"></code>
+              <button type="button" onclick="copyGeneratedUniversalKey()" class="bg-slate-800 hover:bg-slate-700 text-sky-400 px-3 py-3 rounded-lg" title="Copy key">
+                <i class="fa-solid fa-copy"></i>
+              </button>
             </div>
-            <span id="certificateRegistryCount" class="text-[10px] font-bold px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">0</span>
-          </div>
-          <div id="certificateRegistryList" class="space-y-2 max-h-48 overflow-y-auto"></div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button onclick="downloadCertificateRegistry()" class="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold py-2 rounded-lg text-xs transition-colors"><i class="fa-solid fa-file-export mr-1"></i> Export Registry</button>
-            <button onclick="clearLocalCertificateRecords()" class="bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700 font-bold py-2 rounded-lg text-xs transition-colors"><i class="fa-solid fa-trash-can mr-1"></i> Clear Local Records</button>
-          </div>
-          <div class="text-[10px] leading-relaxed text-slate-500 bg-slate-950/70 rounded-lg p-3">
-            Export creates an updated <span class="text-slate-300 font-semibold">certificates.json</span>. Upload/replace that file in the GitHub project to make the new certificates publicly verifiable.
-          </div>
-        </div>
-        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-4">
-          <div class="flex justify-between items-center">
-            <div>
-              <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">EDSA Admin Dashboard</h4>
-              <p class="text-[11px] text-slate-400 mt-1">Local operational overview from student profiles, exam activity, keys and certificates.</p>
-            </div>
-            <button onclick="renderAdminDashboard()" class="text-[10px] text-sky-400 font-bold">Refresh</button>
-          </div>
-          <div id="adminStatsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="bg-black/70 border border-slate-800 rounded-lg p-3">
-              <h5 class="text-[10px] font-bold text-slate-300 uppercase">Course Statistics</h5>
-              <div id="adminCourseStats" class="mt-2 space-y-2"></div>
-            </div>
-            <div class="bg-black/70 border border-slate-800 rounded-lg p-3">
-              <h5 class="text-[10px] font-bold text-slate-300 uppercase">Recent Activity</h5>
-              <div id="adminRecentActivity" class="mt-2 space-y-2 max-h-52 overflow-y-auto"></div>
-            </div>
-          </div>
-          <div class="bg-black/70 border border-slate-800 rounded-lg p-3">
-            <div class="flex justify-between items-center gap-2">
-              <h5 class="text-[10px] font-bold text-slate-300 uppercase">Students</h5>
-              <span id="adminStudentCount" class="text-[10px] text-sky-400 font-bold">0</span>
-            </div>
-            <div id="adminStudentList" class="mt-2 space-y-2 max-h-48 overflow-y-auto"></div>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button onclick="exportAdminReport()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 rounded-lg text-xs"><i class="fa-solid fa-file-export mr-1"></i> Export Admin Report</button>
-            <button onclick="clearLocalAdminActivity()" class="bg-slate-800 hover:bg-slate-700 text-rose-400 border border-slate-700 font-bold py-2 rounded-lg text-xs"><i class="fa-solid fa-trash-can mr-1"></i> Clear Local Activity</button>
-          </div>
-          <div class="text-[10px] leading-relaxed text-slate-500 bg-slate-950 rounded-lg p-3">
-            This dashboard is device-local until a server/database is connected. Chapa payment records are intentionally not added yet.
+            <p class="text-[10px] text-slate-500 mt-2 text-center">Send this key to the paid student. It becomes invalid immediately after successful activation.</p>
           </div>
         </div>
 
-        <div class="space-y-2">
-          <div class="flex justify-between items-center">
-            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Active & Used Keys</h4>
-            <button onclick="clearUsedKeys()" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold">Clear Used Keys</button>
-          </div>
-          
-          <div class="border border-slate-800 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-black text-slate-400 uppercase font-semibold">
-                <tr>
-                  <th class="p-3">Key Code</th>
-                  <th class="p-3">Scope</th>
-                  <th class="p-3">Status</th>
-                  <th class="p-3 text-right">Copy / Delete</th>
-                </tr>
-              </thead>
-              <tbody id="keysTableBody" class="divide-y divide-slate-800 bg-slate-900/50"></tbody>
-            </table>
-          </div>
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 text-[10px] text-slate-500 leading-relaxed">
+          <i class="fa-solid fa-circle-info text-sky-400 mr-1"></i>
+          Student flow: choose course → complete learning → pay 400 ETB → receive this universal key → enter key → exam → 80%+ → certificate. A failed attempt requires a new 400 ETB universal key; lessons remain free.
         </div>
-
       </div>
 
     </div>
@@ -1267,7 +1216,12 @@ function generate50Questions(courseKey, courseTitle) {
             localStorage.setItem("EDSA_LAST_ACTIVATED_EMAIL", String(state.studentEmail || "").toLowerCase());
             localStorage.setItem("EDSA_COURSE_UNLOCKED_" + String(state.studentEmail || "").toLowerCase() + "_" + courseId, "1");
           } catch (_) {}
-          window.location.href = "/learning.html?course=" + encodeURIComponent(courseId) + "&lesson=0";
+          showSection("stepExam");
+          state.accessKey = inputKey;
+          document.getElementById("examCourseTitle").innerText = state.selectedCourse.title;
+          state.currentPage = 1;
+          state.userAnswers = {};
+          startExam();
           return;
         }
 
@@ -2188,8 +2142,8 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     async function generateKeys() {
-      const scope = document.getElementById("keyCourseScope").value;
-      const count = Math.min(Math.max(parseInt(document.getElementById("keyCount").value) || 1, 1), 20);
+      const scope = "all";
+      const count = 1;
       try {
         const response = await EDSA_API_FETCH("/api/admin-generate-key", {
           method: "POST",
@@ -2214,7 +2168,14 @@ function generate50Questions(courseKey, courseTitle) {
         }));
         saveStoredKeys(keys);
         renderKeysTable();
-        alert((result.keys || []).length + " secure 400 ETB activation key(s) generated.");
+        const generated = (result.keys || [])[0];
+        if (generated) {
+          const box = document.getElementById("generatedUniversalKey");
+          const code = document.getElementById("generatedUniversalKeyCode");
+          if (code) code.textContent = generated.code;
+          if (box) box.classList.remove("hidden");
+        }
+        alert("One secure universal 400 ETB key generated.");
       } catch (error) {
         console.error("[EDSA] Key generation failed:", error);
         alert("Key generation could not be completed. Please try again.");
@@ -2224,6 +2185,12 @@ function generate50Questions(courseKey, courseTitle) {
      function copyKey(code) {
       navigator.clipboard.writeText(code);
       alert(`Key ${code} copied to clipboard! You can paste it into Telegram now.`);
+    }
+
+    function copyGeneratedUniversalKey() {
+      const code = document.getElementById("generatedUniversalKeyCode")?.textContent?.trim();
+      if (!code) return;
+      navigator.clipboard.writeText(code).then(() => alert("Universal key copied."));
     }
 
     function renderKeysTable() {
