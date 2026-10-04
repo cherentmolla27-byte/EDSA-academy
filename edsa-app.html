@@ -228,66 +228,40 @@
         </div>
       </div>
 
-      <div id="adminDashboardView" class="space-y-6 hidden">
+      <div id="adminDashboardView" class="space-y-5 hidden">
         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <div>
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-shield-halved text-sky-400"></i>
-              <h3 class="text-lg font-bold text-white">EDSA Premium Admin</h3>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Secure universal exam-key control center</p>
+          <div class="flex items-center gap-2">
+            <span class="w-9 h-9 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center"><i class="fa-solid fa-shield-halved text-sky-400"></i></span>
+            <div><h3 class="text-lg font-black text-white">EDSA Premium Admin</h3><p class="text-[10px] text-slate-400 mt-1">Control center • keys • students • certificates</p></div>
           </div>
-          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+          <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
-
-        <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950/40 p-5 rounded-2xl border border-sky-500/30 shadow-xl">
-          <div class="flex items-start gap-3 mb-5">
-            <div class="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
-              <i class="fa-solid fa-key text-sky-400 text-lg"></i>
-            </div>
-            <div>
-              <h4 class="text-sm font-extrabold text-white">Universal Exam Key</h4>
-              <p class="text-[11px] text-slate-400 mt-1">One key works for any EDSA course, but only one student and one exam attempt.</p>
-            </div>
+        <div id="adminStatsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950/40 p-5 rounded-2xl border border-sky-500/30 shadow-xl">
+            <div class="flex items-start gap-3 mb-4"><div class="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center"><i class="fa-solid fa-key text-sky-400 text-lg"></i></div><div><h4 class="text-sm font-extrabold text-white">Universal Exam Key</h4><p class="text-[10px] text-slate-400 mt-1">400 ETB • any course • one attempt • one-time use</p></div></div>
+            <button type="button" onclick="generateKeys()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-black py-3 rounded-xl text-xs transition-all shadow-lg"><i class="fa-solid fa-bolt mr-1"></i> Generate Universal Key</button>
+            <div id="generatedUniversalKey" class="hidden mt-4 bg-black/70 border border-emerald-500/30 rounded-xl p-4"><div class="text-[10px] uppercase tracking-wider font-bold text-emerald-400 mb-2">New One-Time Key</div><div class="flex items-center gap-2"><code id="generatedUniversalKeyCode" class="flex-1 text-center text-lg font-black tracking-widest text-white bg-slate-950 rounded-lg px-3 py-3"></code><button type="button" onclick="copyGeneratedUniversalKey()" class="bg-slate-800 hover:bg-slate-700 text-sky-400 px-3 py-3 rounded-lg"><i class="fa-solid fa-copy"></i></button></div><p class="text-[10px] text-slate-500 mt-2 text-center">Send it to the student after confirming payment.</p></div>
           </div>
-
-          <div class="bg-black/50 border border-slate-800 rounded-xl p-4 mb-4">
-            <div class="flex justify-between items-center">
-              <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Fee</span>
-              <span class="text-lg font-black text-sky-400">400 ETB</span>
-            </div>
-            <div class="flex justify-between items-center mt-3">
-              <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Scope</span>
-              <span class="text-xs font-bold text-emerald-400">ALL COURSES</span>
-            </div>
-            <div class="flex justify-between items-center mt-3">
-              <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Usage</span>
-              <span class="text-xs font-bold text-amber-400">ONE TIME ONLY</span>
-            </div>
-          </div>
-
-          <button type="button" onclick="generateKeys()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-lg">
-            <i class="fa-solid fa-bolt mr-1"></i> Generate Universal Key
-          </button>
-
-          <div id="generatedUniversalKey" class="hidden mt-4 bg-black/70 border border-emerald-500/30 rounded-xl p-4">
-            <div class="text-[10px] uppercase tracking-wider font-bold text-emerald-400 mb-2">New One-Time Key</div>
-            <div class="flex items-center gap-2">
-              <code id="generatedUniversalKeyCode" class="flex-1 text-center text-lg font-black tracking-widest text-white bg-slate-950 rounded-lg px-3 py-3"></code>
-              <button type="button" onclick="copyGeneratedUniversalKey()" class="bg-slate-800 hover:bg-slate-700 text-sky-400 px-3 py-3 rounded-lg" title="Copy key">
-                <i class="fa-solid fa-copy"></i>
-              </button>
-            </div>
-            <p class="text-[10px] text-slate-500 mt-2 text-center">Send this key to the paid student. It becomes invalid immediately after successful activation.</p>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5">
+            <div class="flex justify-between items-center mb-3"><div><h4 class="text-sm font-extrabold text-white">Key Management</h4><p class="text-[10px] text-slate-500">This device's key history</p></div><button type="button" onclick="clearUsedKeys()" class="text-[10px] text-rose-400">Clear used</button></div>
+            <div class="overflow-x-auto max-h-48"><table class="w-full text-left text-[10px]"><thead class="text-slate-500 uppercase"><tr><th class="p-2">Key</th><th class="p-2">Scope</th><th class="p-2">Status</th><th class="p-2 text-right">Action</th></tr></thead><tbody id="keysTableBody"></tbody></table></div>
           </div>
         </div>
-
-        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 text-[10px] text-slate-500 leading-relaxed">
-          <i class="fa-solid fa-circle-info text-sky-400 mr-1"></i>
-          Student flow: choose course → complete learning → pay 400 ETB → receive this universal key → enter key → exam → 80%+ → certificate. A failed attempt requires a new 400 ETB universal key; lessons remain free.
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button type="button" onclick="openAdminLearningPreview()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-xl p-3 text-[10px] font-bold"><i class="fa-solid fa-book-open text-sky-400 mr-1"></i> Preview Courses</button>
+          <button type="button" onclick="exportAdminReport()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-xl p-3 text-[10px] font-bold"><i class="fa-solid fa-file-export text-sky-400 mr-1"></i> Export Report</button>
+          <button type="button" onclick="downloadCertificateRegistry()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white rounded-xl p-3 text-[10px] font-bold"><i class="fa-solid fa-certificate text-amber-400 mr-1"></i> Certificates</button>
+          <button type="button" onclick="clearLocalAdminActivity()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-rose-300 rounded-xl p-3 text-[10px] font-bold"><i class="fa-solid fa-trash mr-1"></i> Clear Activity</button>
         </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4"><div class="flex justify-between items-center mb-3"><h4 class="text-sm font-extrabold text-white">Course Performance</h4><span class="text-[9px] text-slate-500">Attempts • passes • best</span></div><div id="adminCourseStats" class="space-y-2"></div></div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4"><div class="flex justify-between items-center mb-3"><h4 class="text-sm font-extrabold text-white">Recent Activity</h4><span class="text-[9px] text-slate-500">Latest</span></div><div id="adminRecentActivity" class="space-y-2 max-h-52 overflow-y-auto"></div></div>
+        </div>
+        <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4"><div class="flex justify-between items-center mb-3"><div><h4 class="text-sm font-extrabold text-white">Students</h4><p class="text-[10px] text-slate-500">Local admin overview</p></div><span id="adminStudentCount" class="text-[10px] font-black text-sky-400">0</span></div><div id="adminStudentList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto"></div></div>
+        <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4"><div class="flex justify-between items-center mb-2"><h4 class="text-sm font-extrabold text-white">Certificate Registry</h4><span id="certificateRegistryCount" class="text-[10px] text-amber-400 font-bold">0</span></div><div id="certificateRegistryList" class="space-y-2 max-h-44 overflow-y-auto"></div></div>
+        <div class="bg-sky-500/5 border border-sky-500/20 rounded-xl p-4 text-[10px] text-slate-400 leading-relaxed"><i class="fa-solid fa-circle-info text-sky-400 mr-1"></i> Student flow: sign in → choose a course → lessons stay free → finish lesson 15 → exam opens automatically → pay 400 ETB for the attempt → pass at 80%+ for certification. If a student fails, lessons stay free and only the next exam attempt requires another 400 ETB key.</div>
       </div>
-
     </div>
   </div>
 
@@ -1909,6 +1883,8 @@ function generate50Questions(courseKey, courseTitle) {
       }
     }
 
+    function openAdminLearningPreview() { window.location.href = "/learning.html?adminPreview=1"; }
+
     function closeAdminModal() {
       document.getElementById("adminModal").classList.add("hidden");
     }
@@ -1960,9 +1936,9 @@ function generate50Questions(courseKey, courseTitle) {
 
         document.getElementById("adminAuthView").classList.add("hidden");
         document.getElementById("adminDashboardView").classList.remove("hidden");
-        renderKeysTable();
-        renderCertificateRegistry();
-        renderAdminDashboard();
+        try { renderKeysTable(); } catch (e) { console.error("[EDSA] Admin keys UI error:", e); }
+        try { renderCertificateRegistry(); } catch (e) { console.error("[EDSA] Admin certificate UI error:", e); }
+        try { renderAdminDashboard(); } catch (e) { console.error("[EDSA] Admin dashboard UI error:", e); }
         pinInput.value = "";
       } catch (error) {
         console.error("[EDSA] Admin login failed:", error);
@@ -2196,6 +2172,7 @@ function generate50Questions(courseKey, courseTitle) {
     function renderKeysTable() {
       const keys = getStoredKeys();
       const tbody = document.getElementById("keysTableBody");
+      if (!tbody) return;
 
       if (keys.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No active keys generated yet.</td></tr>`;
