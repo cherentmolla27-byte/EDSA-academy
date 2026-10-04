@@ -225,15 +225,11 @@ async function activateKey(req, res) {
           }
         } catch (accessWriteError) {
           console.error("[EDSA activation access record]", accessWriteError);
-          // Do not tell the student the key worked when the authoritative
-          // course/attempt records were not saved.
-          return auth.json(res, 503, {
-            ok: false,
-            activated: false,
-            error: "Payment key was verified, but your exam access could not be saved. Please try again; the key was not completed."
-          });
+          // The activation-key registry remains a durable record of the paid
+          // exam entitlement. The exam portal will use it as a fallback if
+          // Supabase is temporarily unavailable or rejects an RLS write.
         }
-        return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId });
+        return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId, entitlementSource: "activation-key" });
       } catch (writeError) {
         if (writeError.status === 409) continue;
         throw writeError;
@@ -298,12 +294,26 @@ async function examAccess(req, res) {
     } catch (attemptError) {
       console.error("[EDSA exam access attempts]", attemptError);
     }
-    const rows = await db.select("exam_entitlements",
-      "select=id,activation_code,status,created_at&email=eq." + encodeURIComponent(email) +
-      "&course_id=eq." + encodeURIComponent(courseId) +
-      "&status=eq.available&order=created_at.asc&limit=1"
-    );
-    const available = Array.isArray(rows) && rows.length > 0;
+    let rows = [];
+    try {
+      rows = await db.select("exam_entitlements",
+        "select=id,activation_code,status,created_at&email=eq." + encodeURIComponent(email) +
+        "&course_id=eq." + encodeURIComponent(courseId) +
+        "&status=eq.available&order=created_at.asc&limit=1"
+      );
+    } catch (entitlementError) {
+      console.error("[EDSA exam access entitlement db]", entitlementError);
+    }
+    let available = Array.isArray(rows) && rows.length > 0;
+    if (!available) {
+      const { data: keys } = await readJsonFile("activation-keys.json", []);
+      available = keys.some(k =>
+        String(k.status || "").toLowerCase() === "used" &&
+        auth.normalizeEmail(k.usedEmail) === email &&
+        String(k.usedCourse || "").trim().toLowerCase() === courseId &&
+        !k.examUsedAt
+      );
+    }
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
     return auth.json(res, 200, {
       ok: true,
@@ -448,35 +458,53 @@ async function examAttempt(req, res) {
 
     // Find one available paid entitlement, then consume that exact entitlement.
     // Course ownership remains untouched, so a failed student keeps all 15 lessons unlocked.
-    const availableEntitlements = await db.supabaseRequest(
-      "/exam_entitlements?email=eq." + encodeURIComponent(email) +
-      "&course_id=eq." + encodeURIComponent(courseId) +
-      "&status=eq.available&order=created_at.asc&limit=1",
-      { method: "GET" }
-    );
-    const entitlement = Array.isArray(availableEntitlements) ? availableEntitlements[0] : null;
-    if (!entitlement || !entitlement.id) {
-      return auth.json(res, 403, {
-        ok: false,
-        error: "This exam attempt has already been used. A new 400 ETB activation key is required for another attempt.",
-        requiresNewPayment: true
-      });
+    let entitlement = null;
+    try {
+      const availableEntitlements = await db.supabaseRequest(
+        "/exam_entitlements?email=eq." + encodeURIComponent(email) +
+        "&course_id=eq." + encodeURIComponent(courseId) +
+        "&status=eq.available&order=created_at.asc&limit=1",
+        { method: "GET" }
+      );
+      entitlement = Array.isArray(availableEntitlements) ? availableEntitlements[0] : null;
+    } catch (entitlementReadError) {
+      console.error("[EDSA exam entitlement read]", entitlementReadError);
     }
 
-    const consumed = await db.supabaseRequest(
-      "/exam_entitlements?id=eq." + encodeURIComponent(entitlement.id) + "&status=eq.available",
-      {
-        method: "PATCH",
-        headers: { Prefer: "return=representation" },
-        body: JSON.stringify({ status: "used", used_at: completedAt })
+    if (entitlement && entitlement.id) {
+      const consumed = await db.supabaseRequest(
+        "/exam_entitlements?id=eq." + encodeURIComponent(entitlement.id) + "&status=eq.available",
+        {
+          method: "PATCH",
+          headers: { Prefer: "return=representation" },
+          body: JSON.stringify({ status: "used", used_at: completedAt })
+        }
+      );
+      if (!Array.isArray(consumed) || !consumed.length) {
+        return auth.json(res, 409, {
+          ok: false,
+          error: "This exam attempt was just used. Please refresh and try again.",
+          requiresNewPayment: true
+        });
       }
-    );
-    if (!Array.isArray(consumed) || !consumed.length) {
-      return auth.json(res, 409, {
-        ok: false,
-        error: "This exam attempt was just used. Please refresh and try again.",
-        requiresNewPayment: true
-      });
+    } else {
+      const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
+      const keyIndex = keys.findIndex(k =>
+        String(k.status || "").toLowerCase() === "used" &&
+        auth.normalizeEmail(k.usedEmail) === email &&
+        String(k.usedCourse || "").trim().toLowerCase() === courseId &&
+        !k.examUsedAt
+      );
+      if (keyIndex < 0) {
+        return auth.json(res, 403, {
+          ok: false,
+          error: "This exam attempt has already been used. A new 400 ETB activation key is required for another attempt.",
+          requiresNewPayment: true
+        });
+      }
+      keys[keyIndex].examUsedAt = completedAt;
+      keys[keyIndex].examUsedBy = session.name || "Student";
+      await writeJsonFile("activation-keys.json", keys, sha, "Consume EDSA exam attempt");
     }
 
     const name = auth.validateName(session.name) || cleanText(body.studentName, 120) || "EDSA Student";
