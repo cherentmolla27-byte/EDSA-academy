@@ -133,15 +133,15 @@ async function boot(){
       state.name=x.user.name||"Student";
       load();
       await Promise.all(Object.keys(COURSES).map(id=>checkCourseAccess(id)));
-      document.getElementById("welcome").textContent="Welcome, "+state.name+". Activate a course once, then all 15 lessons stay free. You may take the exam whenever you are ready.";
+      document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose any course and study all 15 lessons FREE. When you finish, your exam opens automatically — 400 ETB per exam attempt.";
       renderCourses();
       if(COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); selectCourse(q,Number.isFinite(qi)?qi:0); }
       return;
     }
   }catch(e){}
-  document.getElementById("welcome").textContent="Sign in, activate a course with 400 ETB, then study all 15 lessons for free and take the exam when ready.";
+  document.getElementById("welcome").textContent="Sign in to study any course FREE. Finish the lessons, then take the 400 ETB exam when you are ready.";
 }
-function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100),open=state.unlocked[id]===true;return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">${open?"Open →":"🔒 Unlock with 400 ETB"}</span><strong>${c.title}</strong><span>${c.desc}</span><b>${open?pct+"% complete • "+(d.completed||[]).length+"/"+c.lessons.length+" lessons • Course access stays free after payment":"15 full lessons + videos • One exam attempt included with activation"}</b></div>`}
+function courseCard(id,c){const d=state.done[id]||{},pct=Math.round(((d.completed||[]).length/c.lessons.length)*100);return `<div class="course ${state.courseId===id?"active":""}" onclick="selectCourse('${id}')"><span style="float:right;color:#0b3f83;font-weight:900">Open →</span><strong>${c.title}</strong><span>${c.desc}</span><b>${pct+"% complete • "+(d.completed||[]).length+"/"+c.lessons.length+" lessons"} • Study is FREE • Exam: 400 ETB/attempt</b></div>`}
 function renderCourses(){
   const home=document.getElementById("courseList");
   const inside=document.getElementById("courseListInside");
@@ -167,13 +167,8 @@ function showCourseHome(){
 async function selectCourse(id,lessonIndex=0){
   if(!COURSES[id]) return;
   try{
-    const unlocked=await checkCourseAccess(id);
-    if(!unlocked){
-      const name=COURSES[id].title;
-      alert(name+" is locked. Pay 400 ETB and receive an activation key. Once activated, all 15 lessons stay unlocked for you.");
-      window.location.href="/edsa-app.html?course="+encodeURIComponent(id);
-      return;
-    }
+    // Learning is FREE for signed-in students. Payment belongs only to the exam attempt.
+    state.unlocked[id]=true;
     const lessons=await loadLessons(id);
     if(!Array.isArray(lessons)||!lessons.length) return;
     state.courseId=id;
@@ -220,10 +215,6 @@ async function loadLessons(id){
 function getLessons(id){return LESSON_CACHE[id]||[];}
 
 function renderCourse(){
-  if(!state.unlocked[state.courseId]){
-    document.getElementById("learningArea").innerHTML="<div class=\"empty\"><strong>Course locked</strong><br><br>Pay 400 ETB and activate your first exam attempt. After activation, all 15 lessons and videos stay unlocked for you.</div>";
-    return;
-  }
   const c=COURSES[state.courseId], lessons=getLessons(state.courseId);
   if(!Array.isArray(lessons)||!lessons.length){
     document.getElementById("learningArea").innerHTML="<div class=\"empty\"><strong>Lesson content is loading.</strong><br><br>Please wait a moment and try again.</div>";
@@ -282,9 +273,18 @@ function nextLesson(){
 function toggleComplete(){
   const d=state.done[state.courseId]||{completed:[]};
   d.completed=d.completed||[];
-  const n=d.completed.indexOf(state.lesson);
-  if(n>=0)d.completed.splice(n,1);else d.completed.push(state.lesson);
+  const wasDone=d.completed.includes(state.lesson);
+  if(wasDone){
+    d.completed.splice(d.completed.indexOf(state.lesson),1);
+    state.done[state.courseId]=d; save(); renderCourse(); renderCourses();
+    return;
+  }
+  d.completed.push(state.lesson);
   state.done[state.courseId]=d; save(); renderCourse(); renderCourses();
+  const total=getLessons(state.courseId).length;
+  if(state.lesson===total-1 && d.completed.length===total){
+    setTimeout(()=>goToExamPortal(),350);
+  }
 }
 function escapeHtml(v){
   return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
