@@ -109,7 +109,7 @@
       <button onclick="navToCatalog()" class="text-xs text-sky-400 hover:text-sky-300 font-semibold mb-4 inline-flex items-center gap-1">
         <i class="fa-solid fa-arrow-left"></i> Back to Courses
       </button>
-      <h2 class="text-2xl font-bold text-white mb-1">Manual Payment & Activation</h2>
+      <h2 class="text-2xl font-bold text-white mb-1">Exam Payment & Activation</h2>
       <p id="selectedCourseTitle" class="text-sky-400 font-semibold mb-4 text-sm"></p>
 
       <div class="bg-black/80 p-5 rounded-xl border border-slate-800 mb-6 text-sm text-slate-300 space-y-3">
@@ -126,7 +126,7 @@
 
         <!-- Telegram Action Button -->
         <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p id="paymentInstructions" class="text-xs text-slate-400">For your first exam, pay 400 ETB and send your transfer screenshot to get your activation key. After activation, the 15 lessons stay unlocked for you. A new exam attempt after a fail requires another 400 ETB key:</p>
+          <p id="paymentInstructions" class="text-xs text-slate-400">Pay 400 ETB for this exam attempt and send your transfer screenshot to receive a one-time exam activation key. Your lessons are always FREE. If you fail, simply pay 400 ETB again for a new exam attempt — your lessons remain unlocked.</p>
           <a id="telegramBtn" href="https://t.me/Cheru178" target="_blank" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs px-4 py-2 rounded-lg inline-flex items-center gap-2 transition-colors whitespace-nowrap">
             <i class="fa-brands fa-telegram text-base"></i> Send Receipt on Telegram
           </a>
@@ -1018,31 +1018,15 @@ function generate50Questions(courseKey, courseTitle) {
       }
       document.getElementById("selectedCourseTitle").innerText = `Selected: ${state.selectedCourse.title}`;
       document.getElementById("userStatus").innerText = `Signed in: ${state.studentName || state.studentEmail}`;
-      // If this course was already activated, the student has already paid.
-      // Send them directly into the exam instead of showing the manual-payment screen again.
+      // IMPORTANT: lessons are free. The exam is the paid product.
+      // Never redirect a student back to Learning Center just because they have
+      // no exam entitlement. Show the exam payment screen instead.
       try {
-        const accessResponse = await EDSA_API_FETCH("/api/course-access?courseId="+encodeURIComponent(courseId), {
-          credentials:"include",
-          headers:EDSA_AUTH_HEADERS(),
-          cache:"no-store"
+        const examAccessResponse = await EDSA_API_FETCH("/api/exam-access?courseId=" + encodeURIComponent(courseId), {
+          credentials: "include", headers: EDSA_AUTH_HEADERS(), cache: "no-store"
         });
-        const accessResult = await accessResponse.json().catch(() => ({}));
-        if (accessResponse.ok && accessResult.ok && accessResult.unlocked) {
-          // If the course is owned but the included first exam has not been
-          // taken yet, the correct next step is the 15-lesson Learning Center.
-          // Failed students are handled by the retake flow below.
-          try {
-            const examAccessResponse = await EDSA_API_FETCH("/api/exam-access?courseId=" + encodeURIComponent(courseId), {
-              credentials: "include", headers: EDSA_AUTH_HEADERS(), cache: "no-store"
-            });
-            const examAccessResult = await examAccessResponse.json().catch(() => ({}));
-            if (examAccessResponse.ok && examAccessResult.ok && !examAccessResult.hasAttempt && !examAccessResult.passed) {
-              window.location.href = "/learning.html?course=" + encodeURIComponent(courseId) + "&lesson=0";
-              return;
-            }
-          } catch (examStateError) {
-            console.warn("[EDSA] Initial course exam state check failed:", examStateError);
-          }
+        const examAccessResult = await examAccessResponse.json().catch(() => ({}));
+        if (examAccessResponse.ok && examAccessResult.ok && examAccessResult.available) {
           const nameInput = document.getElementById("studentName");
           if (nameInput) nameInput.value = state.studentName || "";
           const keyInput = document.getElementById("accessKey");
@@ -1051,9 +1035,8 @@ function generate50Questions(courseKey, courseTitle) {
           return;
         }
       } catch (error) {
-        console.warn("[EDSA] Existing course access check failed:", error);
+        console.warn("[EDSA] Exam entitlement check failed:", error);
       }
-      // New/unactivated course: show the one-time manual payment + activation flow.
       showSection("stepPayment");
     }
 
