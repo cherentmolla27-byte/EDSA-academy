@@ -2,9 +2,13 @@
   {
     "code": "EDSA-C3483AF4",
     "scope": "all",
-    "amount": 500,
-    "status": "active",
-    "createdAt": "2026-10-04T11:35:24.371Z"
+    "amount": 400,
+    "status": "used",
+    "createdAt": "2026-10-04T11:35:24.371Z",
+    "usedAt": "2026-10-04T11:35:48.852Z",
+    "usedBy": "Chere",
+    "usedEmail": "cherentchere966@gmail.com",
+    "usedCourse": "smm"
   },
   {
     "code": "EDSA-622E514A",
