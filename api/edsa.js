@@ -246,9 +246,6 @@ async function activateKey(req, res) {
           activated: false,
           error: "Payment was not activated because the access record could not be saved. Your activation key was NOT consumed. Please try again."
         });
-      } catch (writeError) {
-        if (writeError.status === 409) continue;
-        throw writeError;
       }
     }
     return auth.json(res, 409, { ok: false, error: "The activation registry changed repeatedly. Please try again." });
