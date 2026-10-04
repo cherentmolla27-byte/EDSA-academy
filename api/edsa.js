@@ -171,7 +171,7 @@ async function activateKey(req, res) {
       } else if (keyAmount !== 400) {
         return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 400 ETB fee." });
       }
-      if (!courseId || (String(key.scope || "").toLowerCase() !== courseId && String(key.scope || "").toLowerCase() !== "all")) return auth.json(res, 409, { ok: false, error: "This 400 ETB key is for a different course." });
+      if (!courseId || String(key.scope || "").trim().toLowerCase() !== "all") return auth.json(res, 409, { ok: false, error: "Only universal EDSA keys are valid." });
 
       // First activation owns the course and includes the first exam attempt.
       // A second key is only valid after a recorded failed attempt; it never
@@ -225,6 +225,13 @@ async function activateKey(req, res) {
           }
         } catch (accessWriteError) {
           console.error("[EDSA activation access record]", accessWriteError);
+          // Do not tell the student the key worked when the authoritative
+          // course/attempt records were not saved.
+          return auth.json(res, 503, {
+            ok: false,
+            activated: false,
+            error: "Payment key was verified, but your exam access could not be saved. Please try again; the key was not completed."
+          });
         }
         return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId });
       } catch (writeError) {
@@ -245,10 +252,8 @@ async function adminGenerateKey(req, res) {
   if (!session) return auth.json(res, 401, { ok: false, error: "Admin sign-in required." });
   try {
     const body = req.body || {};
-    const scope = String(body.scope || "").trim();
-    const count = Math.min(Math.max(Number(body.count) || 1, 1), 20);
-    const allowed = ["smm", "dme", "pbm", "gdm", "fme", "dbi", "all"];
-    if (!allowed.includes(scope)) return auth.json(res, 400, { ok: false, error: "Invalid course scope." });
+    const scope = "all";
+    const count = 1;
     for (let attempt = 0; attempt < 3; attempt++) {
       const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
       const created = [];
