@@ -10,18 +10,12 @@
 </style>
 </head>
 <body>
-<header class="top"><div class="brand">EDSA ACADEMY<small>LEARNING CENTER</small></div><div><button class="btn light" onclick="location.href='/'">Dashboard</button> <button class="btn blue" id="examPortalBtn" onclick="goToExamPortal()">Exam Portal</button></div></header>
+<header class="top"><div class="brand">EDSA ACADEMY<small>LEARNING CENTER</small></div><div><button class="btn light" onclick="location.href='/'">Home</button> <button class="btn light" onclick="location.href='/admin-dashboard.html'">Admin Panel</button> <button class="btn blue" id="examPortalBtn" onclick="goToExamPortal()">Exam Portal →</button></div></header>
 <main class="wrap">
 <section class="hero"><div class="tag">STEP 14 — LEARNING PLATFORM</div><h1>Learn. Practice. Get Certified.</h1><p id="welcome">Loading your student account...</p></section>
 <div id="courseHome" class="panel"><h2 style="margin:0 0 6px">Choose a Course</h2><p style="margin:0 0 18px;color:#64748b;font-size:12px">Tap a course to enter it. Your lessons and progress stay inside that course.</p><div id="courseList" class="courses"><div class="course" onclick="selectCourse('smm')"><strong>Social Media Management</strong><span>Social strategy, content, communities and platform management.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('dme')"><strong>Digital Marketing Essentials</strong><span>Digital campaigns, channels, analytics and marketing strategy.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('pbm')"><strong>Project &amp; Business Management</strong><span>Planning, operations, projects, leadership and business decisions.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('gdm')"><strong>Graphic Design for Marketers</strong><span>Visual communication, design principles, branding and marketing graphics.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('fme')"><strong>Financial Management for Entrepreneurs</strong><span>Budgeting, cash flow, financial decisions and entrepreneurial finance.</span><b>15 lessons • Open →</b></div><div class="course" onclick="selectCourse('dbi')"><strong>Data Analysis &amp; Business Intelligence</strong><span>Data, dashboards, analytics, databases and business intelligence.</span><b>15 lessons • Open →</b></div></div></div>
 <div id="courseView" class="grid" style="display:none"><aside class="panel"><button class="btn light" style="margin-bottom:14px" onclick="showCourseHome()">← All Courses</button><div id="courseListInside" class="courses"></div></aside><section class="panel"><div id="learningArea"></div></section></div>
-<section id="examWorkspace" class="panel" style="display:none;margin-top:16px;padding:10px">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 8px 10px">
-    <div><strong style="font-size:15px">EDSA Exam</strong><div style="font-size:10px;color:#64748b">Your course, lessons and exam stay in one workspace.</div></div>
-    <button type="button" class="btn light" onclick="closeExamWorkspace()">← Back to Lessons</button>
-  </div>
-  <iframe id="examFrame" title="EDSA Exam" style="width:100%;height:900px;border:1px solid #dbeafe;border-radius:14px;background:#020617" allow="fullscreen"></iframe>
-</section>
+
 </main>
 <script>
 function EDSA_API_FETCH(url, options) {
@@ -155,23 +149,13 @@ function renderCourses(){
   if(home) home.innerHTML=html;
   if(inside) inside.innerHTML=html;
 }
-function openExamWorkspace(){
+function goToExamPortal(){
   const id=state.courseId||new URLSearchParams(location.search).get("course")||"";
   if(!id){alert("Please select a course first.");return;}
-  const frame=document.getElementById("examFrame"), workspace=document.getElementById("examWorkspace");
-  if(!frame||!workspace)return;
   const admin=window.__EDSA_ADMIN_PREVIEW_MODE===true;
-  frame.src="/edsa-app.html?"+(admin?"adminPreview=1&exam=1&":"exam=1&")+"course="+encodeURIComponent(id)+"&embedded=1";
-  workspace.style.display="block";
-  workspace.scrollIntoView({behavior:"smooth",block:"start"});
+  location.href="/exam.html?"+(admin?"adminPreview=1&":"")+"course="+encodeURIComponent(id);
 }
-function closeExamWorkspace(){
-  const frame=document.getElementById("examFrame"), workspace=document.getElementById("examWorkspace");
-  if(frame)frame.src="about:blank";
-  if(workspace)workspace.style.display="none";
-  scrollToLesson();
-}
-function goToExamPortal(){openExamWorkspace();}
+function openExamWorkspace(){ goToExamPortal(); }
 function showCourseHome(){
   state.courseId="";
   state.lesson=0;
@@ -262,7 +246,7 @@ function renderCourse(){
     '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="progress-text">'+pct+'% complete • '+completed.length+'/'+lessons.length+' lessons completed</div>'+
     '<div id="lessonStart" class="viewer"><h3>'+escapeHtml(l.title)+'</h3><div class="lesson-copy">'+sections+'<div class="example"><strong>Practical Example</strong>'+escapeHtml(l.example)+'</div></div>'+videoHtml+
     '<div class="actions"><button type="button" class="btn '+(isDone?"light":"blue")+'" onclick="toggleComplete()">'+(isDone?"✓ Completed — Mark Incomplete":"✓ Mark Lesson Complete")+'</button><button type="button" class="btn light" onclick="prevLesson()">← Previous</button><button type="button" class="btn blue" onclick="nextLesson()">Next Lesson →</button></div></div>'+
-    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>'+(completed.length===lessons.length?'<div class="panel" style="margin-top:18px;border-color:#86efac;background:#f0fdf4"><strong style="color:#166534">🎓 All 15 lessons completed!</strong><p style="font-size:11px;color:#166534;margin:6px 0 12px">You can take the exam now, or return to any lesson for review. Your course access remains free after activation.</p><button type="button" class="btn blue" onclick="openExamWorkspace()">📝 Take Exam Now</button></div>':'')+
+    '<div style="margin-top:18px"><div style="font-size:12px;font-weight:900;color:#0b2145;margin-bottom:8px">Course Lessons</div><div class="lessons">'+lessons.map((x,i)=>'<div class="lesson '+(i===state.lesson?"active ":"")+(completed.includes(i)?"done":"")+'" onclick="openLesson('+i+')"><div class="num">'+(i+1)+'</div><div><strong>'+escapeHtml(x.title)+'</strong><span>'+ (completed.includes(i)?"Completed":"Open lesson")+'</span></div>'+(completed.includes(i)?'<div class="check">✓</div>':'')+'</div>').join("")+'</div></div>'+(completed.length===lessons.length?'<div class="panel" style="margin-top:18px;border-color:#86efac;background:#f0fdf4"><strong style="color:#166534">🎓 All 15 lessons completed!</strong><p style="font-size:11px;color:#166534;margin:6px 0 12px">You can take the exam now, or return to any lesson for review. Your course access remains free after activation.</p><button type="button" class="btn blue" onclick="goToExamPortal()">📝 Leave Learning → Open Exam Portal</button></div>':'')+
     '</div></div>';
 }
 function scrollToLesson(){
@@ -292,7 +276,7 @@ function nextLesson(){
   renderCourse(); renderCourses();
   if(state.done[state.courseId].completed.length===total){
     // The intended course journey is automatic: finish lesson 15 -> open the exam.
-    setTimeout(()=>{ openExamWorkspace(); },250);
+    setTimeout(()=>{ goToExamPortal(); },250);
   }
 }
 function toggleComplete(){
