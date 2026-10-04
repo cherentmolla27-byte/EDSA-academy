@@ -128,6 +128,11 @@ async function authLogout(req, res) {
   auth.clearSessionCookie(res, "student");
   return auth.json(res, 200, { ok: true });
 }
+async function adminLogout(req, res) {
+  if (!method(req, res, ["POST"])) return;
+  auth.clearSessionCookie(res, "admin");
+  return auth.json(res, 200, { ok: true });
+}
 async function adminLogin(req, res) {
   if (!method(req, res, ["POST"])) return;
   const configuredPin = process.env.EDSA_ADMIN_PIN || "";
@@ -198,38 +203,49 @@ async function activateKey(req, res) {
       if (alreadyOwned && !lastAttempt) return auth.json(res, 409, { ok: false, error: "Your first exam attempt is already included. Complete the lessons and take that exam before buying another attempt." });
       if (alreadyOwned && lastAttempt && lastAttempt.passed === true) return auth.json(res, 409, { ok: false, error: "You have already passed this course. A new exam attempt is not needed." });
 
-      key.status = "used"; key.usedAt = new Date().toISOString(); key.usedBy = s.name || "Student"; key.usedEmail = s.email; key.usedCourse = courseId;
+      // Never consume the payment/activation key until BOTH the course
+      // ownership and the paid exam entitlement have been persisted.
+      // This prevents a student from being told they paid successfully when
+      // the database write failed.
+      if (!db.dbConfigured()) {
+        return auth.json(res, 503, { ok: false, error: "Payment activation is temporarily unavailable. Please contact EDSA." });
+      }
       try {
+        const now = new Date().toISOString();
+        await db.upsert("course_access", {
+          email: normalizedEmail,
+          course_id: courseId,
+          activation_code: code,
+          amount: 400,
+          activated_at: now
+        }, "email,course_id");
+        await db.upsert("exam_entitlements", {
+          email: normalizedEmail,
+          course_id: courseId,
+          activation_code: code,
+          status: "available",
+          created_at: now,
+          used_at: null
+        }, "activation_code");
+
+        key.status = "used";
+        key.usedAt = now;
+        key.usedBy = s.name || "Student";
+        key.usedEmail = normalizedEmail;
+        key.usedCourse = courseId;
         await writeJsonFile("activation-keys.json", keys, sha, "Activate EDSA 400 ETB key");
-        // Persist course ownership separately from the activation-key registry.
-        // This is the authoritative student/course relationship used by the
-        // Learning Center and Exam Portal after the one-time activation.
-        try {
-          if (db.dbConfigured()) {
-            await db.upsert("course_access", {
-              email: auth.normalizeEmail(s.email),
-              course_id: courseId,
-              activation_code: code,
-              amount: 400,
-              activated_at: new Date().toISOString()
-            }, "email,course_id");
-            // Every successful activation grants exactly one exam attempt.
-            await db.upsert("exam_entitlements", {
-              email: auth.normalizeEmail(s.email),
-              course_id: courseId,
-              activation_code: code,
-              status: "available",
-              created_at: new Date().toISOString(),
-              used_at: null
-            }, "activation_code");
-          }
-        } catch (accessWriteError) {
-          console.error("[EDSA activation access record]", accessWriteError);
-          // The activation-key registry remains a durable record of the paid
-          // exam entitlement. The exam portal will use it as a fallback if
-          // Supabase is temporarily unavailable or rejects an RLS write.
-        }
-        return auth.json(res, 200, { ok: true, activated: true, firstActivation: !alreadyOwned, amount: 400, courseId, entitlementSource: "activation-key" });
+
+        return auth.json(res, 200, {
+          ok: true, activated: true, firstActivation: !alreadyOwned,
+          amount: 400, courseId, entitlementSource: "database"
+        });
+      } catch (accessWriteError) {
+        console.error("[EDSA activation access record]", accessWriteError);
+        return auth.json(res, 503, {
+          ok: false,
+          activated: false,
+          error: "Payment was not activated because the access record could not be saved. Your activation key was NOT consumed. Please try again."
+        });
       } catch (writeError) {
         if (writeError.status === 409) continue;
         throw writeError;
@@ -336,10 +352,31 @@ async function courseAccess(req, res) {
     const courseId = String((req.query && req.query.courseId) || "").trim().toLowerCase();
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
     const email = auth.normalizeEmail(s.email);
-    // Courses and all lessons are free for authenticated students.
-    // Exam attempts remain paid and are enforced by exam entitlements.
-    const unlocked = true;
-    if (String((req.query && req.query.include) || "") !== "lessons") return auth.json(res, 200, { ok: true, unlocked: true, courseId });
+    // A course is locked until the student has a paid activation.
+    // Once activated, lessons stay unlocked permanently, including after a
+    // failed exam. Only the exam entitlement is consumed per attempt.
+    let unlocked = false;
+    try {
+      if (db.dbConfigured()) {
+        const rows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(email) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
+        unlocked = Array.isArray(rows) && rows.length > 0;
+      }
+    } catch (accessError) {
+      console.error("[EDSA course access db]", accessError);
+    }
+    if (!unlocked) {
+      const { data: keys } = await readJsonFile("activation-keys.json", []);
+      unlocked = keys.some(k =>
+        String(k.status || "").toLowerCase() === "used" &&
+        auth.normalizeEmail(k.usedEmail) === email &&
+        String(k.usedCourse || "").trim().toLowerCase() === courseId &&
+        (String(k.scope || "").trim().toLowerCase() === courseId || String(k.scope || "").trim().toLowerCase() === "all")
+      );
+    }
+    if (String((req.query && req.query.include) || "") !== "lessons") {
+      return auth.json(res, 200, { ok: true, unlocked, courseId });
+    }
+    if (!unlocked) return auth.json(res, 403, { ok: false, unlocked: false, courseId, error: "This course is locked. Complete the 400 ETB manual payment and enter your EDSA activation key first." });
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
       headers: { cookie: String(req.headers.cookie || ""), authorization: String(req.headers.authorization || ""), accept: "application/json" }, cache: "no-store"
     });
@@ -622,7 +659,7 @@ async function certificateVerify(req, res) {
 
 const routes = {
   "auth-login": authLogin, "auth-register": authRegister, "auth-me": authMe, "auth-logout": authLogout,
-  "admin-login": adminLogin, "admin-me": adminMe, "activate-key": activateKey, "admin-generate-key": adminGenerateKey,
+  "admin-login": adminLogin, "admin-logout": adminLogout, "admin-me": adminMe, "activate-key": activateKey, "admin-generate-key": adminGenerateKey,
   "course-access": courseAccess, "exam-access": examAccess, "student-sync": studentSync, "exam-attempt": examAttempt,
   "admin-dashboard": adminDashboard, "register-certificate": certificateRegister, "verify-certificate": certificateVerify
 };
