@@ -321,26 +321,9 @@ async function courseAccess(req, res) {
     const courseId = String((req.query && req.query.courseId) || "").trim().toLowerCase();
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
     const email = auth.normalizeEmail(s.email);
-    let unlocked = false;
-    try {
-      if (db.dbConfigured()) {
-        const rows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(email) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
-        unlocked = Array.isArray(rows) && rows.length > 0;
-      }
-    } catch (accessReadError) {
-      console.error("[EDSA course access db]", accessReadError);
-    }
-    if (!unlocked) {
-      const { data: keys } = await readJsonFile("activation-keys.json", []);
-      unlocked = keys.some(k => {
-        if (String(k.status || "").toLowerCase() !== "used") return false;
-        if (auth.normalizeEmail(k.usedEmail) !== email) return false;
-        const usedCourse = String(k.usedCourse || "").trim().toLowerCase();
-        const scope = String(k.scope || "").trim().toLowerCase();
-        return usedCourse === courseId && (scope === courseId || scope === "all");
-      });
-    }
-    if (!unlocked) return auth.json(res, 200, { ok: true, unlocked: false, courseId });
+    // Courses and all lessons are free for authenticated students.
+    // Exam attempts remain paid and are enforced by exam entitlements.
+    const unlocked = true;
     if (String((req.query && req.query.include) || "") !== "lessons") return auth.json(res, 200, { ok: true, unlocked: true, courseId });
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
       headers: { cookie: String(req.headers.cookie || ""), authorization: String(req.headers.authorization || ""), accept: "application/json" }, cache: "no-store"
