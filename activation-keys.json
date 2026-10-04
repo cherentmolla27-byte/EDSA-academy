@@ -2,9 +2,13 @@
   {
     "code": "EDSA-3E811A70",
     "scope": "all",
-    "amount": 500,
-    "status": "active",
-    "createdAt": "2026-10-04T18:07:43.717Z"
+    "amount": 400,
+    "status": "used",
+    "createdAt": "2026-10-04T18:07:43.717Z",
+    "usedAt": "2026-10-04T18:08:21.834Z",
+    "usedBy": "Chere",
+    "usedEmail": "cherentchere966@gmail.com",
+    "usedCourse": "smm"
   },
   {
     "code": "EDSA-4328CAEF",
