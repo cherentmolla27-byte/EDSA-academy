@@ -1,5 +1,5 @@
 const API_BASE = (process.env.SUPABASE_URL || "").replace(/\/$/, "") + "/rest/v1";
-const SECRET = process.env.SUPABASE_SECRET_KEY || "";
+const SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || "";
 
 function dbConfigured() {
   return Boolean(process.env.SUPABASE_URL && SECRET);
