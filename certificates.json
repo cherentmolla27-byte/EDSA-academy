@@ -114,5 +114,15 @@
     "score": "100",
     "status": "Valid",
     "issuedBy": "Ethiopian Digital Skills Academy"
+  },
+  "EDSA-2026-700511": {
+    "id": "EDSA-2026-700511",
+    "name": "Chere",
+    "email": "cherentchere966@gmail.com",
+    "course": "Social Media Management",
+    "issueDate": "2026-10-04",
+    "score": "94",
+    "status": "Valid",
+    "issuedBy": "Ethiopian Digital Skills Academy"
   }
 }
