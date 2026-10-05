@@ -176,7 +176,10 @@ async function activateKey(req, res) {
       } else if (keyAmount !== 400) {
         return auth.json(res, 409, { ok: false, error: "This key is not valid for the current 400 ETB fee." });
       }
-      if (!courseId || String(key.scope || "").trim().toLowerCase() !== "all") return auth.json(res, 409, { ok: false, error: "Only universal EDSA keys are valid." });
+      const keyScope = String(key.scope || "").trim().toLowerCase();
+      if (!courseId || (keyScope !== "all" && keyScope !== courseId)) {
+        return auth.json(res, 409, { ok: false, error: "This activation key is not valid for the selected course." });
+      }
 
       // First activation owns the course and includes the first exam attempt.
       // A second key is only valid after a recorded failed attempt; it never
@@ -261,8 +264,10 @@ async function adminGenerateKey(req, res) {
   if (!session) return auth.json(res, 401, { ok: false, error: "Admin sign-in required." });
   try {
     const body = req.body || {};
-    const scope = "all";
-    const count = 1;
+    const allowedScopes = new Set(["all","smm","dme","pbm","gdm","fme","dbi"]);
+    const scope = String(body.scope || "all").trim().toLowerCase();
+    const count = Math.min(Math.max(Number(body.count) || 1, 1), 20);
+    if (!allowedScopes.has(scope)) return auth.json(res, 400, { ok: false, error: "Invalid course scope." });
     for (let attempt = 0; attempt < 3; attempt++) {
       const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
       const created = [];
