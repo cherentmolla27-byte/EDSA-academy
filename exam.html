@@ -2330,11 +2330,11 @@ function generate50Questions(courseKey, courseTitle) {
           setTimeout(() => {
             if (COURSES.some(c => c.id === courseId)) {
               if (openExam) {
-                state.selectedCourse = COURSES.find(c => c.id === courseId);
-                const nameInput = document.getElementById("studentName");
-                if (nameInput) nameInput.value = state.studentName || "";
-                showSection("stepPayment");
-                verifyAndStartExam({ preventDefault: function() {} });
+                // Direct exam links are ALWAYS gated. Selecting the course first
+                // runs the same authenticated entitlement check as the normal
+                // Exam Portal. Without a paid/activated attempt, the student
+                // sees the 400 ETB payment + Telegram receipt instructions.
+                selectCourse(courseId);
               } else {
                 selectCourse(courseId);
               }
