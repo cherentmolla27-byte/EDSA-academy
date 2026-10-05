@@ -1857,6 +1857,15 @@ function generate50Questions(courseKey, courseTitle) {
       document.getElementById("adminModal").classList.remove("hidden");
       checkLockoutState();
 
+      // Security: opening the Admin Panel from the exam portal always requires
+      // a fresh administrator PIN. Never reuse an existing admin session here.
+      try {
+        await EDSA_API_FETCH("/api/admin-logout", {
+          method: "POST",
+          cache: "no-store"
+        });
+      } catch (_) {}
+
       try {
         const response = await EDSA_API_FETCH("/api/admin-me", { cache: "no-store" });
         const result = await response.json().catch(() => ({}));
