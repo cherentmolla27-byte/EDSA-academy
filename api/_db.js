@@ -48,8 +48,18 @@ async function upsert(table, rows, onConflict) {
   });
 }
 
+async function insertMinimal(table, rows) {
+  const payload = Array.isArray(rows) ? rows : [rows];
+  if (!payload.length) return [];
+  return supabaseRequest("/" + table, {
+    method: "POST",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify(payload)
+  });
+}
+
 async function select(table, query) {
   return supabaseRequest("/" + table + (query ? "?" + query : ""), { method: "GET" });
 }
 
-module.exports = { dbConfigured, supabaseRequest, upsert, select };
+module.exports = { dbConfigured, supabaseRequest, upsert, insertMinimal, select };
