@@ -215,21 +215,23 @@ async function activateKey(req, res) {
       }
       try {
         const now = new Date().toISOString();
-        await db.upsert("course_access", {
-          email: normalizedEmail,
-          course_id: courseId,
-          activation_code: code,
-          amount: 400,
-          activated_at: now
-        }, "email,course_id");
-        await db.upsert("exam_entitlements", {
+        if (!alreadyOwned) {
+          await db.insertMinimal("course_access", {
+            email: normalizedEmail,
+            course_id: courseId,
+            activation_code: code,
+            amount: 400,
+            activated_at: now
+          });
+        }
+        await db.insertMinimal("exam_entitlements", {
           email: normalizedEmail,
           course_id: courseId,
           activation_code: code,
           status: "available",
           created_at: now,
           used_at: null
-        }, "activation_code");
+        });
 
         key.status = "used";
         key.usedAt = now;
@@ -509,36 +511,10 @@ async function examAttempt(req, res) {
 
     // Find one available paid entitlement, then consume that exact entitlement.
     // Course ownership remains untouched, so a failed student keeps all 15 lessons unlocked.
-    let entitlement = null;
-    try {
-      const availableEntitlements = await db.supabaseRequest(
-        "/exam_entitlements?email=eq." + encodeURIComponent(email) +
-        "&course_id=eq." + encodeURIComponent(courseId) +
-        "&status=eq.available&order=created_at.asc&limit=1",
-        { method: "GET" }
-      );
-      entitlement = Array.isArray(availableEntitlements) ? availableEntitlements[0] : null;
-    } catch (entitlementReadError) {
-      console.error("[EDSA exam entitlement read]", entitlementReadError);
-    }
-
-    if (entitlement && entitlement.id) {
-      const consumed = await db.supabaseRequest(
-        "/exam_entitlements?id=eq." + encodeURIComponent(entitlement.id) + "&status=eq.available",
-        {
-          method: "PATCH",
-          headers: { Prefer: "return=representation" },
-          body: JSON.stringify({ status: "used", used_at: completedAt })
-        }
-      );
-      if (!Array.isArray(consumed) || !consumed.length) {
-        return auth.json(res, 409, {
-          ok: false,
-          error: "This exam attempt was just used. Please refresh and try again.",
-          requiresNewPayment: true
-        });
-      }
-    } else {
+    // The activation-key registry is the authoritative exam-attempt ledger.
+    // The entitlement table is append-only audit data, so exam attempts are
+    // consumed from the activation-key registry instead of mutating it.
+    {
       const { data: keys, sha } = await readJsonFile("activation-keys.json", []);
       const keyIndex = keys.findIndex(k =>
         String(k.status || "").toLowerCase() === "used" &&
