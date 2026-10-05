@@ -354,10 +354,11 @@ async function courseAccess(req, res) {
     const courseId = String((req.query && req.query.courseId) || "").trim().toLowerCase();
     if (!courseId) return auth.json(res, 400, { ok: false, error: "Course is required." });
     const email = auth.normalizeEmail(s.email);
-    // A course is locked until the student has a paid activation.
-    // Once activated, lessons stay unlocked permanently, including after a
-    // failed exam. Only the exam entitlement is consumed per attempt.
-    let unlocked = false;
+    // Lessons are FREE for every signed-in student.
+    // Payment/activation is required only for the exam attempt. Once a student
+    // has activated a course, course ownership is also retained permanently,
+    // including after a failed exam.
+    let unlocked = true;
     try {
       if (db.dbConfigured()) {
         const rows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(email) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
@@ -366,9 +367,21 @@ async function courseAccess(req, res) {
     } catch (accessError) {
       console.error("[EDSA course access db]", accessError);
     }
-    if (!unlocked) {
+    // For the course status endpoint, report whether the student owns the
+    // course separately. The UI can still show/open lessons because lessons
+    // are free; only the exam requires a paid entitlement.
+    let owned = false;
+    try {
+      if (db.dbConfigured()) {
+        const rows = await db.select("course_access", "select=id&email=eq." + encodeURIComponent(email) + "&course_id=eq." + encodeURIComponent(courseId) + "&limit=1");
+        owned = Array.isArray(rows) && rows.length > 0;
+      }
+    } catch (accessError) {
+      console.error("[EDSA course ownership db]", accessError);
+    }
+    if (!owned) {
       const { data: keys } = await readJsonFile("activation-keys.json", []);
-      unlocked = keys.some(k =>
+      owned = keys.some(k =>
         String(k.status || "").toLowerCase() === "used" &&
         auth.normalizeEmail(k.usedEmail) === email &&
         String(k.usedCourse || "").trim().toLowerCase() === courseId &&
@@ -376,9 +389,8 @@ async function courseAccess(req, res) {
       );
     }
     if (String((req.query && req.query.include) || "") !== "lessons") {
-      return auth.json(res, 200, { ok: true, unlocked, courseId });
+      return auth.json(res, 200, { ok: true, unlocked: true, owned, lessonsFree: true, courseId });
     }
-    if (!unlocked) return auth.json(res, 403, { ok: false, unlocked: false, courseId, error: "This course is locked. Complete the 400 ETB manual payment and enter your EDSA activation key first." });
     const r = await fetch("https://xcdezvnnkahdogywllkk.supabase.co/functions/v1/edsa-course-lessons?courseId=" + encodeURIComponent(courseId), {
       headers: { cookie: String(req.headers.cookie || ""), authorization: String(req.headers.authorization || ""), accept: "application/json" }, cache: "no-store"
     });
