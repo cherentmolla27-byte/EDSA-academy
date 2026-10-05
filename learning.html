@@ -133,7 +133,7 @@ async function boot(){
       state.name=x.user.name||"Student";
       load();
       await Promise.all(Object.keys(COURSES).map(id=>checkCourseAccess(id)));
-      document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose any course and study all 15 lessons FREE. When you finish, your exam opens automatically — 400 ETB per exam attempt.";
+      document.getElementById("welcome").textContent="Welcome, "+state.name+". Choose any course and study all 15 lessons FREE. Study all 15 lessons FREE. When you finish, choose the exam portal to continue.";
       renderCourses();
       if(COURSES[q]) { const qi=Number(new URLSearchParams(location.search).get("lesson")); selectCourse(q,Number.isFinite(qi)?qi:0); }
       return;
@@ -266,8 +266,7 @@ function nextLesson(){
   if(state.lesson<total-1){ openLesson(state.lesson+1); return; }
   renderCourse(); renderCourses();
   if(state.done[state.courseId].completed.length===total){
-    // The intended course journey is automatic: finish lesson 15 -> open the exam.
-    setTimeout(()=>{ goToExamPortal(); },250);
+    // Finishing lessons does not launch the exam automatically. The student must choose the exam portal.
   }
 }
 function toggleComplete(){
@@ -282,9 +281,7 @@ function toggleComplete(){
   d.completed.push(state.lesson);
   state.done[state.courseId]=d; save(); renderCourse(); renderCourses();
   const total=getLessons(state.courseId).length;
-  if(state.lesson===total-1 && d.completed.length===total){
-    setTimeout(()=>goToExamPortal(),350);
-  }
+  // Completing the final lesson only reveals the exam-payment button.
 }
 function escapeHtml(v){
   return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
