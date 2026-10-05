@@ -204,6 +204,12 @@ $("students").addEventListener("click",e=>{const row=e.target.closest(".student-
 $("attempts").addEventListener("click",e=>{const b=e.target.closest(".attempt-view");if(b)showAttempt(b.dataset.id);});
 $("certificates").addEventListener("click",e=>{const b=e.target.closest(".cert-view");if(b)showCertificate(b.dataset.id);});
 
-loadDashboard().then(function(ok){if(ok)startDashboardAutoRefresh();});
+// Security: never restore an existing admin session automatically.
+// Opening this page requires a fresh administrator PIN.
+(async function requireFreshAdminLogin(){
+  try { await fetch("/api/admin-logout",{method:"POST",credentials:"same-origin",cache:"no-store"}); } catch (_) {}
+  $("login").classList.remove("hidden");
+  $("dashboard").classList.add("hidden");
+})();
 </script>
 </body></html>
