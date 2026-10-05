@@ -1854,33 +1854,14 @@ function generate50Questions(courseKey, courseTitle) {
     }
 
     async function openAdminModal() {
+      // Security rule: opening the admin panel always starts at the PIN gate.
+      // Do not silently restore an old admin session into the dashboard UI.
       document.getElementById("adminModal").classList.remove("hidden");
+      state.adminAuthenticated = false;
+      document.getElementById("adminAuthView").classList.remove("hidden");
+      document.getElementById("adminDashboardView").classList.add("hidden");
+      document.getElementById("adminPinInput").value = "";
       checkLockoutState();
-
-      try {
-        const response = await EDSA_API_FETCH("/api/admin-me", { cache: "no-store" });
-        const result = await response.json().catch(() => ({}));
-
-        const adminRole = result && result.user && result.user.role ? result.user.role : (result && result.role ? result.role : "");
-        if (response.ok && result.ok && adminRole === "admin") {
-          state.adminAuthenticated = true;
-          document.getElementById("adminAuthView").classList.add("hidden");
-          document.getElementById("adminDashboardView").classList.remove("hidden");
-          renderKeysTable();
-          renderCertificateRegistry();
-          renderAdminDashboard();
-        } else {
-          state.adminAuthenticated = false;
-          document.getElementById("adminAuthView").classList.remove("hidden");
-          document.getElementById("adminDashboardView").classList.add("hidden");
-          document.getElementById("adminPinInput").value = "";
-        }
-      } catch (error) {
-        state.adminAuthenticated = false;
-        document.getElementById("adminAuthView").classList.remove("hidden");
-        document.getElementById("adminDashboardView").classList.add("hidden");
-        console.warn("[EDSA] Admin session check failed:", error);
-      }
     }
 
     function openAdminLearningPreview() { window.location.href = "/learning.html?adminPreview=1"; }
