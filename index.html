@@ -109,7 +109,7 @@ html,body{margin:0;width:100%;min-height:100%;overflow:auto;background:#020617}b
     </div>
     <div class="edsa-ref-nav-actions">
       <button class="edsa-ref-lang" id="edsaReferenceLang" type="button">አማ / EN</button>
-      <button class="edsa-ref-sign" type="button" onclick="EDSA_SHOW_LOGIN()">ግባ / Sign In</button>
+      <button class="edsa-ref-lang" type="button" onclick="EDSA_OPEN_ADMIN()">🔒 Admin</button><button class="edsa-ref-sign" type="button" onclick="EDSA_SHOW_LOGIN()">ግባ / Sign In</button>
     </div>
   </nav>
 
@@ -535,7 +535,7 @@ async function EDSA_OPEN_COURSE(id,profile){
   }
   window.location.href="/?login=1&return="+encodeURIComponent(learningUrl);
 }
-function EDSA_OPEN_ADMIN(){window.location.href="/edsa-app.html?admin=1"}
+function EDSA_OPEN_ADMIN(){window.location.href="/admin-dashboard.html"}
 function EDSA_OPEN_LEARNING(id){
   // Learning Center performs its own server-side student authentication check.
   // Do not depend on the localStorage profile here.
