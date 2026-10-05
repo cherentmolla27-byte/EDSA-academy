@@ -1021,22 +1021,13 @@ function generate50Questions(courseKey, courseTitle) {
       // IMPORTANT: lessons are free. The exam is the paid product.
       // Never redirect a student back to Learning Center just because they have
       // no exam entitlement. Show the exam payment screen instead.
-      try {
-        const examAccessResponse = await EDSA_API_FETCH("/api/exam-access?courseId=" + encodeURIComponent(courseId), {
-          credentials: "include", headers: EDSA_AUTH_HEADERS(), cache: "no-store"
-        });
-        const examAccessResult = await examAccessResponse.json().catch(() => ({}));
-        if (examAccessResponse.ok && examAccessResult.ok && examAccessResult.available) {
-          const nameInput = document.getElementById("studentName");
-          if (nameInput) nameInput.value = state.studentName || "";
-          const keyInput = document.getElementById("accessKey");
-          if (keyInput) keyInput.value = "";
-          await verifyAndStartExam({ preventDefault: function() {} });
-          return;
-        }
-      } catch (error) {
-        console.warn("[EDSA] Exam entitlement check failed:", error);
-      }
+      // Always show the payment screen first. A stored entitlement must never auto-start an exam.
+      const nameInput = document.getElementById("studentName");
+      if (nameInput) nameInput.value = state.studentName || "";
+      const keyInput = document.getElementById("accessKey");
+      if (keyInput) keyInput.value = "";
+      const instruction = document.getElementById("paymentInstructions");
+      if (instruction) instruction.innerHTML = "<strong>400 ETB exam attempt.</strong> Your 15 lessons remain FREE. Send the payment receipt on Telegram, receive your one-time activation key from EDSA, then enter it below to open the exam. If you fail, lessons stay FREE and only the next exam attempt needs another payment.";
       showSection("stepPayment");
     }
 
