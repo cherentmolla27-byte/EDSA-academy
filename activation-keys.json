@@ -2,9 +2,13 @@
   {
     "code": "EDSA-C547F7BE",
     "scope": "all",
-    "amount": 500,
-    "status": "active",
-    "createdAt": "2026-10-05T15:25:50.246Z"
+    "amount": 400,
+    "status": "used",
+    "createdAt": "2026-10-05T15:25:50.246Z",
+    "usedAt": "2026-10-05T15:28:05.822Z",
+    "usedBy": "Kal Selemon",
+    "usedEmail": "kalselemon49@gmail.com",
+    "usedCourse": "pbm"
   },
   {
     "code": "EDSA-246BC076",
