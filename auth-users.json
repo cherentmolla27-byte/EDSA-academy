@@ -46,5 +46,11 @@
     "email": "bereketniguse418@gmail.com",
     "passwordHash": "scrypt$3629912166c7d37e3b832cfada8232cb$1164d23a3cf1f5efbaf92c7c53bb72750a3e5280b96dc8af225d2a21aec3b7f14fc3aa06e1d6516e55eb3b4326d8d2efd2ad25fd3acaae5aa9fe01de31b3fe02",
     "createdAt": "2026-10-02T19:00:07.958Z"
+  },
+  "kalselemon49@gmail.com": {
+    "name": "Kal Selemon",
+    "email": "kalselemon49@gmail.com",
+    "passwordHash": "scrypt$1fb0ebe524511b9b2fe9cadf4223c54c$781e7bd6bc7a1a75d00ba7fa4ebdd56c006e96dd107be6eafa0bd322b2282d5cafddd22b1368e81cdad4c35d95a9cf90e10a9920c4c3a3786396e024b65eaa93",
+    "createdAt": "2026-10-05T14:31:47.865Z"
   }
 }
