@@ -52,5 +52,11 @@
     "email": "kalselemon49@gmail.com",
     "passwordHash": "scrypt$1fb0ebe524511b9b2fe9cadf4223c54c$781e7bd6bc7a1a75d00ba7fa4ebdd56c006e96dd107be6eafa0bd322b2282d5cafddd22b1368e81cdad4c35d95a9cf90e10a9920c4c3a3786396e024b65eaa93",
     "createdAt": "2026-10-05T14:31:47.865Z"
+  },
+  "nahomtewodros05@gmail.com": {
+    "name": "nahom tewodros",
+    "email": "nahomtewodros05@gmail.com",
+    "passwordHash": "scrypt$67d5ad4763049d920491eeadcd2df7ce$c0fa2be165be9007a0551a5f6b021272efff57729ed17f12b76017145bced5ac7ca463127dc1b2ef39be9c4fa357d2fb3f92c486c0d8ed5e056a1b69520a5394",
+    "createdAt": "2026-10-06T15:14:04.965Z"
   }
 }
