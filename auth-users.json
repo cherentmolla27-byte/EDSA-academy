@@ -58,5 +58,11 @@
     "email": "nahomtewodros05@gmail.com",
     "passwordHash": "scrypt$67d5ad4763049d920491eeadcd2df7ce$c0fa2be165be9007a0551a5f6b021272efff57729ed17f12b76017145bced5ac7ca463127dc1b2ef39be9c4fa357d2fb3f92c486c0d8ed5e056a1b69520a5394",
     "createdAt": "2026-10-06T15:14:04.965Z"
+  },
+  "gizawermias12@gmail.com": {
+    "name": "Ermias Gizaw",
+    "email": "gizawermias12@gmail.com",
+    "passwordHash": "scrypt$8fd188a18267c80aed68ad4a3fe8fab0$4c90c433ed1645a9c33dc24a58c33ac82cf98cd35402c00aaee65dd1d8c4c234aa9ec0817cb3c3739db437277ae356ee903382e295a5f5f971415b1a5b9be38f",
+    "createdAt": "2026-10-10T12:19:30.189Z"
   }
 }
