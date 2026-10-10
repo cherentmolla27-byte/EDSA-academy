@@ -64,5 +64,11 @@
     "email": "gizawermias12@gmail.com",
     "passwordHash": "scrypt$8fd188a18267c80aed68ad4a3fe8fab0$4c90c433ed1645a9c33dc24a58c33ac82cf98cd35402c00aaee65dd1d8c4c234aa9ec0817cb3c3739db437277ae356ee903382e295a5f5f971415b1a5b9be38f",
     "createdAt": "2026-10-10T12:19:30.189Z"
+  },
+  "meriemeyob@gmail.com": {
+    "name": "Meriem Eyob",
+    "email": "meriemeyob@gmail.com",
+    "passwordHash": "scrypt$7fddf368cc362d625e2e0e16104876ad$f4feeb33db0ff2e9ca57ed88e3a3d96e11ea8989649f6c192cbf66720caac94c6966dcfe654a0d257befefd938de691ae888f05b917a7a9aac1befe7b219e254",
+    "createdAt": "2026-10-10T12:21:19.230Z"
   }
 }
