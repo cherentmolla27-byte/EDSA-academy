@@ -70,5 +70,11 @@
     "email": "meriemeyob@gmail.com",
     "passwordHash": "scrypt$7fddf368cc362d625e2e0e16104876ad$f4feeb33db0ff2e9ca57ed88e3a3d96e11ea8989649f6c192cbf66720caac94c6966dcfe654a0d257befefd938de691ae888f05b917a7a9aac1befe7b219e254",
     "createdAt": "2026-10-10T12:21:19.230Z"
+  },
+  "bemnilyu@gmail.com": {
+    "name": "Bemnet",
+    "email": "bemnilyu@gmail.com",
+    "passwordHash": "scrypt$2e4896f4b649336c9bdb959ba97d4d43$290f3f8c9318537dc671827e415d34d8e63d923233ce9adc52e129e333fb92e332d2a7843f7434b5bb2af72c236d4ab7a1aa464a599b5296fa68c0558f7b8867",
+    "createdAt": "2026-10-10T12:29:54.790Z"
   }
 }
