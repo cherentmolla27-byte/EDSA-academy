@@ -76,5 +76,11 @@
     "email": "bemnilyu@gmail.com",
     "passwordHash": "scrypt$2e4896f4b649336c9bdb959ba97d4d43$290f3f8c9318537dc671827e415d34d8e63d923233ce9adc52e129e333fb92e332d2a7843f7434b5bb2af72c236d4ab7a1aa464a599b5296fa68c0558f7b8867",
     "createdAt": "2026-10-10T12:29:54.790Z"
+  },
+  "zekeyousteshaynh@gmail.com": {
+    "name": "Fitsum Tsehaye",
+    "email": "zekeyousteshaynh@gmail.com",
+    "passwordHash": "scrypt$04eeb99e339f688e1d655fb7531574bf$75f771fed10d46fc06ea99d2dedf1c2e3ac2677aee95dc71bedf63b3829852ad84596f2184752d682313edcf25863d37d33284ac4341a98d69e4ac3e6544dbf3",
+    "createdAt": "2026-10-10T12:38:30.624Z"
   }
 }
