@@ -1,81 +1,16 @@
 const crypto = require("crypto");
+const db = require("./_db");
 
-const REPO = process.env.EDSA_AUTH_REPO || "cherentmolla27-byte/EDSA-academy";
-const BRANCH = "main";
-const USERS_PATH = "auth-users.json";
+const LEGACY_USERS_URL = "https://raw.githubusercontent.com/cherentmolla27-byte/EDSA-academy/main/auth-users.json";
 
-// Keep the user registry warm inside a reused Vercel function instance.
-// This removes a GitHub API round-trip from most repeat sign-ins while
-// keeping registration writes authoritative and invalidating the cache.
+// Keep the private database-backed account registry warm in reused function instances.
 let usersCache = null;
 let usersCacheAt = 0;
-const USERS_CACHE_MS = 60 * 1000;
+const USERS_CACHE_MS = 30 * 1000;
 
 function json(res, status, body) {
   res.status(status).setHeader("Content-Type", "application/json; charset=utf-8");
   res.end(JSON.stringify(body));
-}
-
-function getToken() {
-  return process.env.EDSA_GITHUB_TOKEN || "";
-}
-
-async function githubRequest(path, options = {}) {
-  const token = getToken();
-  if (!token) throw new Error("EDSA_GITHUB_TOKEN is not configured");
-  const response = await fetch("https://api.github.com" + path, {
-    ...options,
-    headers: {
-      Accept: "application/vnd.github+json",
-      Authorization: "Bearer " + token,
-      "X-GitHub-Api-Version": "2022-11-28",
-      ...(options.headers || {})
-    }
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const err = new Error(data.message || "GitHub request failed");
-    err.status = response.status;
-    throw err;
-  }
-  return data;
-}
-
-async function readUsers() {
-  const now = Date.now();
-  if (usersCache && now - usersCacheAt < USERS_CACHE_MS) {
-    return { users: usersCache.users, sha: usersCache.sha };
-  }
-  try {
-    const data = await githubRequest("/repos/" + REPO + "/contents/" + USERS_PATH + "?ref=" + BRANCH);
-    const raw = Buffer.from(data.content || "", "base64").toString("utf8");
-    const users = JSON.parse(raw || "{}");
-    const normalized = users && typeof users === "object" ? users : {};
-    usersCache = { users: normalized, sha: data.sha };
-    usersCacheAt = now;
-    return { users: normalized, sha: data.sha };
-  } catch (err) {
-    if (err.status === 404) {
-      usersCache = { users: {}, sha: null };
-      usersCacheAt = now;
-      return { users: {}, sha: null };
-    }
-    throw err;
-  }
-}
-
-async function writeUsers(users, sha, message) {
-  const body = Buffer.from(JSON.stringify(users, null, 2) + "\n", "utf8").toString("base64");
-  const payload = { message, content: body, branch: BRANCH };
-  if (sha) payload.sha = sha;
-  const result = await githubRequest("/repos/" + REPO + "/contents/" + USERS_PATH, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  usersCache = { users, sha: result && result.content ? result.content.sha : sha };
-  usersCacheAt = Date.now();
-  return result;
 }
 
 function normalizeEmail(email) {
@@ -107,6 +42,68 @@ async function verifyPassword(password, stored) {
     crypto.scrypt(password, salt, expected.length, { N: 16384, r: 8, p: 1 }, (err, key) => err ? reject(err) : resolve(key));
   });
   return expected.length === derived.length && crypto.timingSafeEqual(expected, derived);
+}
+
+function rowsToUsers(rows) {
+  const users = {};
+  for (const row of Array.isArray(rows) ? rows : []) {
+    const email = normalizeEmail(row.email);
+    if (!email || !row.password_hash) continue;
+    users[email] = {
+      name: String(row.name || ""),
+      email,
+      passwordHash: String(row.password_hash),
+      createdAt: row.created_at || new Date().toISOString()
+    };
+  }
+  return users;
+}
+
+function usersToRows(users) {
+  return Object.values(users || {}).filter(user => user && normalizeEmail(user.email) && user.passwordHash).map(user => ({
+    email: normalizeEmail(user.email),
+    name: validateName(user.name) || "EDSA Student",
+    password_hash: String(user.passwordHash),
+    created_at: user.createdAt || new Date().toISOString()
+  }));
+}
+
+async function importLegacyUsersIfEmpty() {
+  const existing = await db.select("student_auth_credentials", "select=email&limit=1");
+  if (Array.isArray(existing) && existing.length) return;
+  // One-time, server-side import preserves existing scrypt hashes and passwords.
+  const response = await fetch(LEGACY_USERS_URL, { headers: { Accept: "application/json" } });
+  if (!response.ok) {
+    const err = new Error("Legacy student account registry could not be loaded");
+    err.status = response.status;
+    throw err;
+  }
+  const legacy = await response.json();
+  const rows = usersToRows(legacy);
+  if (rows.length) await db.upsert("student_auth_credentials", rows, "email");
+}
+
+async function readUsers() {
+  const now = Date.now();
+  if (usersCache && now - usersCacheAt < USERS_CACHE_MS) {
+    return { users: usersCache, sha: null };
+  }
+  let rows = await db.select("student_auth_credentials", "select=email,name,password_hash,created_at&limit=1000");
+  if (!Array.isArray(rows) || !rows.length) {
+    await importLegacyUsersIfEmpty();
+    rows = await db.select("student_auth_credentials", "select=email,name,password_hash,created_at&limit=1000");
+  }
+  usersCache = rowsToUsers(rows);
+  usersCacheAt = Date.now();
+  return { users: usersCache, sha: null };
+}
+
+async function writeUsers(users) {
+  const rows = usersToRows(users);
+  if (rows.length) await db.upsert("student_auth_credentials", rows, "email");
+  usersCache = { ...users };
+  usersCacheAt = Date.now();
+  return { ok: true };
 }
 
 function sessionSecret() {
