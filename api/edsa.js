@@ -627,39 +627,43 @@ async function certificateRegister(req, res) {
   if (!method(req, res, ["POST"])) return;
   const session = requireRole(req, "student");
   if (!session) return auth.json(res, 401, { ok: false, error: "Student sign-in required." });
+  if (!db.dbConfigured()) return auth.json(res, 503, { ok: false, error: "Certificate registry is temporarily unavailable." });
   try {
-    const token = process.env.EDSA_GITHUB_TOKEN;
-    if (!token) return auth.json(res, 500, { ok: false, error: "EDSA_GITHUB_TOKEN is not configured on the server." });
     const body = req.body || {};
-    const id = String(body.id || "").trim(), name = String(body.name || "").trim(), course = String(body.course || "").trim();
-    const issueDate = String(body.issueDate || "").trim(), score = String(body.score ?? "").trim(), email = String(body.email || "").trim().toLowerCase();
-    if (!/^EDSA-\d{4}-\d{6}$/.test(id) || !name || !course || !issueDate) return auth.json(res, 400, { ok: false, error: "Invalid certificate data." });
-    if (email && email !== String(session.email || "").trim().toLowerCase()) return auth.json(res, 403, { ok: false, error: "Certificate email does not match the signed-in student." });
-    const numericScore = Number(score);
-    if (!Number.isFinite(numericScore) || numericScore < 80 || numericScore > 100) return auth.json(res, 400, { ok: false, error: "Only certificates with a passing score of 80% or higher can be registered." });
-    const [owner, repo] = REPO_CERT.split("/");
-    if (!owner || !repo) return auth.json(res, 500, { ok: false, error: "Invalid EDSA_GITHUB_REPOSITORY." });
-    const headers = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "Content-Type": "application/json", "User-Agent": "EDSA-Certificate-Registry" };
-    const fileUrl = `https://api.github.com/repos/${owner}/${repo}/contents/certificates.json`;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const currentResponse = await fetch(fileUrl, { method: "GET", headers, cache: "no-store" });
-      if (!currentResponse.ok) return auth.json(res, 502, { ok: false, error: "Could not read the public certificate registry." });
-      const current = await currentResponse.json();
-      let registry = {};
-      try { registry = JSON.parse(Buffer.from(current.content || "", "base64").toString("utf8") || "{}"); } catch (_) { registry = {}; }
-      if (registry[id]) return auth.json(res, 200, { ok: true, published: true, id, existing: true });
-      registry[id] = { id, name, email, course, issueDate, score, status: "Valid", issuedBy: "Ethiopian Digital Skills Academy" };
-      const updateResponse = await fetch(fileUrl, {
-        method: "PUT", headers,
-        body: JSON.stringify({ message: "Auto-register certificate " + id, content: Buffer.from(JSON.stringify(registry, null, 2) + "\n", "utf8").toString("base64"), sha: current.sha, branch: "main" })
-      });
-      if (updateResponse.ok) return auth.json(res, 200, { ok: true, published: true, id });
-      if (updateResponse.status === 409) continue;
-      return auth.json(res, 502, { ok: false, error: "Could not publish the certificate to the public registry." });
+    const id = String(body.id || "").trim();
+    const name = String(body.name || "").trim();
+    const course = String(body.course || "").trim();
+    const issueDate = String(body.issueDate || "").trim();
+    const score = Number(body.score);
+    const email = String(body.email || "").trim().toLowerCase();
+    if (!/^EDSA-\d{4}-\d{6}$/.test(id) || !name || !course || !issueDate) {
+      return auth.json(res, 400, { ok: false, error: "Invalid certificate data." });
     }
-    return auth.json(res, 409, { ok: false, error: "The registry changed repeatedly. Please try the certificate again." });
+    if (email && email !== String(session.email || "").trim().toLowerCase()) {
+      return auth.json(res, 403, { ok: false, error: "Certificate email does not match the signed-in student." });
+    }
+    if (!Number.isFinite(score) || score < 80 || score > 100) {
+      return auth.json(res, 400, { ok: false, error: "Only certificates with a passing score of 80% or higher can be registered." });
+    }
+    const existing = await db.select("certificates", "select=certificate_id&certificate_id=eq." + encodeURIComponent(id) + "&limit=1");
+    if (Array.isArray(existing) && existing.length) return auth.json(res, 200, { ok: true, published: true, id, existing: true });
+    const studentRows = await db.select("students", "select=id&email=eq." + encodeURIComponent(String(session.email || "").toLowerCase()) + "&limit=1");
+    await db.upsert("certificates", {
+      certificate_id: id,
+      student_id: studentRows[0]?.id || null,
+      student_name: cleanText(name, 120),
+      course_id: cleanText(body.courseId || course, 100),
+      course_title: cleanText(course, 200),
+      score: Math.round(score),
+      issue_date: issueDate.slice(0, 10),
+      status: "Valid",
+      verification_url: cleanText(body.verificationUrl, 500) || null,
+      issued_by: "Ethiopian Digital Skills Academy"
+    }, "certificate_id");
+    return auth.json(res, 200, { ok: true, published: true, id });
   } catch (error) {
-    return auth.json(res, 500, { ok: false, error: "Certificate registration failed." });
+    console.error("[EDSA certificate register]", error);
+    return auth.json(res, 503, { ok: false, error: "Certificate registration failed. Please try again." });
   }
 }
 
@@ -667,23 +671,49 @@ async function certificateVerify(req, res) {
   if (!method(req, res, ["GET"])) return;
   const id = String((req.query && req.query.id) || "").trim();
   if (!/^EDSA-\d{4}-\d{6}$/.test(id)) return auth.json(res, 400, { ok: false, found: false, error: "Invalid certificate ID." });
+  if (!db.dbConfigured()) return auth.json(res, 503, { ok: false, found: false, error: "Verification service is temporarily unavailable." });
   try {
-    const token = process.env.EDSA_GITHUB_TOKEN;
-    if (!token) return auth.json(res, 500, { ok: false, found: false, error: "Verification service is not configured." });
-    const [owner, repo] = REPO_CERT.split("/");
-    if (!owner || !repo) return auth.json(res, 500, { ok: false, found: false, error: "Invalid repository configuration." });
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/certificates.json?ref=main`, {
-      headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "EDSA-Certificate-Verification" }, cache: "no-store"
-    });
-    if (!response.ok) return auth.json(res, 502, { ok: false, found: false, error: "Could not read the certificate registry." });
-    const file = await response.json();
-    const registry = JSON.parse(Buffer.from(file.content || "", "base64").toString("utf8") || "{}");
-    const record = registry[id];
+    let rows = await db.select("certificates", "select=certificate_id,student_name,course_title,score,issue_date,status,issued_by&certificate_id=eq." + encodeURIComponent(id) + "&limit=1");
+    if (!Array.isArray(rows) || !rows.length) {
+      // Import an older public certificate only when it is requested and absent from the database.
+      const legacyResponse = await fetch("https://raw.githubusercontent.com/cherentmolla27-byte/EDSA-academy/main/certificates.json", { headers: { Accept: "application/json" } });
+      if (legacyResponse.ok) {
+        const legacy = await legacyResponse.json();
+        const record = legacy && legacy[id];
+        if (record) {
+          await db.upsert("certificates", {
+            certificate_id: id,
+            student_name: cleanText(record.name, 120) || "EDSA Student",
+            course_id: cleanText(record.courseId || record.course_id || record.course, 100) || "unknown",
+            course_title: cleanText(record.courseTitle || record.course || "EDSA Course", 200),
+            score: Number.isFinite(Number(record.score)) ? Math.round(Number(record.score)) : null,
+            issue_date: String(record.issueDate || new Date().toISOString()).slice(0, 10),
+            status: cleanText(record.status || "Valid", 40),
+            issued_by: cleanText(record.issuedBy || "Ethiopian Digital Skills Academy", 200)
+          }, "certificate_id");
+          rows = await db.select("certificates", "select=certificate_id,student_name,course_title,score,issue_date,status,issued_by&certificate_id=eq." + encodeURIComponent(id) + "&limit=1");
+        }
+      }
+    }
     res.setHeader("Cache-Control", "no-store, max-age=0");
-    if (!record) return auth.json(res, 404, { ok: true, found: false, id });
-    return auth.json(res, 200, { ok: true, found: true, certificate: record });
+    if (!Array.isArray(rows) || !rows.length) return auth.json(res, 404, { ok: true, found: false, id });
+    const row = rows[0];
+    return auth.json(res, 200, {
+      ok: true,
+      found: true,
+      certificate: {
+        id: row.certificate_id,
+        name: row.student_name,
+        course: row.course_title,
+        issueDate: row.issue_date,
+        score: row.score,
+        status: row.status,
+        issuedBy: row.issued_by
+      }
+    });
   } catch (error) {
-    return auth.json(res, 500, { ok: false, found: false, error: "Verification service failed." });
+    console.error("[EDSA certificate verify]", error);
+    return auth.json(res, 503, { ok: false, found: false, error: "Verification service failed. Please try again." });
   }
 }
 
