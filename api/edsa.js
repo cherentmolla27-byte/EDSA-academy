@@ -49,18 +49,58 @@ async function github(path, options = {}) {
 }
 
 async function readJsonFile(path, fallback) {
-  try {
-    const d = await github("/repos/" + REPO + "/contents/" + path + "?ref=" + BRANCH);
-    return {
-      data: JSON.parse(Buffer.from(d.content || "", "base64").toString("utf8") || JSON.stringify(fallback)),
-      sha: d.sha
-    };
-  } catch (e) {
-    if (e.status === 404) return { data: fallback, sha: null };
-    throw e;
+  if (path === "activation-keys.json") {
+    if (!db.dbConfigured()) throw new Error("Private activation registry database is not configured");
+    let rows = await db.select("activation_key_registry", "select=*&order=created_at.desc&limit=1000");
+    if (!Array.isArray(rows) || !rows.length) {
+      // One-time server-side import from the old public registry. Active keys were
+      // exposed in a public repository, so revoke them rather than risk unpaid access.
+      const legacyResponse = await fetch("https://raw.githubusercontent.com/cherentmolla27-byte/EDSA-academy/main/activation-keys.json", { headers: { Accept: "application/json" } });
+      if (!legacyResponse.ok) throw new Error("Legacy activation registry could not be loaded");
+      const legacy = await legacyResponse.json();
+      const imported = (Array.isArray(legacy) ? legacy : []).map(key => ({
+        code: String(key.code || "").trim().toUpperCase(),
+        scope: String(key.scope || "all").trim().toLowerCase(),
+        amount: Number(key.amount) === 500 ? 400 : (Number(key.amount) || 400),
+        status: String(key.status || "active").toLowerCase() === "active" ? "revoked" : String(key.status || "revoked").toLowerCase(),
+        created_at: key.createdAt || new Date().toISOString(),
+        used_at: key.usedAt || null,
+        used_by: key.usedBy || null,
+        used_email: key.usedEmail || null,
+        used_course: key.usedCourse || null,
+        exam_used_at: key.examUsedAt || null
+      })).filter(key => key.code && /^EDSA-[A-F0-9]{8}$/.test(key.code));
+      if (imported.length) await db.upsert("activation_key_registry", imported, "code");
+      rows = await db.select("activation_key_registry", "select=*&order=created_at.desc&limit=1000");
+    }
+    const data = (Array.isArray(rows) ? rows : []).map(row => ({
+      code: row.code, scope: row.scope, amount: Number(row.amount), status: row.status,
+      createdAt: row.created_at, usedAt: row.used_at, usedBy: row.used_by,
+      usedEmail: row.used_email, usedCourse: row.used_course, examUsedAt: row.exam_used_at
+    }));
+    return { data, sha: null };
   }
+  const d = await github("/repos/" + REPO + "/contents/" + path + "?ref=" + BRANCH);
+  return { data: JSON.parse(Buffer.from(d.content || "", "base64").toString("utf8") || JSON.stringify(fallback)), sha: d.sha };
 }
 async function writeJsonFile(path, data, sha, message) {
+  if (path === "activation-keys.json") {
+    if (!db.dbConfigured()) throw new Error("Private activation registry database is not configured");
+    const rows = (Array.isArray(data) ? data : []).map(key => ({
+      code: String(key.code || "").trim().toUpperCase(),
+      scope: String(key.scope || "all").trim().toLowerCase(),
+      amount: Number(key.amount) === 500 ? 400 : (Number(key.amount) || 400),
+      status: String(key.status || "active").toLowerCase(),
+      created_at: key.createdAt || new Date().toISOString(),
+      used_at: key.usedAt || null,
+      used_by: key.usedBy || null,
+      used_email: key.usedEmail || null,
+      used_course: key.usedCourse || null,
+      exam_used_at: key.examUsedAt || null
+    })).filter(key => key.code && /^EDSA-[A-F0-9]{8}$/.test(key.code));
+    if (rows.length) await db.upsert("activation_key_registry", rows, "code");
+    return { ok: true };
+  }
   const content = Buffer.from(JSON.stringify(data, null, 2) + "\n", "utf8").toString("base64");
   const body = { message, content, branch: BRANCH };
   if (sha) body.sha = sha;
