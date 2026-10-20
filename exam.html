@@ -1099,6 +1099,17 @@ function generate50Questions(courseKey, courseTitle) {
         }
       }
 
+      // If the server confirms an unused paid entitlement, that entitlement—not
+      // whatever text happens to be in the key field—is what authorizes the attempt.
+      // Clear the field so students are not misled into thinking random text worked.
+      if (alreadyUnlocked && examAttemptAvailable) {
+        inputKey = "";
+        const keyInput = document.getElementById("accessKey");
+        if (keyInput) keyInput.value = "";
+        const instruction = document.getElementById("paymentInstructions");
+        if (instruction) instruction.innerHTML = "<strong>Paid exam attempt already activated.</strong> EDSA has confirmed an unused activation on your account. You do not need to enter another key for this attempt. A new 400 ETB key is required only after this attempt is used.";
+      }
+
       if (!alreadyUnlocked || !examAttemptAvailable) {
         if (!inputKey && !alreadyUnlocked) {
           // Recover the original key only when the course itself is not owned.
