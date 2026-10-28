@@ -140,7 +140,7 @@
         </div>
         <div>
           <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Activation Key (Received via Telegram)</label>
-          <input type="text" id="accessKey" required placeholder="e.g. EDSA-8A2F9B" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white uppercase focus:outline-none focus:border-sky-500">
+          <input type="text" id="accessKey" placeholder="Enter key if activating; otherwise leave blank" class="w-full bg-black border border-slate-800 rounded-lg p-3 text-white uppercase focus:outline-none focus:border-sky-500">
         </div>
         <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-lg transition-colors shadow-lg">
           Verify Key & Launch Exam Attempt
@@ -1099,15 +1099,15 @@ function generate50Questions(courseKey, courseTitle) {
         }
       }
 
-      // If the server confirms an unused paid entitlement, that entitlement—not
-      // whatever text happens to be in the key field—is what authorizes the attempt.
-      // Clear the field so students are not misled into thinking random text worked.
+      // A paid, unused entitlement authorizes the attempt, but arbitrary text
+      // must never appear to be accepted as an activation key.
       if (alreadyUnlocked && examAttemptAvailable) {
-        inputKey = "";
-        const keyInput = document.getElementById("accessKey");
-        if (keyInput) keyInput.value = "";
+        if (inputKey) {
+          alert("Your account already has an activated exam attempt. Please clear the activation-key field and submit again; no key is needed for this already-paid attempt.");
+          return;
+        }
         const instruction = document.getElementById("paymentInstructions");
-        if (instruction) instruction.innerHTML = "<strong>Paid exam attempt already activated.</strong> EDSA has confirmed an unused activation on your account. You do not need to enter another key for this attempt. A new 400 ETB key is required only after this attempt is used.";
+        if (instruction) instruction.innerHTML = "<strong>Paid exam attempt already activated.</strong> EDSA has confirmed an unused activation on your account. Leave the activation-key field empty for this attempt. A new 400 ETB key is required only after this attempt is used.";
       }
 
       if (!alreadyUnlocked || !examAttemptAvailable) {
